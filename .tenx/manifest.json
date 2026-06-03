@@ -1,0 +1,12 @@
+{
+  "bundleIdentifier" : "app.10x.build-a-mobile-app-called-charmster-ai-dating-c",
+  "createdWith" : "10x",
+  "icon" : "ios\/BuildAMobileAppCalledCharmsterAIDatingC\/Assets.xcassets\/AppIcon.appiconset",
+  "name" : "Build a mobile app called **Charmster AI: Dating C",
+  "projectType" : "ios",
+  "schemaVersion" : 1,
+  "scheme" : "BuildAMobileAppCalledCharmsterAIDatingC",
+  "workspaceRoot" : "ios\/BuildAMobileAppCalledCharmsterAIDatingC",
+  "xcodeGenSpec" : "ios\/project.yml",
+  "xcodeProject" : "ios\/BuildAMobileAppCalledCharmsterAIDatingC.xcodeproj"
+}
