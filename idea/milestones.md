@@ -1,0 +1,10 @@
+- [ ] Scaffold dark design system tokens, typography, and reusable components (cards, pills, score rings, progress bar, CTA buttons)
+- [ ] Build onboarding: 3 slides + 4-question coach quiz + Charm Score reveal with progress ring
+- [ ] Build Roadmap home: top bar (avatar / streak / XP), section headers, snaking path with locked / active / completed / boss node states
+- [ ] Build Quest Detail bottom sheet (standard + Boss Fight variant) and lock-state toast
+- [ ] Build Text Mission Mode: screenshot upload, analyzing state, Conversation Autopsy scorecard, coach feedback, 3 reply templates, +50 XP banner
+- [ ] Integrate Superwall paywall with monthly/yearly toggle and 3-day free trial CTA
+- [ ] Build Profile & Progress tab: stats, coach mode toggle, badge grid, weekly activity chart
+- [ ] Build Voice Simulation Room: animated orb, live transcript, mic controls, post-session scorecard
+- [ ] Build Settings screen + push notification scheduling for streak reminder
+- [ ] Wire Supabase auth (email + Apple), profiles/quests/progress/sessions tables, and OpenAI proxy Edge Function
