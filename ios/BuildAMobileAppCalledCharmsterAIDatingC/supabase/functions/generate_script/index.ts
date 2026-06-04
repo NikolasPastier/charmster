@@ -1,92 +1,90 @@
-// supabase/functions/generate_script/index.ts
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+// POST /generate_script
+// Body: { trend_source, roadmap_node }
+// Aborts if no peer_reviewed chunk is retrieved. Otherwise inserts into script_approval_queue.
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
-const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-const OPENAI_KEY = Deno.env.get("OPENAI_API_KEY")!;
 const EMBED_MODEL = "text-embedding-3-small";
 const CHAT_MODEL = "gpt-4o";
 
-const CORS = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-};
-
-async function embed(text: string): Promise<number[]> {
+async function embed(text: string, key: string): Promise<number[]> {
   const r = await fetch("https://api.openai.com/v1/embeddings", {
     method: "POST",
-    headers: { "Authorization": `Bearer ${OPENAI_KEY}`, "Content-Type": "application/json" },
+    headers: { "Authorization": `Bearer ${key}`, "Content-Type": "application/json" },
     body: JSON.stringify({ model: EMBED_MODEL, input: text }),
   });
   if (!r.ok) throw new Error(await r.text());
   return (await r.json()).data[0].embedding;
 }
 
-async function chat(system: string, user: string): Promise<string> {
+async function chat(messages: any[], key: string): Promise<string> {
   const r = await fetch("https://api.openai.com/v1/chat/completions", {
     method: "POST",
-    headers: { "Authorization": `Bearer ${OPENAI_KEY}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ model: CHAT_MODEL, temperature: 0.8,
-      messages: [{ role: "system", content: system }, { role: "user", content: user }] }),
+    headers: { "Authorization": `Bearer ${key}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ model: CHAT_MODEL, messages, temperature: 0.8, max_tokens: 500 }),
   });
   if (!r.ok) throw new Error(await r.text());
-  return (await r.json()).choices[0].message.content as string;
+  return (await r.json()).choices[0].message.content;
 }
 
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response("ok", { headers: CORS });
   try {
     const { trend_source, roadmap_node } = await req.json();
-    if (!trend_source || !roadmap_node) throw new Error("trend_source and roadmap_node required");
+    if (!trend_source || !roadmap_node) {
+      return json({ error: "trend_source and roadmap_node required" }, 400);
+    }
+    const sb = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+    const openaiKey = Deno.env.get("OPENAI_API_KEY")!;
 
-    const sb = createClient(SUPABASE_URL, SERVICE_KEY);
-    const qv = await embed(trend_source);
+    const qEmb = await embed(trend_source, openaiKey);
     const { data: chunks, error } = await sb.rpc("match_knowledge_chunks", {
-      query_embedding: qv as unknown as string,
+      query_embedding: qEmb,
       match_node: roadmap_node,
       match_mode: null,
       match_count: 8,
     });
     if (error) throw error;
+    const retrieved = chunks ?? [];
 
-    const peerReviewed = (chunks as any[]).filter(c => c.claim_strength === "peer_reviewed");
+    const peerReviewed = retrieved.filter((c: any) => c.claim_strength === "peer_reviewed");
     if (peerReviewed.length === 0) {
-      return new Response(JSON.stringify({
-        error: "NO_PEER_REVIEWED_EVIDENCE",
-        message: "Script generation aborted: no peer_reviewed chunk available for this node + trend.",
-      }), { status: 422, headers: { ...CORS, "Content-Type": "application/json" } });
+      return json({ error: "No peer_reviewed chunk available — script generation aborted (content-gating)." }, 422);
     }
 
-    const ctx = (chunks as any[]).map((c, i) =>
-      `[#${i + 1}] (${c.claim_strength}${c.source_citation ? `, ${c.source_citation}` : ""}) ${c.content}`
+    const block = retrieved.map((c: any, i: number) =>
+      `[${i+1}] (${c.claim_strength}) ${c.source_citation ? "[" + c.source_citation + "]" : ""}: ${c.content}`
     ).join("\n");
 
-    const system = `You are a short-form video script writer for a dating-skills coaching app. Fuse the supplied live trend with the retrieved evidence. Use authority language ("research shows…") ONLY when leaning on a peer_reviewed chunk. Output a 30-45s script with HOOK / POINT / EXAMPLE / CTA. Do not invent stats. Do not quote citations inline.
+    const system = `You are a short-form video scriptwriter for Charmster AI, a dating-coach app.
+Fuse the trending insight with a peer_reviewed finding from the retrieved chunks. Paraphrase the science; cite the source plainly (e.g. "according to research by Gottman..."). Never invent stats. 90-120 words, 3 beats: hook, science, takeaway.
 
-RETRIEVED EVIDENCE:
-${ctx}`;
-    const user = `Trend source: ${trend_source}\nRoadmap node: ${roadmap_node}`;
-    const script_text = await chat(system, user);
+Retrieved chunks:
+${block}`;
 
-    const attached_chunk_ids = (chunks as any[]).map(c => c.id);
+    const script_text = await chat([
+      { role: "system", content: system },
+      { role: "user", content: `Trend insight: ${trend_source}\nRoadmap node: ${roadmap_node}` },
+    ], openaiKey);
+
+    const attached = retrieved.map((c: any) => c.id);
     const { data: row, error: insErr } = await sb.from("script_approval_queue").insert({
       script_text,
       trend_source,
-      attached_chunk_ids,
+      attached_chunk_ids: attached,
       has_peer_reviewed: true,
       status: "pending",
     }).select().single();
     if (insErr) throw insErr;
 
-    return new Response(JSON.stringify({
-      ok: true,
-      script_id: row.id,
-      script_text,
-      citations: Array.from(new Set((chunks as any[]).map(c => c.source_citation).filter(Boolean))),
-      status: "pending",
-    }), { headers: { ...CORS, "Content-Type": "application/json" } });
+    return json({
+      ok: true, queue_id: row.id, script_text, status: "pending",
+      attached_chunk_ids: attached,
+      peer_reviewed_citations: peerReviewed.map((c: any) => c.source_citation),
+    });
   } catch (e) {
-    return new Response(JSON.stringify({ error: String(e) }), { status: 400, headers: { ...CORS, "Content-Type": "application/json" } });
+    return json({ error: String(e) }, 500);
   }
 });
+
+function json(body: any, status = 200) {
+  return new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json" } });
+}
