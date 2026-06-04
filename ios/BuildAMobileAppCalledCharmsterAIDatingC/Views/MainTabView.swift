@@ -1,20 +1,20 @@
 import SwiftUI
 
 struct MainTabView: View {
-    @State private var tab: Tab = .roadmap
+    @State private var selection: AppTab = .roadmap
 
-    enum Tab: Hashable { case roadmap, profile, settings }
+    enum AppTab: Hashable { case roadmap, profile, settings }
 
     var body: some View {
         Group {
-            TabView(selection: $tab) {
-                Tab("Roadmap", systemImage: "map.fill", value: Tab.roadmap) {
+            TabView(selection: $selection) {
+                Tab("Roadmap", systemImage: "map.fill", value: AppTab.roadmap) {
                     RoadmapView()
                 }
-                Tab("Profile", systemImage: "person.crop.circle.fill", value: Tab.profile) {
+                Tab("Profile", systemImage: "person.crop.circle.fill", value: AppTab.profile) {
                     ProfileView()
                 }
-                Tab("Settings", systemImage: "gearshape.fill", value: Tab.settings) {
+                Tab("Settings", systemImage: "gearshape.fill", value: AppTab.settings) {
                     SettingsView()
                 }
             }
