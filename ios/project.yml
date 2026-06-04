@@ -1,4 +1,8 @@
 name: BuildAMobileAppCalledCharmsterAIDatingC
+packages:
+  Superwall:
+    url: 'https://github.com/superwall/Superwall-iOS'
+    from: '4.0.0'
 targets:
   BuildAMobileAppCalledCharmsterAIDatingC:
     type: application
@@ -6,7 +10,9 @@ targets:
     deploymentTarget: "26.0"
     sources:
       - path: BuildAMobileAppCalledCharmsterAIDatingC
-
+    dependencies:
+          - package: Superwall
+            product: SuperwallKit
     settings:
       base:
         PRODUCT_NAME: BuildAMobileAppCalledCharmsterAIDatingC
