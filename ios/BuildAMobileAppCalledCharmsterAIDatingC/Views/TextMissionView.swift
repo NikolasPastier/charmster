@@ -10,6 +10,10 @@ struct TextMissionView: View {
     @State private var pickerItem: PhotosPickerItem?
     @State private var uploadedImage: Image?
     @State private var copiedIndex: Int?
+    @State private var coachFeedback: String?
+    @State private var coachCitations: [String] = []
+    @State private var showCitations: Bool = false
+    @State private var coachError: String?
 
     enum Phase { case upload, analyzing, results, complete }
 
@@ -159,14 +163,50 @@ struct TextMissionView: View {
             HStack(alignment: .top, spacing: 12) {
                 Rectangle().fill(Theme.accent).frame(width: 3).cornerRadius(2)
                 VStack(alignment: .leading, spacing: 10) {
-                    Text("Here's what went wrong")
+                    Text("Here's what your coach saw")
                         .font(.titleM).foregroundStyle(.white)
-                    feedbackBullet("Your opener landed — but you went straight to logistics. You burned the spark.")
-                    feedbackBullet("You asked 3 questions in a row. It read like an interview, not a vibe.")
-                    feedbackBullet("No callback to the joke at message 4. You left chemistry on the table.")
-                    Text("Next move: drop one short, low-stakes statement that gives her something to react to.")
-                        .font(.bodyS).foregroundStyle(Theme.accent)
-                        .padding(.top, 6)
+                    if let coachFeedback {
+                        Text(coachFeedback)
+                            .font(.bodyM)
+                            .foregroundStyle(Theme.textPrimary)
+                            .fixedSize(horizontal: false, vertical: true)
+                    } else {
+                        feedbackBullet("Your opener landed — but you went straight to logistics. You burned the spark.")
+                        feedbackBullet("You asked 3 questions in a row. It read like an interview, not a vibe.")
+                        feedbackBullet("No callback to the joke at message 4. You left chemistry on the table.")
+                        Text("Next move: drop one short, low-stakes statement that gives her something to react to.")
+                            .font(.bodyS).foregroundStyle(Theme.accent)
+                            .padding(.top, 6)
+                    }
+                    if let coachError {
+                        Text(coachError)
+                            .font(.bodyS).foregroundStyle(Theme.coral.opacity(0.9))
+                            .padding(.top, 4)
+                    }
+                    if !coachCitations.isEmpty {
+                        Button {
+                            withAnimation(.smooth) { showCitations.toggle() }
+                        } label: {
+                            HStack(spacing: 6) {
+                                Image(systemName: "text.book.closed.fill")
+                                Text(showCitations ? "Hide sources" : "Why? (\(coachCitations.count))")
+                            }
+                            .font(.system(size: 12, weight: .bold, design: .rounded))
+                            .foregroundStyle(Theme.accent)
+                        }
+                        .buttonStyle(.plain)
+                        .padding(.top, 4)
+                        if showCitations {
+                            VStack(alignment: .leading, spacing: 4) {
+                                ForEach(coachCitations, id: \.self) { c in
+                                    Text("· \(c)")
+                                        .font(.caption)
+                                        .foregroundStyle(Theme.textSecondary)
+                                }
+                            }
+                            .padding(.top, 2)
+                        }
+                    }
                 }
             }
             .padding(18)
@@ -246,8 +286,36 @@ struct TextMissionView: View {
 
     private func runAnalysis() {
         phase = .analyzing
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.8) {
-            withAnimation(.smooth) { phase = .results }
+        coachFeedback = nil
+        coachCitations = []
+        coachError = nil
+
+        let node: CoachService.RoadmapNode = quest.path == .beginner ? .firstImpressions : .conversationFlow
+        let userInput = "Quest: \(quest.title). The user uploaded a stalled text conversation and wants an autopsy plus one tightening move. Coach mode: \(app.coachMode.displayName). Keep it under 120 words and end with one concrete next move."
+
+        Task {
+            if CoachService.shared.isConfigured {
+                do {
+                    let res = try await CoachService.shared.coach(
+                        node: node, userInput: userInput, mode: app.coachMode
+                    )
+                    await MainActor.run {
+                        coachFeedback = res.coach_output
+                        coachCitations = res.citations ?? []
+                        withAnimation(.smooth) { phase = .results }
+                    }
+                    return
+                } catch {
+                    await MainActor.run {
+                        coachError = "Live coach unavailable — showing sample feedback."
+                    }
+                }
+            }
+            // Mock fallback
+            try? await Task.sleep(nanoseconds: 1_400_000_000)
+            await MainActor.run {
+                withAnimation(.smooth) { phase = .results }
+            }
         }
     }
 }
