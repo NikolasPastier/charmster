@@ -1,5 +1,8 @@
 name: BuildAMobileAppCalledCharmsterAIDatingC
 packages:
+  Supabase:
+    url: 'https://github.com/supabase/supabase-swift'
+    from: '2.0.0'
   Superwall:
     url: 'https://github.com/superwall/Superwall-iOS'
     from: '4.0.0'
@@ -11,6 +14,8 @@ targets:
     sources:
       - path: BuildAMobileAppCalledCharmsterAIDatingC
     dependencies:
+          - package: Supabase
+            product: Supabase
           - package: Superwall
             product: SuperwallKit
     settings:
@@ -38,4 +43,7 @@ targets:
           ONLY_ACTIVE_ARCH: YES
     scheme:
       environmentVariables:
+        'SUPABASE_ANON_KEY': 'sb_publishable_PugmXyqfYNd9-owgqH9s5w_hVbXBIcY'
+        'SUPABASE_PUBLISHABLE_KEY': 'sb_publishable_PugmXyqfYNd9-owgqH9s5w_hVbXBIcY'
+        'SUPABASE_URL': 'https://uvjtrhvhldeeslgnvhyd.supabase.co'
         'SUPERWALL_PUBLIC_API_KEY': 'pk_lcfKX6IEixXO0g22flG_R'
