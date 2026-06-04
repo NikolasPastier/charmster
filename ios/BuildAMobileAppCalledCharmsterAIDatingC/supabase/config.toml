@@ -1,2 +1,5 @@
 [functions.seed_knowledge]
 verify_jwt = false
+
+[functions.coach]
+verify_jwt = false
