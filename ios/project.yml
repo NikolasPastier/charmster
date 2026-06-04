@@ -36,3 +36,6 @@ targets:
       configs:
         Debug:
           ONLY_ACTIVE_ARCH: YES
+    scheme:
+      environmentVariables:
+        'SUPERWALL_PUBLIC_API_KEY': 'pk_lcfKX6IEixXO0g22flG_R'
