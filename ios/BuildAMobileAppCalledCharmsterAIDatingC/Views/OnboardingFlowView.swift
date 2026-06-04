@@ -107,13 +107,13 @@ private struct ValuePropSlide: View {
             VStack(spacing: 16) {
                 ValueRow(icon: "bubble.left.and.bubble.right.fill", tint: Theme.accent,
                          title: "Practice real conversations",
-                         body: "Train with an AI coach that talks back.")
+                         subtitle: "Train with an AI coach that talks back.")
                 ValueRow(icon: "waveform.path.ecg", tint: Theme.coral,
                          title: "Brutally honest feedback",
-                         body: "No empty pep talks. Real coaching.")
+                         subtitle: "No empty pep talks. Real coaching.")
                 ValueRow(icon: "gamecontroller.fill", tint: Theme.pathBlue,
                          title: "Level up like a game",
-                         body: "Quests, XP, streaks, boss fights.")
+                         subtitle: "Quests, XP, streaks, boss fights.")
             }
             Spacer()
             PrimaryButton(title: "Next", action: onContinue)
@@ -125,7 +125,7 @@ private struct ValueRow: View {
     let icon: String
     let tint: Color
     let title: String
-    let body: String
+    let subtitle: String
 
     var body: some View {
         HStack(alignment: .top, spacing: 14) {
@@ -139,7 +139,7 @@ private struct ValueRow: View {
             }
             VStack(alignment: .leading, spacing: 3) {
                 Text(title).font(.titleM).foregroundStyle(.white)
-                Text(body).font(.bodyS).foregroundStyle(Theme.textSecondary)
+                Text(subtitle).font(.bodyS).foregroundStyle(Theme.textSecondary)
             }
             Spacer()
         }
