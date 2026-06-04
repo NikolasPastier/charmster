@@ -2,6 +2,5 @@
 verify_jwt = false
 [functions.coach]
 verify_jwt = false
-
 [functions.generate_script]
 verify_jwt = false
