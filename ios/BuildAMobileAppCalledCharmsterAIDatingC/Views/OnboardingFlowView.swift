@@ -1,313 +1,467 @@
 import SwiftUI
 
+/// Onboarding personalization quiz — 13 steps per the playbook spec.
 struct OnboardingFlowView: View {
     @Environment(AppState.self) private var app
     @State private var step: Int = 0
-    @State private var quiz = QuizResult()
+    @State private var draft = QuizResult()
+    @State private var anx: [Double] = [3, 3, 3]
+    @State private var avd: [Double] = [3, 3, 3]
+
+    private let totalSteps = 13
 
     var body: some View {
-        Group {
-            ZStack {
-                backgroundGlow
-                VStack(spacing: 0) {
-                    content
+        ZStack {
+            AuraBackground()
+            VStack(spacing: 18) {
+                topBar
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 22) {
+                        Group {
+                            switch step {
+                            case 0:  welcomeStep
+                            case 1:  ageStep
+                            case 2:  goalStep
+                            case 3:  experienceStep
+                            case 4:  focusStep
+                            case 5:  attachmentStep
+                            case 6:  flirtingStep
+                            case 7:  confidenceStep
+                            case 8:  coachStep
+                            case 9:  dailyGoalStep
+                            case 10: accountStep
+                            case 11: cameraPrimerStep
+                            default: resultsStep
+                            }
+                        }
+                        .padding(.horizontal, 20)
+                    }
+                    .padding(.top, 6)
                 }
-                .padding(.horizontal, 24)
-                .padding(.bottom, 32)
+                .scrollIndicators(.hidden)
+
+                bottomCTA
             }
         }
         .trackView("OnboardingFlowView")
     }
 
-    @ViewBuilder
-    private var content: some View {
-        switch step {
-        case 0: SplashSlide(onContinue: advance)
-        case 1: ValuePropSlide(onContinue: advance)
-        case 2: SocialProofSlide(onContinue: advance)
-        case 3: QuizChallengeSlide(quiz: $quiz, onContinue: advance)
-        case 4: QuizArenaSlide(quiz: $quiz, onContinue: advance)
-        case 5: QuizCoachSlide(quiz: $quiz, onContinue: advance)
-        case 6: QuizCadenceSlide(quiz: $quiz, onContinue: advance)
-        default: CharmScoreRevealSlide(quiz: quiz) {
-            app.applyQuizResult(quiz)
+    // MARK: Top bar
+
+    private var topBar: some View {
+        HStack(spacing: 12) {
+            Button {
+                if step > 0 { withAnimation(.smooth) { step -= 1 } }
+            } label: {
+                Image(systemName: "chevron.left")
+                    .font(.system(size: 16, weight: .bold))
+                    .foregroundStyle(Theme.textPrimary)
+                    .frame(width: 36, height: 36)
+                    .background(Circle().fill(Theme.surface).overlay(Circle().stroke(Theme.border, lineWidth: 1)))
+            }
+            .opacity(step == 0 ? 0 : 1)
+
+            VStack(alignment: .leading, spacing: 6) {
+                Text("Step \(step + 1) of \(totalSteps)")
+                    .font(.system(size: 11, weight: .bold)).tracking(1.1)
+                    .foregroundStyle(Theme.textMuted)
+                AuraProgressBar(progress: Double(step + 1) / Double(totalSteps))
+            }
         }
+        .padding(.horizontal, 20)
+        .padding(.top, 18)
+    }
+
+    // MARK: Bottom CTA
+
+    private var bottomCTA: some View {
+        VStack(spacing: 10) {
+            AuraButton(title: ctaTitle) { advance() }
+                .disabled(!canAdvance)
+                .opacity(canAdvance ? 1 : 0.4)
+            if step > 1 && step < totalSteps - 1 {
+                Button {
+                    withAnimation(.smooth) { step += 1 }
+                } label: {
+                    Text("Skip for now").font(.system(size: 13, weight: .semibold))
+                        .foregroundStyle(Theme.textMuted)
+                }
+            }
+        }
+        .padding(.horizontal, 20)
+        .padding(.bottom, 22)
+    }
+
+    private var ctaTitle: String {
+        switch step {
+        case 0: return "Get started"
+        case 11: return "Got it"
+        case totalSteps - 1: return "Start my first lesson — free"
+        default: return "Continue"
+        }
+    }
+
+    private var canAdvance: Bool {
+        switch step {
+        case 1: return draft.username.count >= 0  // age step → just confirm
+        case 2: return draft.goal != nil
+        case 3: return draft.experience != nil
+        case 4: return !draft.focusAreas.isEmpty
+        case 6: return draft.flirting != nil
+        case 8: return draft.coach != nil
+        case 10: return draft.username.trimmingCharacters(in: .whitespaces).count >= 2
+        default: return true
         }
     }
 
     private func advance() {
-        withAnimation(.smooth(duration: 0.35)) { step += 1 }
-    }
-
-    private var backgroundGlow: some View {
-        ZStack {
-            Theme.background
-            RadialGradient(colors: [Theme.accent.opacity(0.18), .clear],
-                           center: .topLeading, startRadius: 20, endRadius: 360)
-            RadialGradient(colors: [Theme.coral.opacity(0.10), .clear],
-                           center: .bottomTrailing, startRadius: 20, endRadius: 400)
+        if step == 5 {
+            draft.attachmentAnxiety = anx.reduce(0, +) / 3
+            draft.attachmentAvoidance = avd.reduce(0, +) / 3
         }
-        .ignoresSafeArea()
+        if step >= totalSteps - 1 {
+            app.applyQuiz(draft)
+            return
+        }
+        withAnimation(.smooth) { step += 1 }
     }
-}
 
-// MARK: - Slides
+    // MARK: - Steps
 
-private struct SplashSlide: View {
-    let onContinue: () -> Void
-    @State private var pulse = false
-
-    var body: some View {
-        VStack {
-            Spacer()
+    private var welcomeStep: some View {
+        VStack(spacing: 22) {
+            Spacer(minLength: 24)
             ZStack {
-                Circle()
-                    .fill(Theme.accent.opacity(0.15))
-                    .frame(width: 220, height: 220)
-                    .scaleEffect(pulse ? 1.08 : 0.95)
-                    .blur(radius: 18)
-                Circle()
-                    .strokeBorder(Theme.accent.opacity(0.6), lineWidth: 2)
-                    .frame(width: 160, height: 160)
-                Image(systemName: "sparkles")
-                    .font(.system(size: 64, weight: .black))
-                    .foregroundStyle(Theme.accent)
-                    .shadow(color: Theme.accent.opacity(0.6), radius: 18)
+                Circle().fill(Theme.aura).frame(width: 140, height: 140)
+                    .shadow(color: Theme.auraGlow, radius: 40)
+                Image(systemName: "heart.fill")
+                    .font(.system(size: 64, weight: .bold))
+                    .foregroundStyle(.white)
+                Image(systemName: "sparkle")
+                    .font(.system(size: 26, weight: .bold))
+                    .foregroundStyle(Theme.gold)
+                    .offset(x: 38, y: -42)
             }
-            .onAppear { withAnimation(.easeInOut(duration: 1.6).repeatForever(autoreverses: true)) { pulse = true } }
+            VStack(spacing: 10) {
+                Text("Practice love.\nBuild real confidence.")
+                    .font(.system(size: 32, weight: .heavy, design: .rounded))
+                    .multilineTextAlignment(.center)
+                    .foregroundStyle(Theme.textPrimary)
+                Text("Charmster is a flight simulator for dating. Watch a short lecture, practice with an AI, get scored, level up.")
+                    .font(.system(size: 15))
+                    .multilineTextAlignment(.center)
+                    .foregroundStyle(Theme.textSecondary)
+                    .padding(.horizontal, 8)
+            }
+            Spacer(minLength: 8)
+        }
+        .frame(maxWidth: .infinity)
+    }
 
-            Text("Charmster")
-                .font(.system(size: 44, weight: .heavy, design: .rounded))
-                .foregroundStyle(.white)
-                .padding(.top, 32)
-            Text("Practice the real thing.")
-                .font(.system(size: 18, weight: .medium, design: .rounded))
-                .foregroundStyle(Theme.textSecondary)
-                .padding(.top, 6)
-            Spacer()
-            PrimaryButton(title: "Start My Journey", action: onContinue)
-            Text("No cringe. No judgment.")
-                .font(.caption)
-                .foregroundStyle(Theme.textTertiary)
-                .padding(.top, 10)
+    private var ageStep: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            stepTitle("Quick age check", subtitle: "Charmster is for 17+ only. We never share this.")
+            GlassCard {
+                HStack(spacing: 14) {
+                    Image(systemName: "shield.lefthalf.filled")
+                        .font(.system(size: 22)).foregroundStyle(Theme.calmBlue)
+                    Text("I confirm I'm 17 or older.")
+                        .font(.system(size: 15, weight: .semibold))
+                        .foregroundStyle(Theme.textPrimary)
+                    Spacer()
+                }
+            }
         }
     }
-}
 
-private struct ValuePropSlide: View {
-    let onContinue: () -> Void
-    var body: some View {
-        VStack(alignment: .leading, spacing: 28) {
-            Spacer().frame(height: 24)
-            Text("Stop faking it.\nStart building it.")
-                .font(.displayL)
-                .foregroundStyle(.white)
-                .lineSpacing(2)
-
-            VStack(spacing: 16) {
-                ValueRow(icon: "bubble.left.and.bubble.right.fill", tint: Theme.accent,
-                         title: "Practice real conversations",
-                         subtitle: "Train with an AI coach that talks back.")
-                ValueRow(icon: "waveform.path.ecg", tint: Theme.coral,
-                         title: "Brutally honest feedback",
-                         subtitle: "No empty pep talks. Real coaching.")
-                ValueRow(icon: "gamecontroller.fill", tint: Theme.pathBlue,
-                         title: "Level up like a game",
-                         subtitle: "Quests, XP, streaks, boss fights.")
+    private var goalStep: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            stepTitle("What brings you to Charmster?", subtitle: "Pick the one that fits best — we'll tailor your start.")
+            VStack(spacing: 10) {
+                ForEach(OnbGoal.allCases) { g in
+                    SelectableCard(text: g.rawValue, selected: draft.goal == g) {
+                        draft.goal = g
+                    }
+                }
             }
-            Spacer()
-            PrimaryButton(title: "Next", action: onContinue)
         }
     }
-}
 
-private struct ValueRow: View {
-    let icon: String
-    let tint: Color
-    let title: String
-    let subtitle: String
-
-    var body: some View {
-        HStack(alignment: .top, spacing: 14) {
-            ZStack {
-                RoundedRectangle(cornerRadius: 14, style: .continuous)
-                    .fill(tint.opacity(0.15))
-                    .frame(width: 52, height: 52)
-                Image(systemName: icon)
-                    .font(.system(size: 22, weight: .bold))
-                    .foregroundStyle(tint)
+    private var experienceStep: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            stepTitle("How much dating have you done?", subtitle: "Sets your default difficulty.")
+            VStack(spacing: 10) {
+                ForEach(OnbExperience.allCases) { e in
+                    SelectableCard(text: e.rawValue, selected: draft.experience == e) {
+                        draft.experience = e
+                    }
+                }
             }
-            VStack(alignment: .leading, spacing: 3) {
-                Text(title).font(.titleM).foregroundStyle(.white)
-                Text(subtitle).font(.bodyS).foregroundStyle(Theme.textSecondary)
-            }
-            Spacer()
         }
     }
-}
 
-private struct SocialProofSlide: View {
-    let onContinue: () -> Void
-    var body: some View {
-        VStack(spacing: 24) {
-            Spacer()
-            ZStack {
-                ForEach(0..<5) { i in
-                    Circle()
-                        .fill(LinearGradient(colors: [.gray.opacity(0.6), .gray.opacity(0.2)],
-                                             startPoint: .top, endPoint: .bottom))
-                        .frame(width: 56, height: 56)
-                        .overlay(
-                            Image(systemName: ["person.fill","person.fill.checkmark","face.smiling.fill","person.fill","heart.fill"][i])
-                                .foregroundStyle(.white.opacity(0.8))
+    private var focusStep: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            stepTitle("What do you want to work on?", subtitle: "Pick a few. We'll surface lessons that fit.")
+            let cols = [GridItem(.flexible()), GridItem(.flexible())]
+            LazyVGrid(columns: cols, spacing: 10) {
+                ForEach(OnbFocusArea.allCases) { f in
+                    let on = draft.focusAreas.contains(f)
+                    Button {
+                        if on { draft.focusAreas.remove(f) } else { draft.focusAreas.insert(f) }
+                    } label: {
+                        Text(f.rawValue)
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundStyle(on ? .white : Theme.textPrimary)
+                            .frame(maxWidth: .infinity, minHeight: 56)
+                            .padding(.horizontal, 12)
+                            .background(
+                                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                                    .fill(on ? AnyShapeStyle(Theme.aura) : AnyShapeStyle(Theme.surface))
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 16, style: .continuous)
+                                            .stroke(on ? Color.clear : Theme.border, lineWidth: 1)
+                                    )
+                            )
+                            .shadow(color: on ? Theme.auraGlow : .clear, radius: 16)
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+        }
+    }
+
+    private var attachmentStep: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            stepTitle("A quick check-in", subtitle: "Six prompts. There are no wrong answers — this just personalizes your coach.")
+            ForEach(0..<3, id: \.self) { i in
+                AgreeScale(prompt: anxiousPrompts[i], value: $anx[i])
+            }
+            ForEach(0..<3, id: \.self) { i in
+                AgreeScale(prompt: avoidantPrompts[i], value: $avd[i])
+            }
+        }
+    }
+
+    private let anxiousPrompts = [
+        "I worry the people I like don't really feel the same way.",
+        "I think about texts a lot before sending them.",
+        "I want to feel really sure she likes me back."
+    ]
+    private let avoidantPrompts = [
+        "I prefer keeping things light and not too serious.",
+        "I get uncomfortable when someone leans in fast.",
+        "I'd rather handle hard feelings on my own."
+    ]
+
+    private var flirtingStep: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            stepTitle("What's your flirting style?", subtitle: "We'll lean your AI partner and tips toward this.")
+            VStack(spacing: 10) {
+                ForEach(OnbFlirtingStyle.allCases) { s in
+                    SelectableCard(text: s.rawValue, selected: draft.flirting == s) {
+                        draft.flirting = s
+                    }
+                }
+            }
+        }
+    }
+
+    private var confidenceStep: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            stepTitle("How confident do you feel dating right now?", subtitle: "Slide to where you honestly are. It's just a starting point.")
+            GlassCard {
+                VStack(spacing: 14) {
+                    Text("\(Int(draft.confidence))")
+                        .font(.system(size: 56, weight: .heavy, design: .rounded))
+                        .foregroundStyle(Theme.aura)
+                    Slider(value: $draft.confidence, in: 0...100, step: 1)
+                        .tint(Theme.pink)
+                    HStack {
+                        Text("Low").foregroundStyle(Theme.calmBlue)
+                        Spacer()
+                        Text("Moderate").foregroundStyle(Theme.textMuted)
+                        Spacer()
+                        Text("High").foregroundStyle(Theme.gold)
+                    }
+                    .font(.system(size: 11, weight: .semibold))
+                }
+            }
+        }
+    }
+
+    private var coachStep: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            stepTitle("Pick your coach", subtitle: "Five styles. You can switch any time.")
+            VStack(spacing: 10) {
+                ForEach(CoachMode.allCases) { c in
+                    let on = draft.coach == c
+                    Button { draft.coach = c } label: {
+                        HStack(spacing: 14) {
+                            Text(c.emoji).font(.system(size: 28))
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(c.displayName)
+                                    .font(.system(size: 16, weight: .heavy))
+                                    .foregroundStyle(Theme.textPrimary)
+                                Text(c.tagline)
+                                    .font(.system(size: 13))
+                                    .foregroundStyle(Theme.textSecondary)
+                            }
+                            Spacer()
+                            Image(systemName: on ? "checkmark.circle.fill" : "circle")
+                                .font(.system(size: 20))
+                                .foregroundStyle(on ? AnyShapeStyle(Theme.aura) : AnyShapeStyle(Theme.textMuted))
+                        }
+                        .padding(16)
+                        .background(
+                            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                                .fill(Theme.surface)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 20, style: .continuous)
+                                        .stroke(on ? AnyShapeStyle(Theme.aura) : AnyShapeStyle(Theme.border),
+                                                lineWidth: on ? 1.5 : 1)
+                                )
+                                .shadow(color: on ? Theme.auraGlow : .clear, radius: 18)
                         )
-                        .overlay(Circle().stroke(Theme.background, lineWidth: 3))
-                        .offset(x: CGFloat(i - 2) * 36)
+                    }
+                    .buttonStyle(.plain)
                 }
             }
-            Text("10,000+")
-                .font(.system(size: 56, weight: .heavy, design: .rounded))
-                .foregroundStyle(Theme.accent)
-            Text("Charmsters building real confidence,\none quest at a time.")
-                .multilineTextAlignment(.center)
-                .font(.titleM)
-                .foregroundStyle(.white)
-                .padding(.horizontal, 12)
+        }
+    }
 
-            HStack(spacing: 6) {
-                ForEach(0..<5) { _ in
-                    Image(systemName: "star.fill")
-                        .foregroundStyle(Theme.accent)
+    private var dailyGoalStep: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            stepTitle("Daily practice goal", subtitle: "Tiny daily reps beat marathons.")
+            GlassCard {
+                VStack(alignment: .leading, spacing: 14) {
+                    HStack {
+                        ForEach([5, 10, 15, 20], id: \.self) { m in
+                            let on = draft.dailyMinutes == m
+                            Button { draft.dailyMinutes = m } label: {
+                                Text("\(m) min")
+                                    .font(.system(size: 14, weight: .bold))
+                                    .padding(.horizontal, 14).padding(.vertical, 10)
+                                    .background(
+                                        Capsule().fill(on ? AnyShapeStyle(Theme.aura) : AnyShapeStyle(Theme.elevated))
+                                    )
+                                    .foregroundStyle(on ? .white : Theme.textPrimary)
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                    Toggle(isOn: $draft.reminderEnabled) {
+                        Text("Daily reminder")
+                            .font(.system(size: 15, weight: .semibold))
+                            .foregroundStyle(Theme.textPrimary)
+                    }
+                    .tint(Theme.pink)
                 }
-                Text("4.9 · App Store").foregroundStyle(Theme.textSecondary).font(.bodyS).padding(.leading, 6)
             }
+        }
+    }
+
+    private var accountStep: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            stepTitle("What should we call you?", subtitle: "Choose any name. You can change it later.")
+            GlassCard {
+                TextField("", text: $draft.username, prompt:
+                            Text("Your name").foregroundStyle(Theme.textMuted))
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundStyle(Theme.textPrimary)
+                    .textInputAutocapitalization(.words)
+                    .padding(.vertical, 6)
+            }
+        }
+    }
+
+    private var cameraPrimerStep: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            stepTitle("Camera & mic, one note", subtitle: "Heads up before your first live session.")
+            GlassCard {
+                VStack(alignment: .leading, spacing: 14) {
+                    primerRow("video.fill", "Live practice uses your camera & mic", Theme.pink)
+                    primerRow("eye.slash.fill", "Streams are processed live — never recorded or stored", Theme.calmBlue)
+                    primerRow("hand.raised.fill", "You can switch to audio-only or text any time", Theme.gold)
+                }
+            }
+        }
+    }
+
+    private var resultsStep: some View {
+        let track = Curriculum.tracks.first { $0.id == draft.recommendedTrack } ?? Curriculum.tracks[1]
+        return VStack(alignment: .leading, spacing: 16) {
+            stepTitle("Your starting point", subtitle: nil)
+            GlassCard {
+                VStack(alignment: .leading, spacing: 14) {
+                    HStack {
+                        TagPill(text: draft.attachmentLabel.rawValue, tint: Theme.purple)
+                        TagPill(text: draft.flirting?.rawValue ?? "Playful & teasing", tint: Theme.pink)
+                        Spacer()
+                    }
+                    Text(draft.attachmentLabel.strengthLine)
+                        .font(.system(size: 15))
+                        .foregroundStyle(Theme.textPrimary)
+                }
+            }
+            GlassCard {
+                HStack(spacing: 14) {
+                    ZStack {
+                        Circle().fill(Theme.aura).frame(width: 56, height: 56)
+                        Image(systemName: track.symbol).foregroundStyle(.white)
+                            .font(.system(size: 22, weight: .bold))
+                    }
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Track \(track.number) — \(track.name)")
+                            .font(.system(size: 16, weight: .heavy))
+                            .foregroundStyle(Theme.textPrimary)
+                        Text("This fits where you are. We'll adjust as you go.")
+                            .font(.system(size: 13))
+                            .foregroundStyle(Theme.textSecondary)
+                    }
+                }
+            }
+            HStack(spacing: 10) {
+                TagPill(text: "Default tier: \(draft.defaultTier.label)", tint: Theme.calmBlue)
+                TagPill(text: "Coach: \(draft.coach?.displayName ?? "Wingman")", tint: Theme.gold)
+            }
+            Text("Results are a growth starting point — not a verdict.")
+                .font(.system(size: 12, weight: .semibold))
+                .foregroundStyle(Theme.textMuted)
+        }
+    }
+
+    // MARK: helpers
+
+    @ViewBuilder
+    private func stepTitle(_ title: String, subtitle: String?) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(title)
+                .font(.system(size: 26, weight: .heavy, design: .rounded))
+                .foregroundStyle(Theme.textPrimary)
+            if let subtitle {
+                Text(subtitle)
+                    .font(.system(size: 15))
+                    .foregroundStyle(Theme.textSecondary)
+            }
+        }
+    }
+
+    private func primerRow(_ icon: String, _ text: String, _ tint: Color) -> some View {
+        HStack(spacing: 14) {
+            Image(systemName: icon)
+                .foregroundStyle(tint)
+                .font(.system(size: 18, weight: .bold))
+                .frame(width: 28)
+            Text(text)
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundStyle(Theme.textPrimary)
             Spacer()
-            PrimaryButton(title: "Take the 60-Second Quiz", action: onContinue)
         }
     }
 }
 
-// MARK: - Quiz Slides
-
-private struct QuizChallengeSlide: View {
-    @Binding var quiz: QuizResult
-    let onContinue: () -> Void
-    var body: some View {
-        QuizScreen(stepIndex: 1, totalSteps: 4,
-                   title: "What's your biggest challenge?",
-                   subtitle: "We'll start your roadmap here.") {
-            VStack(spacing: 12) {
-                ForEach(QuizChallenge.allCases) { opt in
-                    QuizChoice(text: opt.rawValue,
-                               selected: quiz.challenge == opt) {
-                        quiz.challenge = opt
-                    }
-                }
-            }
-        } footer: {
-            PrimaryButton(title: "Continue", action: onContinue)
-                .disabled(quiz.challenge == nil)
-                .opacity(quiz.challenge == nil ? 0.4 : 1)
-        }
-    }
-}
-
-private struct QuizArenaSlide: View {
-    @Binding var quiz: QuizResult
-    let onContinue: () -> Void
-    var body: some View {
-        QuizScreen(stepIndex: 2, totalSteps: 4,
-                   title: "Where do you mostly struggle?",
-                   subtitle: "We'll weight your drills to match.") {
-            VStack(spacing: 12) {
-                ForEach(QuizArena.allCases) { opt in
-                    QuizChoice(text: opt.rawValue,
-                               selected: quiz.arena == opt) {
-                        quiz.arena = opt
-                    }
-                }
-            }
-        } footer: {
-            PrimaryButton(title: "Continue", action: onContinue)
-                .disabled(quiz.arena == nil)
-                .opacity(quiz.arena == nil ? 0.4 : 1)
-        }
-    }
-}
-
-private struct QuizCoachSlide: View {
-    @Binding var quiz: QuizResult
-    let onContinue: () -> Void
-    var body: some View {
-        QuizScreen(stepIndex: 3, totalSteps: 4,
-                   title: "Pick your coach.",
-                   subtitle: "You can switch any time.") {
-            VStack(spacing: 12) {
-                ForEach(CoachMode.allCases) { coach in
-                    CoachOptionCard(coach: coach, selected: quiz.coach == coach) {
-                        quiz.coach = coach
-                    }
-                }
-            }
-        } footer: {
-            PrimaryButton(title: "Continue", action: onContinue)
-                .disabled(quiz.coach == nil)
-                .opacity(quiz.coach == nil ? 0.4 : 1)
-        }
-    }
-}
-
-private struct QuizCadenceSlide: View {
-    @Binding var quiz: QuizResult
-    let onContinue: () -> Void
-    var body: some View {
-        QuizScreen(stepIndex: 4, totalSteps: 4,
-                   title: "How much can you practice daily?",
-                   subtitle: "Consistency beats intensity.") {
-            VStack(spacing: 12) {
-                ForEach(QuizCadence.allCases) { opt in
-                    QuizChoice(text: opt.rawValue,
-                               selected: quiz.cadence == opt) {
-                        quiz.cadence = opt
-                    }
-                }
-            }
-        } footer: {
-            PrimaryButton(title: "Reveal My Charm Score", action: onContinue)
-                .disabled(quiz.cadence == nil)
-                .opacity(quiz.cadence == nil ? 0.4 : 1)
-        }
-    }
-}
-
-private struct QuizScreen<Body: View, Footer: View>: View {
-    let stepIndex: Int
-    let totalSteps: Int
-    let title: String
-    let subtitle: String
-    @ViewBuilder var content: Body
-    @ViewBuilder var footer: Footer
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 18) {
-            HStack(spacing: 6) {
-                ForEach(0..<totalSteps, id: \.self) { i in
-                    Capsule()
-                        .fill(i < stepIndex ? Theme.accent : Color.white.opacity(0.12))
-                        .frame(height: 4)
-                }
-            }
-            .padding(.top, 24)
-            Text(title).font(.titleXL).foregroundStyle(.white)
-            Text(subtitle).font(.bodyM).foregroundStyle(Theme.textSecondary)
-            content
-            Spacer()
-            footer
-        }
-    }
-}
-
-private struct QuizChoice: View {
+private struct SelectableCard: View {
     let text: String
     let selected: Bool
     let action: () -> Void
@@ -315,117 +469,63 @@ private struct QuizChoice: View {
         Button(action: action) {
             HStack {
                 Text(text)
-                    .font(.system(size: 16, weight: .semibold, design: .rounded))
-                    .foregroundStyle(.white)
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundStyle(Theme.textPrimary)
                 Spacer()
-                ZStack {
-                    Circle().stroke(selected ? Theme.accent : Color.white.opacity(0.2), lineWidth: 2)
-                        .frame(width: 22, height: 22)
-                    if selected {
-                        Circle().fill(Theme.accent).frame(width: 12, height: 12)
-                    }
+                if selected {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundStyle(Theme.aura)
+                        .font(.system(size: 20))
                 }
             }
-            .padding(18)
-            .background(selected ? Theme.accentDim : Theme.surface,
-                        in: RoundedRectangle(cornerRadius: Theme.rMed, style: .continuous))
-            .overlay(
-                RoundedRectangle(cornerRadius: Theme.rMed, style: .continuous)
-                    .stroke(selected ? Theme.accent : Theme.border, lineWidth: 1.5)
+            .padding(.horizontal, 16).padding(.vertical, 18)
+            .background(
+                RoundedRectangle(cornerRadius: 20, style: .continuous)
+                    .fill(Theme.surface)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 20, style: .continuous)
+                            .stroke(selected ? AnyShapeStyle(Theme.aura) : AnyShapeStyle(Theme.border),
+                                    lineWidth: selected ? 1.5 : 1)
+                    )
+                    .shadow(color: selected ? Theme.auraGlow : .clear, radius: 16)
             )
         }
         .buttonStyle(.plain)
     }
 }
 
-private struct CoachOptionCard: View {
-    let coach: CoachMode
-    let selected: Bool
-    let action: () -> Void
+private struct AgreeScale: View {
+    let prompt: String
+    @Binding var value: Double  // 1...5
     var body: some View {
-        Button(action: action) {
-            HStack(spacing: 14) {
-                ZStack {
-                    RoundedRectangle(cornerRadius: 12).fill(Theme.accent.opacity(selected ? 0.25 : 0.12))
-                        .frame(width: 46, height: 46)
-                    Image(systemName: coach.icon).foregroundStyle(Theme.accent).font(.system(size: 20, weight: .bold))
-                }
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(coach.displayName)
-                        .font(.system(size: 16, weight: .bold, design: .rounded))
-                        .foregroundStyle(.white)
-                    Text(coach.tagline)
-                        .font(.bodyS).foregroundStyle(Theme.textSecondary)
-                }
-                Spacer()
-                ZStack {
-                    Circle().stroke(selected ? Theme.accent : Color.white.opacity(0.2), lineWidth: 2)
-                        .frame(width: 22, height: 22)
-                    if selected { Circle().fill(Theme.accent).frame(width: 12, height: 12) }
-                }
-            }
-            .padding(16)
-            .background(selected ? Theme.accentDim : Theme.surface,
-                        in: RoundedRectangle(cornerRadius: Theme.rMed, style: .continuous))
-            .overlay(
-                RoundedRectangle(cornerRadius: Theme.rMed, style: .continuous)
-                    .stroke(selected ? Theme.accent : Theme.border, lineWidth: 1.5)
-            )
-        }
-        .buttonStyle(.plain)
-    }
-}
-
-// MARK: - Reveal
-
-private struct CharmScoreRevealSlide: View {
-    let quiz: QuizResult
-    let onContinue: () -> Void
-    @State private var animated: Double = 0
-
-    var body: some View {
-        VStack(spacing: 24) {
-            Spacer().frame(height: 12)
-            Text("YOUR CHARM SCORE")
-                .font(.system(size: 12, weight: .bold, design: .rounded))
-                .tracking(2)
-                .foregroundStyle(Theme.textSecondary)
-
-            ProgressRing(progress: animated, size: 220, lineWidth: 16,
-                         tint: Theme.accent, label: "out of 100",
-                         value: "\(Int(animated * 100))")
-                .onAppear {
-                    withAnimation(.easeOut(duration: 1.4)) {
-                        animated = Double(quiz.charmScore) / 100.0
+        GlassCard {
+            VStack(alignment: .leading, spacing: 12) {
+                Text(prompt)
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundStyle(Theme.textPrimary)
+                HStack(spacing: 8) {
+                    ForEach(1...5, id: \.self) { i in
+                        Button { value = Double(i) } label: {
+                            Text("\(i)")
+                                .font(.system(size: 13, weight: .heavy))
+                                .frame(maxWidth: .infinity, minHeight: 36)
+                                .background(
+                                    Capsule().fill(Int(value) == i
+                                                   ? AnyShapeStyle(Theme.aura)
+                                                   : AnyShapeStyle(Theme.elevated))
+                                )
+                                .foregroundStyle(Int(value) == i ? .white : Theme.textPrimary)
+                        }
+                        .buttonStyle(.plain)
                     }
                 }
-
-            Text("You've got room to run.")
-                .font(.titleL).foregroundStyle(.white)
-
-            VStack(alignment: .leading, spacing: 10) {
-                ResultRow(label: "Your coach", value: quiz.coach?.displayName ?? "Wingman")
-                ResultRow(label: "Weak spot", value: quiz.challenge?.rawValue ?? "—")
-                ResultRow(label: "Daily target", value: quiz.cadence?.rawValue ?? "—")
+                HStack {
+                    Text("Disagree").foregroundStyle(Theme.textMuted)
+                    Spacer()
+                    Text("Agree").foregroundStyle(Theme.textMuted)
+                }
+                .font(.system(size: 11, weight: .semibold))
             }
-            .padding(18)
-            .background(Theme.surface, in: RoundedRectangle(cornerRadius: Theme.rMed, style: .continuous))
-            .overlay(RoundedRectangle(cornerRadius: Theme.rMed, style: .continuous).stroke(Theme.border, lineWidth: 1))
-
-            Spacer()
-            PrimaryButton(title: "Build My Roadmap", icon: "arrow.right", action: onContinue)
-        }
-    }
-}
-
-private struct ResultRow: View {
-    let label: String
-    let value: String
-    var body: some View {
-        HStack {
-            Text(label).font(.bodyS).foregroundStyle(Theme.textSecondary)
-            Spacer()
-            Text(value).font(.system(size: 14, weight: .semibold, design: .rounded)).foregroundStyle(.white)
         }
     }
 }

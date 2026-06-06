@@ -2,214 +2,137 @@ import SwiftUI
 
 struct ProfileView: View {
     @Environment(AppState.self) private var app
-
-    private let weeklyMinutes: [Int] = [12, 18, 6, 22, 0, 14, 9]
-    private let dayLabels = ["M","T","W","T","F","S","S"]
+    @State private var settingsOpen = false
 
     var body: some View {
-        Group {
-            NavigationStack {
-                ScrollView {
-                    VStack(spacing: 22) {
-                        headerCard
-                        statsRow
-                        coachCard
-                        weeklyChartCard
-                        achievementsCard
-                        Spacer().frame(height: 40)
-                    }
-                    .padding(.horizontal, 20)
-                    .padding(.top, 6)
-                }
-                .background(Theme.background)
-                .scrollIndicators(.hidden)
-                .navigationTitle("Profile")
-                .navigationBarTitleDisplayMode(.large)
-                .toolbarBackground(Theme.background, for: .navigationBar)
-                .toolbarColorScheme(.dark, for: .navigationBar)
+        ScrollView {
+            VStack(alignment: .leading, spacing: 18) {
+                identity
+                statsRow
+                SectionHeader(title: "Personalization")
+                tagsCard
+                SectionHeader(title: "Subscription")
+                subscriptionCard
+                AuraButton(title: app.isPro ? "Manage subscription" : "Try Pro free for 3 days",
+                           icon: "sparkles") {}
+                GlassButton(title: "Settings", icon: "gearshape.fill") { settingsOpen = true }
             }
+            .padding(.horizontal, 18)
+            .padding(.bottom, 30)
+        }
+        .scrollIndicators(.hidden)
+        .sheet(isPresented: $settingsOpen) {
+            SettingsView()
+                .presentationBackground(Theme.background)
         }
         .trackView("ProfileView")
     }
 
-    private var headerCard: some View {
-        VStack(spacing: 14) {
+    private var identity: some View {
+        HStack(spacing: 16) {
             ZStack {
-                Circle()
-                    .fill(LinearGradient(colors: [Theme.accent.opacity(0.4), Theme.pathBlue.opacity(0.2)],
-                                         startPoint: .topLeading, endPoint: .bottomTrailing))
-                    .frame(width: 110, height: 110)
-                    .blur(radius: 8)
-                Circle()
-                    .fill(LinearGradient(colors: [Theme.accent, Theme.pathBlue],
-                                         startPoint: .topLeading, endPoint: .bottomTrailing))
-                    .frame(width: 88, height: 88)
-                Text(String(app.username.prefix(1)).uppercased())
-                    .font(.system(size: 34, weight: .heavy, design: .rounded))
-                    .foregroundStyle(.black)
+                Circle().fill(Theme.aura).frame(width: 76, height: 76)
+                    .shadow(color: Theme.auraGlow, radius: 18)
+                Text(initials).font(.system(size: 26, weight: .heavy)).foregroundStyle(.white)
             }
-            Text(app.username).font(.titleXL).foregroundStyle(.white)
-            HStack(spacing: 6) {
-                Image(systemName: "star.fill").foregroundStyle(Theme.accent)
+            VStack(alignment: .leading, spacing: 4) {
+                Text(app.displayName)
+                    .font(.system(size: 22, weight: .heavy, design: .rounded))
+                    .foregroundStyle(Theme.textPrimary)
                 Text("Level \(app.level) · \(app.levelTitle)")
-                    .font(.system(size: 13, weight: .bold, design: .rounded))
-                    .foregroundStyle(.white)
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundStyle(Theme.textSecondary)
             }
-            .padding(.horizontal, 12).padding(.vertical, 6)
-            .background(Theme.surface, in: Capsule())
-            .overlay(Capsule().stroke(Theme.border, lineWidth: 1))
+            Spacer()
         }
-        .frame(maxWidth: .infinity)
-        .padding(.top, 6)
+        .padding(.top, 20)
+    }
+
+    private var initials: String {
+        let parts = app.displayName.split(separator: " ")
+        let first = parts.first?.first.map(String.init) ?? ""
+        let last = parts.dropFirst().first?.first.map(String.init) ?? ""
+        return (first + last).uppercased()
     }
 
     private var statsRow: some View {
-        HStack(spacing: 12) {
-            StatBlock(label: "Total XP", value: "\(app.xp)", tint: Theme.accent)
-            StatBlock(label: "Streak", value: "\(app.streak)d", tint: Theme.coral)
-            StatBlock(label: "Quests", value: "\(app.completedCount)", tint: Theme.pathBlue)
+        HStack(spacing: 10) {
+            StatTile(label: "Aura", value: "\(Int(app.aura))", tint: AnyShapeStyle(Theme.aura))
+            StatTile(label: "XP",   value: "\(app.totalXP)",   tint: AnyShapeStyle(Theme.gold))
+            StatTile(label: "Streak", value: "\(app.streakDays)d", tint: AnyShapeStyle(Theme.ember))
+            StatTile(label: "Coins", value: "\(app.charmCoins)", tint: AnyShapeStyle(Theme.calmBlue))
         }
     }
 
-    private var coachCard: some View {
-        SurfaceCard {
+    private var tagsCard: some View {
+        GlassCard {
             VStack(alignment: .leading, spacing: 12) {
-                Text("MY COACH")
-                    .font(.system(size: 11, weight: .heavy, design: .rounded))
-                    .tracking(1.6).foregroundStyle(Theme.textSecondary)
+                HStack(spacing: 8) {
+                    TagPill(text: app.attachmentLabel.rawValue, tint: Theme.purple)
+                    TagPill(text: app.flirting.rawValue, tint: Theme.pink)
+                    TagPill(text: "Tier: \(app.difficultyTier.label)", tint: Theme.calmBlue)
+                }
+                Divider().background(Theme.border)
                 HStack(spacing: 14) {
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 12).fill(Theme.accentDim)
-                            .frame(width: 52, height: 52)
-                        Image(systemName: app.coachMode.icon)
-                            .font(.system(size: 22, weight: .black))
-                            .foregroundStyle(Theme.accent)
-                    }
+                    Text(app.coachMode.emoji).font(.system(size: 26))
                     VStack(alignment: .leading, spacing: 2) {
-                        Text(app.coachMode.displayName).font(.titleM).foregroundStyle(.white)
-                        Text(app.coachMode.tagline).font(.bodyS).foregroundStyle(Theme.textSecondary)
+                        Text("Coach: \(app.coachMode.displayName)")
+                            .font(.system(size: 14, weight: .heavy))
+                            .foregroundStyle(Theme.textPrimary)
+                        Text(app.coachMode.tagline)
+                            .font(.system(size: 12))
+                            .foregroundStyle(Theme.textSecondary)
                     }
                     Spacer()
-                    NavigationLink {
-                        SettingsView()
-                    } label: {
-                        Image(systemName: "arrow.right")
-                            .foregroundStyle(.white.opacity(0.6))
-                    }
                 }
             }
         }
     }
 
-    private var weeklyChartCard: some View {
-        SurfaceCard {
-            VStack(alignment: .leading, spacing: 14) {
-                HStack {
-                    Text("THIS WEEK")
-                        .font(.system(size: 11, weight: .heavy, design: .rounded))
-                        .tracking(1.6).foregroundStyle(Theme.textSecondary)
-                    Spacer()
-                    Text("\(weeklyMinutes.reduce(0, +)) min")
-                        .font(.system(size: 13, weight: .bold, design: .monospaced))
-                        .foregroundStyle(Theme.accent)
+    private var subscriptionCard: some View {
+        GlassCard {
+            HStack(spacing: 14) {
+                Image(systemName: app.isPro ? "crown.fill" : "lock.fill")
+                    .font(.system(size: 22))
+                    .foregroundStyle(app.isPro ? AnyShapeStyle(Theme.gold) : AnyShapeStyle(Theme.calmBlue))
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(app.isPro ? "Pro" : "Free")
+                        .font(.system(size: 16, weight: .heavy))
+                        .foregroundStyle(Theme.textPrimary)
+                    Text(app.isPro
+                         ? "Unlimited practice (fair use). Daily Double, all 13 tracks."
+                         : "1 live session/day · taster lecture per track")
+                        .font(.system(size: 12))
+                        .foregroundStyle(Theme.textSecondary)
                 }
-                let maxV = max(weeklyMinutes.max() ?? 1, 1)
-                HStack(alignment: .bottom, spacing: 10) {
-                    ForEach(Array(weeklyMinutes.enumerated()), id: \.offset) { i, v in
-                        VStack(spacing: 8) {
-                            ZStack(alignment: .bottom) {
-                                RoundedRectangle(cornerRadius: 6)
-                                    .fill(Color.white.opacity(0.05))
-                                    .frame(width: 22, height: 96)
-                                RoundedRectangle(cornerRadius: 6)
-                                    .fill(LinearGradient(colors: [Theme.accent, Theme.accent.opacity(0.6)],
-                                                         startPoint: .top, endPoint: .bottom))
-                                    .frame(width: 22, height: max(4, CGFloat(v) / CGFloat(maxV) * 96))
-                            }
-                            Text(dayLabels[i])
-                                .font(.system(size: 11, weight: .bold, design: .rounded))
-                                .foregroundStyle(Theme.textSecondary)
-                        }
-                        .frame(maxWidth: .infinity)
-                    }
-                }
-            }
-        }
-    }
-
-    private var achievementsCard: some View {
-        SurfaceCard {
-            VStack(alignment: .leading, spacing: 14) {
-                Text("ACHIEVEMENTS")
-                    .font(.system(size: 11, weight: .heavy, design: .rounded))
-                    .tracking(1.6).foregroundStyle(Theme.textSecondary)
-
-                let badges: [(String, String, Bool)] = [
-                    ("First Quest", "checkmark.seal.fill", true),
-                    ("7-Day Streak", "flame.fill", false),
-                    ("Boss Victor", "trophy.fill", false),
-                    ("Smooth Talker", "bubble.left.and.bubble.right.fill", true),
-                    ("Voice Op", "waveform", false),
-                    ("Pro Charmster", "sparkles", false),
-                ]
-                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 14), count: 3),
-                          spacing: 14) {
-                    ForEach(Array(badges.enumerated()), id: \.offset) { _, b in
-                        BadgeTile(title: b.0, icon: b.1, unlocked: b.2)
-                    }
-                }
+                Spacer()
             }
         }
     }
 }
 
-private struct StatBlock: View {
+private struct StatTile: View {
     let label: String
     let value: String
-    let tint: Color
+    let tint: AnyShapeStyle
     var body: some View {
         VStack(spacing: 6) {
             Text(value)
                 .font(.system(size: 22, weight: .heavy, design: .rounded))
-                .foregroundStyle(.white)
-            Text(label)
-                .font(.system(size: 11, weight: .bold, design: .rounded))
-                .tracking(1.2).foregroundStyle(Theme.textSecondary)
+                .foregroundStyle(tint).monospacedDigit()
+            Text(label.uppercased())
+                .font(.system(size: 10, weight: .heavy)).tracking(1)
+                .foregroundStyle(Theme.textMuted)
         }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 16)
-        .background(Theme.surface, in: RoundedRectangle(cornerRadius: Theme.rMed))
-        .overlay(
-            RoundedRectangle(cornerRadius: Theme.rMed)
-                .stroke(Theme.border, lineWidth: 1)
+        .frame(maxWidth: .infinity, minHeight: 80)
+        .background(
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .fill(Theme.surface)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 18, style: .continuous)
+                        .stroke(Theme.border, lineWidth: 1)
+                )
         )
-        .overlay(alignment: .top) {
-            Rectangle().fill(tint).frame(height: 2)
-                .clipShape(RoundedRectangle(cornerRadius: Theme.rMed))
-                .padding(.horizontal, 12)
-        }
-    }
-}
-
-private struct BadgeTile: View {
-    let title: String
-    let icon: String
-    let unlocked: Bool
-    var body: some View {
-        VStack(spacing: 8) {
-            ZStack {
-                Circle()
-                    .fill(unlocked ? Theme.accentDim : Color.white.opacity(0.04))
-                    .frame(width: 56, height: 56)
-                Image(systemName: icon)
-                    .font(.system(size: 22, weight: .bold))
-                    .foregroundStyle(unlocked ? Theme.accent : Theme.textTertiary)
-            }
-            Text(title)
-                .font(.system(size: 11, weight: .semibold, design: .rounded))
-                .foregroundStyle(unlocked ? .white : Theme.textTertiary)
-                .multilineTextAlignment(.center)
-        }
     }
 }
 

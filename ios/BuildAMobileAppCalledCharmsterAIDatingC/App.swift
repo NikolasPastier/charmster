@@ -9,7 +9,7 @@ struct CharmsterApp: App {
             ContentView()
                 .environment(appState)
                 .preferredColorScheme(.dark)
-                .tint(Theme.accent)
+                .tint(Theme.pink)
         }
     }
 }

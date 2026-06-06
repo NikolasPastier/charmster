@@ -1,148 +1,223 @@
 import Foundation
-import SwiftUI
 
-enum QuestPath: String, CaseIterable, Codable, Identifiable {
-    case beginner, conversation, confidence, mastery
-    var id: String { rawValue }
+/// Charmster curriculum models. Mocked locally; will sync to Supabase later.
 
-    var title: String {
-        switch self {
-        case .beginner: return "Beginner"
-        case .conversation: return "Conversation"
-        case .confidence: return "Confidence"
-        case .mastery: return "Mastery"
-        }
-    }
-
-    var subtitle: String {
-        switch self {
-        case .beginner: return "Foundations of every encounter"
-        case .conversation: return "Hold attention. Build pull."
-        case .confidence: return "Own the room. Anywhere."
-        case .mastery: return "Stress-tested in the wild."
-        }
-    }
-
-    var color: Color {
-        switch self {
-        case .beginner: return Theme.accent
-        case .conversation: return Theme.pathBlue
-        case .confidence: return Theme.coral
-        case .mastery: return Theme.pathGold
-        }
-    }
+struct Track: Identifiable, Hashable {
+    let id: Int            // 0...13
+    let number: Int
+    let name: String
+    let blurb: String
+    let symbol: String     // SF Symbol
 }
 
-enum QuestStatus: String, Codable {
-    case completed, active, locked
-}
-
-struct Quest: Identifiable, Hashable {
-    let id: UUID
+struct Lecture: Identifiable, Hashable {
+    let id: String         // "t2-l3"
+    let trackId: Int
+    let number: Int
     let title: String
-    let description: String
-    let path: QuestPath
-    let orderIndex: Int
-    let xpReward: Int
-    let estimatedMinutes: Int
-    let skillTag: String
-    let isBossFight: Bool
-    let contentPreview: String
-    var status: QuestStatus
-
-    static func == (lhs: Quest, rhs: Quest) -> Bool { lhs.id == rhs.id }
-    func hash(into hasher: inout Hasher) { hasher.combine(id) }
+    let scenario: String
+    let minutes: Int
+    /// Per-dimension weight profile. Texting lectures zero voice/face/body.
+    let weights: WeightProfile
 }
 
-extension Quest {
-    static let sampleRoadmap: [Quest] = [
-        // Beginner
-        Quest(id: UUID(), title: "First Impressions",
-              description: "Learn the 3-second rule that hooks attention before you speak.",
-              path: .beginner, orderIndex: 1, xpReward: 50, estimatedMinutes: 5,
-              skillTag: "Openers", isBossFight: false,
-              contentPreview: "3 text drills + 1 AI conversation",
-              status: .completed),
-        Quest(id: UUID(), title: "Keeping It Going",
-              description: "Turn dry replies into real conversations with momentum.",
-              path: .beginner, orderIndex: 2, xpReward: 50, estimatedMinutes: 5,
-              skillTag: "Threading", isBossFight: false,
-              contentPreview: "4 text drills + scenario practice",
-              status: .completed),
-        Quest(id: UUID(), title: "Reading the Room",
-              description: "Spot interest signals — and disinterest — before they speak.",
-              path: .beginner, orderIndex: 3, xpReward: 75, estimatedMinutes: 7,
-              skillTag: "Awareness", isBossFight: false,
-              contentPreview: "2 scenarios + AI feedback",
-              status: .active),
-        Quest(id: UUID(), title: "The Coffee Shop",
-              description: "A live simulation. One shot. Approach, open, exchange numbers.",
-              path: .beginner, orderIndex: 4, xpReward: 200, estimatedMinutes: 12,
-              skillTag: "Boss Fight", isBossFight: true,
-              contentPreview: "Live voice simulation · scored",
-              status: .locked),
-        // Conversation
-        Quest(id: UUID(), title: "Texting Missions",
-              description: "Upload dead conversations. Get an autopsy and three reply tracks.",
-              path: .conversation, orderIndex: 5, xpReward: 75, estimatedMinutes: 6,
-              skillTag: "Texting", isBossFight: false,
-              contentPreview: "Screenshot analysis + reply templates",
-              status: .locked),
-        Quest(id: UUID(), title: "Humor & Wit",
-              description: "Build a humor reflex without trying to be a comedian.",
-              path: .conversation, orderIndex: 6, xpReward: 75, estimatedMinutes: 8,
-              skillTag: "Charisma", isBossFight: false,
-              contentPreview: "5 callback drills",
-              status: .locked),
-        Quest(id: UUID(), title: "Deep Questions",
-              description: "Move past small talk in three exchanges, without it feeling weird.",
-              path: .conversation, orderIndex: 7, xpReward: 100, estimatedMinutes: 8,
-              skillTag: "Connection", isBossFight: false,
-              contentPreview: "Voice sim + scoring",
-              status: .locked),
-        Quest(id: UUID(), title: "First Date Conversation",
-              description: "A full simulated first date. Land the second date.",
-              path: .conversation, orderIndex: 8, xpReward: 250, estimatedMinutes: 15,
-              skillTag: "Boss Fight", isBossFight: true,
-              contentPreview: "Live voice simulation · scored",
-              status: .locked),
-        // Confidence
-        Quest(id: UUID(), title: "Body Language Basics",
-              description: "How to occupy space without overdoing it.",
-              path: .confidence, orderIndex: 9, xpReward: 100, estimatedMinutes: 8,
-              skillTag: "Presence", isBossFight: false,
-              contentPreview: "Posture drills + breakdown",
-              status: .locked),
-        Quest(id: UUID(), title: "Vocal Presence",
-              description: "Slow down, drop in, and let your voice do the work.",
-              path: .confidence, orderIndex: 10, xpReward: 100, estimatedMinutes: 8,
-              skillTag: "Voice", isBossFight: false,
-              contentPreview: "Voice sim + tone feedback",
-              status: .locked),
-        Quest(id: UUID(), title: "Handling Rejection",
-              description: "Stay grounded when it doesn't land. Keep your night.",
-              path: .confidence, orderIndex: 11, xpReward: 125, estimatedMinutes: 10,
-              skillTag: "Resilience", isBossFight: false,
-              contentPreview: "3 scenarios + reflection",
-              status: .locked),
-        Quest(id: UUID(), title: "The Blind Date",
-              description: "Walk in cold. Build chemistry from zero. No script.",
-              path: .confidence, orderIndex: 12, xpReward: 300, estimatedMinutes: 18,
-              skillTag: "Boss Fight", isBossFight: true,
-              contentPreview: "Live voice simulation · scored",
-              status: .locked),
-        // Mastery
-        Quest(id: UUID(), title: "Real-World Scenarios",
-              description: "Bar, gym, bookstore, airport. Pick a setting and run it.",
-              path: .mastery, orderIndex: 13, xpReward: 200, estimatedMinutes: 15,
-              skillTag: "Anywhere", isBossFight: false,
-              contentPreview: "4 scenarios on rotation",
-              status: .locked),
-        Quest(id: UUID(), title: "Leaderboard Unlock",
-              description: "Compete with other Charmsters. Weekly resets.",
-              path: .mastery, orderIndex: 14, xpReward: 500, estimatedMinutes: 5,
-              skillTag: "Trophy", isBossFight: true,
-              contentPreview: "Unlocks global ranking",
-              status: .locked),
+struct WeightProfile: Hashable {
+    var responsiveness: Double = 1
+    var voice: Double = 1
+    var face: Double = 1
+    var body: Double = 1
+    var synchrony: Double = 1
+    var calibration: Double = 1
+
+    static let standard = WeightProfile()
+    static let texting  = WeightProfile(responsiveness: 1.5, voice: 0, face: 0, body: 0,
+                                        synchrony: 0.8, calibration: 1.2)
+}
+
+enum LectureState { case locked, current, mastered }
+
+struct LectureProgress: Hashable {
+    var quizScore: Int = 0   // 0...3
+    var practiced: Bool = false
+    var mastered: Bool { quizScore >= 2 && practiced }
+}
+
+// MARK: - Quiz
+
+struct QuizQuestion: Identifiable, Hashable {
+    let id = UUID()
+    let prompt: String
+    let options: [String]
+    let correctIndex: Int
+}
+
+// MARK: - Session result (post-practice)
+
+struct SessionResult: Hashable {
+    /// 6 dimension scores 0-100
+    var responsiveness: Int
+    var voice: Int
+    var face: Int
+    var body: Int
+    var synchrony: Int
+    var calibration: Int
+
+    /// 4 "how she'd feel" meters 0-100
+    var comfort: Int
+    var interest: Int
+    var spark: Int
+    var respect: Int
+
+    var sessionScore: Int
+    var reaction: String
+    var strengths: [String]
+    var fixes: [String]
+    var xpEarned: Int
+    var coinsEarned: Int
+}
+
+// MARK: - Curriculum (seeded)
+
+enum Curriculum {
+    static let tracks: [Track] = [
+        Track(id: 0,  number: 0,  name: "Starter Assessment",
+              blurb: "Find your starting point.",          symbol: "sparkles"),
+        Track(id: 1,  number: 1,  name: "Foundations",
+              blurb: "Mindset & self-worth.",              symbol: "mountain.2.fill"),
+        Track(id: 2,  number: 2,  name: "First Impressions",
+              blurb: "Approaches & openers.",              symbol: "hand.wave.fill"),
+        Track(id: 3,  number: 3,  name: "Conversation",
+              blurb: "Keep it flowing.",                   symbol: "bubble.left.and.bubble.right.fill"),
+        Track(id: 4,  number: 4,  name: "Humor",
+              blurb: "Be playful, not performative.",      symbol: "face.smiling.fill"),
+        Track(id: 5,  number: 5,  name: "Reading Signals",
+              blurb: "Notice the subtext.",                symbol: "waveform.path.ecg"),
+        Track(id: 6,  number: 6,  name: "Presence",
+              blurb: "Body, voice, stillness.",            symbol: "figure.stand"),
+        Track(id: 7,  number: 7,  name: "Deep Connection",
+              blurb: "Vulnerability & depth.",             symbol: "heart.text.square.fill"),
+        Track(id: 8,  number: 8,  name: "Confidence",
+              blurb: "Calm under pressure.",               symbol: "flame.fill"),
+        Track(id: 9,  number: 9,  name: "Personalization",
+              blurb: "Your style, dialed in.",             symbol: "person.crop.circle.badge.checkmark"),
+        Track(id: 10, number: 10, name: "Texting",
+              blurb: "Pace, timing, words.",               symbol: "message.fill"),
+        Track(id: 11, number: 11, name: "Dating App Strategy",
+              blurb: "Profiles & matches.",                symbol: "rectangle.stack.person.crop.fill"),
+        Track(id: 12, number: 12, name: "First-Date Logistics",
+              blurb: "Plan, propose, show up.",            symbol: "calendar.badge.clock"),
+        Track(id: 13, number: 13, name: "Dates → Relationship",
+              blurb: "From third date to real.",           symbol: "heart.circle.fill")
     ]
+
+    /// Canonical lecture counts per track 1...13.
+    private static let counts: [Int: Int] = [
+        0: 3, 1: 6, 2: 5, 3: 6, 4: 5, 5: 5, 6: 6,
+        7: 6, 8: 6, 9: 5, 10: 7, 11: 5, 12: 6, 13: 6
+    ]
+
+    private static let lectureTitles: [Int: [String]] = [
+        0: ["Welcome", "Where you are now", "Where you're going"],
+        1: ["Why you, why now", "The non-needy mindset", "Self-worth basics",
+            "Outcome independence", "Your dating identity", "Rejection isn't fatal"],
+        2: ["The first 7 seconds", "Conversational openers",
+            "Approaching with calm", "Body language entry", "Exits without sting"],
+        3: ["The volley principle", "Following her thread", "Asking better questions",
+            "Statements vs interrogations", "Silence as a tool", "The graceful close"],
+        4: ["Playful, not performative", "Self-aware humor",
+            "Callbacks & inside jokes", "Teasing without sting", "Reading laugh signals"],
+        5: ["Verbal cues", "Pacing & energy match",
+            "When she's polite vs interested", "Disinterest, gently named", "Recovery moves"],
+        6: ["Voice fundamentals", "Stillness > fidget", "Eye contact rhythm",
+            "Posture & openness", "Warmth in the face", "The slow exhale"],
+        7: ["Mutual vulnerability", "The deeper question",
+            "Listening louder", "Story instead of resume", "Holding space", "When she opens up"],
+        8: ["Catching anxiety early", "Box breathing under fire", "Reframes that work",
+            "Embracing nerves", "The 90-second wave", "Walking in calm"],
+        9: ["Your flirting style", "The right kind of texts",
+            "Coach mode that fits you", "Mistakes you keep making", "Your unfair advantage"],
+        10: ["The opener that lands", "Pacing replies", "Memes, sparingly",
+             "Asking her out via text", "Recovering ghost threads",
+             "Voice notes, used well", "When to put down the phone"],
+        11: ["Profile photo order", "The bio that filters", "Prompts that earn replies",
+             "Swiping strategy", "Match → first message"],
+        12: ["Choosing the spot", "The proposal text", "Day-of logistics",
+             "Arriving grounded", "The first 60 seconds", "Closing the date well"],
+        13: ["Third date energy", "Defining the thing",
+             "Conflict, calmly", "Meeting her people", "Long game choices",
+             "Becoming chosen"]
+    ]
+
+    static let lectures: [Lecture] = {
+        var out: [Lecture] = []
+        for (trackId, count) in counts {
+            for i in 0..<count {
+                let titles = lectureTitles[trackId] ?? []
+                let title = i < titles.count ? titles[i] : "Lesson \(i + 1)"
+                let weights: WeightProfile = trackId == 10 ? .texting : .standard
+                out.append(Lecture(
+                    id: "t\(trackId)-l\(i + 1)",
+                    trackId: trackId,
+                    number: i + 1,
+                    title: title,
+                    scenario: scenario(for: trackId, lesson: i + 1, title: title),
+                    minutes: 4,
+                    weights: weights
+                ))
+            }
+        }
+        return out.sorted { ($0.trackId, $0.number) < ($1.trackId, $1.number) }
+    }()
+
+    static func lectures(in trackId: Int) -> [Lecture] {
+        lectures.filter { $0.trackId == trackId }
+    }
+
+    private static func scenario(for trackId: Int, lesson: Int, title: String) -> String {
+        switch trackId {
+        case 2: return "Mia is reading at a coffee shop. Approach warmly."
+        case 3: return "You matched yesterday — keep the thread alive without trying too hard."
+        case 5: return "She's polite but pulling back. Read it, name it kindly."
+        case 10: return "Text exchange after a fun first date — keep the pace."
+        case 12: return "First date logistics: propose Thursday, 7pm."
+        default: return "Practice: \(title)."
+        }
+    }
+
+    static let quizzes: [String: [QuizQuestion]] = {
+        // Each lecture gets exactly 3 placeholder-but-meaningful Qs.
+        var out: [String: [QuizQuestion]] = [:]
+        for l in lectures {
+            out[l.id] = [
+                QuizQuestion(
+                    prompt: "What's the core idea of '\(l.title)'?",
+                    options: [
+                        "Perform confidence so she believes it.",
+                        "Stay grounded and curious about her, not the outcome.",
+                        "Lead the conversation no matter what."
+                    ],
+                    correctIndex: 1
+                ),
+                QuizQuestion(
+                    prompt: "She seems hesitant. The best next move is to…",
+                    options: [
+                        "Push harder so she warms up.",
+                        "Lighten the energy and give her room.",
+                        "Apologize and exit."
+                    ],
+                    correctIndex: 1
+                ),
+                QuizQuestion(
+                    prompt: "A win in this lesson looks like…",
+                    options: [
+                        "She laughs once and gives you her number.",
+                        "You leave the interaction more like yourself, not less.",
+                        "You out-talk her by 2 to 1."
+                    ],
+                    correctIndex: 1
+                )
+            ]
+        }
+        return out
+    }()
 }
