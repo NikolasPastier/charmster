@@ -1,16 +1,10 @@
 // supabase/functions/ingest_lectures/index.ts
-// Reads every .md file from the "Lecture Library" storage bucket,
-// parses Charmster's lecture markdown schema, and upserts into public.lectures.
+// Reads every markdown file in the "Lecture Library" storage bucket,
+// parses the structured Charmster lecture schema, and upserts rows into public.lectures.
 
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.4";
 
 const BUCKET = "Lecture Library";
-
-interface QuizQ {
-  prompt: string;
-  options: string[];
-  correctIndex: number;
-}
 
 interface Parsed {
   id: string;
@@ -19,271 +13,252 @@ interface Parsed {
   title: string;
   scenario: string | null;
   teaching_content: string | null;
-  principles: string[];
-  quiz: QuizQ[];
+  principles: any;
+  quiz: any;
   practice_opener: string | null;
   win_condition: string | null;
-  character_json: Record<string, unknown> | null;
-  coach_scripts: Record<string, string>;
-  scoring_weights: Record<string, number>;
+  character_json: any;
+  coach_scripts: any;
+  scoring_weights: any;
   success_criteria: string | null;
   source_path: string;
   raw_markdown: string;
 }
 
-function stripMd(s: string): string {
-  return s
-    .replace(/\*\*/g, "")
-    .replace(/\*/g, "")
-    .replace(/`/g, "")
-    .replace(/> /g, "")
-    .replace(/^>\s*/gm, "")
-    .replace(/\u00A0/g, " ")
-    .trim();
+function parseIdFromName(name: string): { track: number; lecture: number } | null {
+  // Matches "Lecture 1 2 ..." or "Assessment 0 1 ..."
+  const m = name.match(/(?:Lecture|Assessment)\s+(\d+)\s+(\d+)\s+/i);
+  if (!m) return null;
+  return { track: parseInt(m[1], 10), lecture: parseInt(m[2], 10) };
 }
 
-function parseLecture(filename: string, md: string): Parsed | null {
-  // Filename: "Lecture 3 1 Catching Bids for Connection f0e72e....md"
-  const lectureMatch = filename.match(/^Lecture\s+(\d+)\s+(\d+)\s+(.+?)\s+[0-9a-f]{20,}\.md$/i);
-  if (!lectureMatch) return null;
-  const trackId = parseInt(lectureMatch[1], 10);
-  const lectureNumber = parseInt(lectureMatch[2], 10);
-  const id = `t${trackId}-l${lectureNumber}`;
+function extractTitle(md: string, fallback: string): string {
+  const m = md.match(/^#\s+(?:Lecture|Assessment)\s+[\d.]+\s*[—\-–]\s*(.+)$/m);
+  return m ? m[1].trim() : fallback;
+}
 
-  // Title from first H1
-  const h1 = md.match(/^#\s+(.+)$/m);
-  const titleRaw = h1 ? h1[1].trim() : lectureMatch[3].replace(/\s+/g, " ").trim();
-  // Strip "Lecture 3.1 — " prefix
-  const title = stripMd(titleRaw.replace(/^Lecture\s+\d+\.\d+\s*[—–-]\s*/i, ""));
+function sectionBetween(md: string, startRe: RegExp, endRe: RegExp): string | null {
+  const start = md.match(startRe);
+  if (!start) return null;
+  const after = md.slice(start.index! + start[0].length);
+  const end = after.match(endRe);
+  return (end ? after.slice(0, end.index!) : after).trim();
+}
 
-  // Split into sections by "## " headings
-  const sections: Record<string, string> = {};
-  const lines = md.split("\n");
-  let currentHeader = "_preamble";
-  let buffer: string[] = [];
-  for (const line of lines) {
-    const h2 = line.match(/^##\s+(.+)$/);
-    if (h2) {
-      sections[currentHeader] = buffer.join("\n").trim();
-      currentHeader = h2[1].trim().toLowerCase();
-      buffer = [];
-    } else {
-      buffer.push(line);
+function extractCoachScripts(md: string): Record<string, string> {
+  const out: Record<string, string> = {};
+  const re = /##\s+Teaching script\s*[—\-–]\s*([^\n]+)\n([\s\S]*?)(?=\n##\s|\n---|$)/g;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(md)) !== null) {
+    const name = m[1].trim();
+    // Strip blockquote markers and italic timing line
+    const body = m[2]
+      .replace(/^\s*\*~[^*]+\*\s*$/gm, "")
+      .replace(/^\s*>\s?/gm, "")
+      .trim();
+    if (body) out[name] = body;
+  }
+  // Style notes bullets
+  const styleBlock = sectionBetween(md, /##\s+Style notes[^\n]*\n/, /\n##\s|\n---/);
+  if (styleBlock) {
+    const bulletRe = /[-*]\s+\*\*([^:*]+):\*\*\s*\*?"?([^*\n"]+)/g;
+    let bm: RegExpExecArray | null;
+    while ((bm = bulletRe.exec(styleBlock)) !== null) {
+      out[bm[1].trim()] = bm[2].trim();
     }
   }
-  sections[currentHeader] = buffer.join("\n").trim();
+  return out;
+}
 
-  // Coach scripts: any section starting with "teaching script"
-  const coach_scripts: Record<string, string> = {};
-  for (const [header, body] of Object.entries(sections)) {
-    if (header.startsWith("teaching script")) {
-      // "teaching script — big brother" => "big brother"
-      const coachName = header.replace(/^teaching script\s*[—–-]\s*/, "").trim() || "default";
-      // Strip leading "*~85 seconds.*" italic line and blockquote markers
-      const cleaned = stripMd(body.replace(/^\*~?[^*]+\*\s*/m, "").trim());
-      coach_scripts[coachName] = cleaned;
+function extractScenario(md: string): {
+  scenario: string | null;
+  opener: string | null;
+  briefing: string | null;
+} {
+  const block = sectionBetween(md, /##\s+Practice scenario\s*\n/, /\n##\s|\n---/);
+  if (!block) return { scenario: null, opener: null, briefing: null };
+  const setting = block.match(/\*\*Setting:\*\*\s*([^\n]+)/i)?.[1]?.trim() ?? null;
+  const context = block.match(/\*\*Context:\*\*\s*([^\n]+)/i)?.[1]?.trim() ?? null;
+  const goal = block.match(/\*\*Goal:\*\*\s*([^\n]+)/i)?.[1]?.trim() ?? null;
+  const briefing = block.match(/\*\*Avatar briefing:\*\*\s*([\s\S]+?)(?:\n\n|$)/i)?.[1]?.trim() ?? null;
+  const parts = [setting, context, goal].filter(Boolean);
+  return {
+    scenario: parts.length ? parts.join(" \u00b7 ") : block,
+    opener: goal,
+    briefing,
+  };
+}
+
+function extractScoringWeights(md: string): Record<string, number> | null {
+  const block = sectionBetween(md, /##\s+Scoring profile\s*\n/, /\n##\s|\n---/);
+  if (!block) return null;
+  const out: Record<string, number> = {};
+  const rowRe = /\|\s*([^|]+?)\s*\|\s*(\d+)\s*%\s*\|/g;
+  let m: RegExpExecArray | null;
+  while ((m = rowRe.exec(block)) !== null) {
+    const key = m[1].trim();
+    if (/dimension/i.test(key)) continue;
+    out[key] = parseInt(m[2], 10);
+  }
+  return Object.keys(out).length ? out : null;
+}
+
+function extractQuiz(md: string): any[] {
+  const block = sectionBetween(md, /##\s+Quiz\s*\n/, /\n##\s|\n---/);
+  if (!block) return [];
+  const questions: any[] = [];
+  const qRe = /\*\*Q\d+:\*\*\s*([^\n]+)\n([\s\S]*?)(?=\n\*\*Q\d+:|\n##|\n---|$)/g;
+  let m: RegExpExecArray | null;
+  while ((m = qRe.exec(block)) !== null) {
+    const prompt = m[1].trim();
+    const optsRaw = m[2];
+    // Options split by · or newlines starting with - A)
+    const opts: { text: string; correct: boolean }[] = [];
+    const splitRe = /(?:^|\n|·)\s*[-*]?\s*([A-E])\)\s*([^·\n]+)/g;
+    let om: RegExpExecArray | null;
+    while ((om = splitRe.exec(optsRaw)) !== null) {
+      let text = om[2].trim();
+      const correct = /✅/.test(text);
+      text = text.replace(/✅/g, "").trim();
+      opts.push({ text, correct });
+    }
+    if (prompt && opts.length) {
+      questions.push({
+        prompt,
+        options: opts.map(o => o.text),
+        correctIndex: opts.findIndex(o => o.correct),
+      });
     }
   }
+  return questions;
+}
 
-  // Style notes section provides short voices for other coaches
-  const styleNotes = sections["style notes — other 3"] ?? sections["style notes"];
-  if (styleNotes) {
-    const items = styleNotes.split(/\n-\s+/).map((s) => s.trim()).filter(Boolean);
-    for (const item of items) {
-      const m = item.match(/\*\*([^*]+):\*\*\s*\*?["“]?(.+?)["”]?\*?\s*$/s);
-      if (m) {
-        const name = m[1].replace(/[^\w\s]/g, "").trim().toLowerCase();
-        coach_scripts[name] = stripMd(m[2]);
-      }
-    }
+function extractCoreTakeaway(md: string): string | null {
+  const block = sectionBetween(md, /##\s+Core takeaway\s*\n/, /\n##\s|\n---/);
+  if (!block) return null;
+  return block.replace(/^>\s?/gm, "").replace(/\*\*/g, "").trim();
+}
+
+function extractSuccessCriteria(md: string): string | null {
+  const block = sectionBetween(md, /##\s+Success criteria\s*\n/, /\n##\s|\n---|$/);
+  return block?.trim() ?? null;
+}
+
+function extractPrinciples(md: string, takeaway: string | null): string[] {
+  const out: string[] = [];
+  if (takeaway) out.push(takeaway);
+  const gv = sectionBetween(md, /##\s+Good vs\.?\s+bad\s*\n/i, /\n##\s|\n---/);
+  if (gv) {
+    const good = gv.match(/✅\s*\*?\*?Good:?\*?\*?\s*([^\n]+)/i)?.[1]?.trim();
+    const bad = gv.match(/❌\s*\*?\*?Bad:?\*?\*?\s*([^\n]+)/i)?.[1]?.trim();
+    if (good) out.push("Do: " + good);
+    if (bad) out.push("Avoid: " + bad);
   }
+  return out;
+}
 
-  // Core takeaway → first principle
-  const principles: string[] = [];
-  const coreTakeaway = sections["core takeaway"];
-  if (coreTakeaway) {
-    principles.push(stripMd(coreTakeaway));
-  }
+function parseLecture(name: string, md: string): Parsed | null {
+  const ids = parseIdFromName(name);
+  if (!ids) return null;
+  const id = `t${ids.track}-l${ids.lecture}`;
+  const title = extractTitle(md, name.replace(/\.md$/i, ""));
+  const coach_scripts = extractCoachScripts(md);
+  const { scenario, opener, briefing } = extractScenario(md);
+  const scoring_weights = extractScoringWeights(md);
+  const quiz = extractQuiz(md);
+  const takeaway = extractCoreTakeaway(md);
+  const principles = extractPrinciples(md, takeaway);
+  const success = extractSuccessCriteria(md);
 
-  // Practice scenario block (parse fields: Setting / Context / Goal / Avatar briefing)
-  const practiceBlock = sections["practice scenario"] ?? "";
-  function fieldFrom(block: string, name: string): string | null {
-    const re = new RegExp(`\\*\\*${name}:?\\*\\*\\s*([\\s\\S]+?)(?:\\n\\n|\\n\\*\\*|$)`, "i");
-    const m = block.match(re);
-    return m ? stripMd(m[1]).trim() : null;
-  }
-  const setting = fieldFrom(practiceBlock, "Setting");
-  const context = fieldFrom(practiceBlock, "Context");
-  const goal = fieldFrom(practiceBlock, "Goal");
-  const avatarBrief = fieldFrom(practiceBlock, "Avatar briefing") ?? fieldFrom(practiceBlock, "System briefing");
-  const scenario = [setting, context].filter(Boolean).join(" ") || null;
-  const practice_opener = goal || null;
-  const win_condition = avatarBrief;
+  // Build teaching content: prefer Wingman / Big Brother / Scientist scripts joined
+  const teaching = Object.entries(coach_scripts)
+    .map(([k, v]) => `**${k}**\n\n${v}`)
+    .join("\n\n");
 
-  const character_json = avatarBrief ? { briefing: avatarBrief } : null;
-
-  // Scoring profile table → weights
-  const scoring_weights: Record<string, number> = {};
-  const scoringBlock = sections["scoring profile"] ?? "";
-  const rowRe = /\|\s*([^|]+?)\s*\|\s*(\d+)%\s*\|/g;
-  let rowMatch: RegExpExecArray | null;
-  while ((rowMatch = rowRe.exec(scoringBlock)) !== null) {
-    const dim = stripMd(rowMatch[1]).toLowerCase();
-    if (dim.includes("dimension")) continue;
-    scoring_weights[dim] = parseInt(rowMatch[2], 10);
-  }
-
-  // Good vs bad → extra principles
-  const goodBad = sections["good vs. bad"] ?? sections["good vs bad"];
-  if (goodBad) {
-    const goodM = goodBad.match(/✅\s*Good[^:]*:\s*\*?\*?(.+?)(?:\n\n|\*\*❌|$)/s);
-    const badM = goodBad.match(/❌\s*Bad[^:]*:\s*\*?\*?(.+?)(?:\n\n|$)/s);
-    if (goodM) principles.push("Good: " + stripMd(goodM[1]).slice(0, 220));
-    if (badM) principles.push("Avoid: " + stripMd(badM[1]).slice(0, 220));
-  }
-
-  // Quiz
-  const quiz: QuizQ[] = [];
-  const quizBlock = sections["quiz"] ?? "";
-  const qRe = /\*\*Q(\d+):\*\*\s*(.+?)\n([\s\S]+?)(?=\*\*Q\d+:|\n##|$)/g;
-  let qm: RegExpExecArray | null;
-  while ((qm = qRe.exec(quizBlock)) !== null) {
-    const prompt = stripMd(qm[2]).trim();
-    const body = qm[3];
-    // Options separated by "·" or by "- A)" lines
-    const options: string[] = [];
-    let correctIndex = -1;
-    // Try inline "- A) ... · B) ... · C) ..." format
-    const inline = body.replace(/^\s*-\s*/, "").split(/·/);
-    if (inline.length >= 2) {
-      for (let i = 0; i < inline.length; i++) {
-        let opt = inline[i].trim();
-        const correct = /✅/.test(opt);
-        opt = opt.replace(/✅/g, "").trim();
-        opt = opt.replace(/^[A-D]\)\s*/, "").trim();
-        opt = stripMd(opt);
-        if (opt) {
-          options.push(opt);
-          if (correct) correctIndex = options.length - 1;
-        }
-      }
-    }
-    if (options.length >= 2 && correctIndex >= 0) {
-      quiz.push({ prompt, options, correctIndex });
-    }
-  }
-
-  // Success criteria
-  const success_criteria = sections["success criteria"]
-    ? stripMd(sections["success criteria"].replace(/^-\s*/gm, "")).replace(/\s+/g, " ").trim()
-    : null;
-
-  // Teaching content = concatenated coach scripts (prefer "big brother" first, then others)
-  const preferredOrder = ["big brother", "the wingman", "wingman", "the scientist", "scientist"];
-  const orderedKeys = [
-    ...preferredOrder.filter((k) => coach_scripts[k]),
-    ...Object.keys(coach_scripts).filter((k) => !preferredOrder.includes(k)),
-  ];
-  const teaching_content = orderedKeys.length
-    ? orderedKeys.map((k) => coach_scripts[k]).join("\n\n")
+  // Character JSON from briefing
+  const character_json = briefing
+    ? { briefing, name: null, vibe: null }
     : null;
 
   return {
     id,
-    track_id: trackId,
-    lecture_number: lectureNumber,
+    track_id: ids.track,
+    lecture_number: ids.lecture,
     title,
     scenario,
-    teaching_content,
+    teaching_content: teaching || takeaway,
     principles,
     quiz,
-    practice_opener,
-    win_condition,
+    practice_opener: opener,
+    win_condition: success,
     character_json,
     coach_scripts,
     scoring_weights,
-    success_criteria,
-    source_path: filename,
+    success_criteria: success,
+    source_path: name,
     raw_markdown: md,
   };
 }
 
 Deno.serve(async (req) => {
-  const cors = {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-  };
-  if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
-
   try {
-    const url = Deno.env.get("SUPABASE_URL")!;
-    const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const supabase = createClient(url, serviceKey);
+    const supabase = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+    );
 
-    // List all files in the bucket
-    const { data: files, error: listErr } = await supabase.storage.from(BUCKET).list("", {
-      limit: 500,
-      sortBy: { column: "name", order: "asc" },
-    });
-    if (listErr) throw listErr;
+    // List all files in bucket (paginate)
+    const files: { name: string }[] = [];
+    let offset = 0;
+    while (true) {
+      const { data, error } = await supabase.storage
+        .from(BUCKET)
+        .list("", { limit: 100, offset, sortBy: { column: "name", order: "asc" } });
+      if (error) throw error;
+      if (!data || data.length === 0) break;
+      files.push(...data.filter(f => f.name.toLowerCase().endsWith(".md")));
+      if (data.length < 100) break;
+      offset += data.length;
+    }
 
-    const results = {
-      total: files?.length ?? 0,
-      parsed: 0,
-      skipped: 0,
-      upserted: 0,
-      errors: [] as Array<{ file: string; error: string }>,
-      ids: [] as string[],
-    };
+    const results: { id?: string; name: string; ok: boolean; reason?: string }[] = [];
+    const rows: Parsed[] = [];
 
-    const batch: Parsed[] = [];
-    for (const file of files ?? []) {
-      if (!file.name.endsWith(".md")) {
-        results.skipped++;
-        continue;
-      }
-      if (!/^Lecture\s+\d+\s+\d+/i.test(file.name)) {
-        // Skip Assessment, Track overview, master index
-        results.skipped++;
-        continue;
-      }
-      const { data: blob, error: dlErr } = await supabase.storage.from(BUCKET).download(file.name);
+    for (const f of files) {
+      const { data: blob, error: dlErr } = await supabase.storage
+        .from(BUCKET).download(f.name);
       if (dlErr || !blob) {
-        results.errors.push({ file: file.name, error: dlErr?.message ?? "download failed" });
+        results.push({ name: f.name, ok: false, reason: dlErr?.message ?? "download failed" });
         continue;
       }
-      const text = await blob.text();
-      const parsed = parseLecture(file.name, text);
+      const md = await blob.text();
+      const parsed = parseLecture(f.name, md);
       if (!parsed) {
-        results.errors.push({ file: file.name, error: "parse failed (filename pattern)" });
+        results.push({ name: f.name, ok: false, reason: "could not parse track/lecture id" });
         continue;
       }
-      results.parsed++;
-      results.ids.push(parsed.id);
-      batch.push(parsed);
+      rows.push(parsed);
+      results.push({ id: parsed.id, name: f.name, ok: true });
     }
 
-    // Upsert in chunks of 25
-    for (let i = 0; i < batch.length; i += 25) {
-      const chunk = batch.slice(i, i + 25).map((p) => ({
-        ...p,
-        updated_at: new Date().toISOString(),
-      }));
-      const { error: upErr } = await supabase.from("lectures").upsert(chunk, { onConflict: "id" });
-      if (upErr) {
-        results.errors.push({ file: `batch ${i}`, error: upErr.message });
-      } else {
-        results.upserted += chunk.length;
-      }
+    // Upsert in batches
+    let upserted = 0;
+    for (let i = 0; i < rows.length; i += 50) {
+      const chunk = rows.slice(i, i + 50).map(r => ({ ...r, updated_at: new Date().toISOString() }));
+      const { error } = await supabase.from("lectures").upsert(chunk, { onConflict: "id" });
+      if (error) throw error;
+      upserted += chunk.length;
     }
 
-    return new Response(JSON.stringify(results, null, 2), {
-      headers: { ...cors, "Content-Type": "application/json" },
-    });
+    return new Response(JSON.stringify({
+      bucket: BUCKET,
+      files_seen: files.length,
+      upserted,
+      skipped: results.filter(r => !r.ok),
+    }, null, 2), { headers: { "content-type": "application/json" } });
   } catch (e) {
     return new Response(JSON.stringify({ error: String(e?.message ?? e) }), {
-      status: 500,
-      headers: { ...cors, "Content-Type": "application/json" },
+      status: 500, headers: { "content-type": "application/json" },
     });
   }
 });
