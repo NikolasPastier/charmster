@@ -1,2 +1,5 @@
 [functions.peek_lecture]
 verify_jwt = false
+
+[functions.ingest_lectures]
+verify_jwt = false
