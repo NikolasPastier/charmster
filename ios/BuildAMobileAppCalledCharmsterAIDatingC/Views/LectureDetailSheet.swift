@@ -4,6 +4,7 @@ import SwiftUI
 struct LectureDetailSheet: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(AppState.self) private var app
+    @Environment(LectureContentStore.self) private var lectures
     let lecture: Lecture
 
     @State private var route: Route = .lecture
@@ -42,10 +43,10 @@ struct LectureDetailSheet: View {
                         Label("\(lecture.minutes) min lecture", systemImage: "play.rectangle.fill")
                             .font(.system(size: 12, weight: .bold))
                             .foregroundStyle(Theme.textMuted)
-                        Text(lectureScript)
-                            .font(.system(size: 15))
-                            .foregroundStyle(Theme.textPrimary)
-                            .lineSpacing(4)
+                            Text(lectures.teachingScript(for: lecture, coach: app.coachMode, fallback: fallbackScript))
+                                .font(.system(size: 15))
+                                .foregroundStyle(Theme.textPrimary)
+                                .lineSpacing(4)
                     }
                 }
                 GlassCard {
@@ -56,7 +57,7 @@ struct LectureDetailSheet: View {
                         VStack(alignment: .leading, spacing: 2) {
                             Text("Today's scenario").font(.system(size: 12, weight: .bold))
                                 .foregroundStyle(Theme.textMuted)
-                            Text(lecture.scenario)
+                            Text(lectures.scenarioText(for: lecture))
                                 .font(.system(size: 14, weight: .semibold))
                                 .foregroundStyle(Theme.textPrimary)
                         }
@@ -104,7 +105,7 @@ struct LectureDetailSheet: View {
         .scrollIndicators(.hidden)
     }
 
-    private var lectureScript: String {
+    private var fallbackScript: String {
         """
         \(lecture.title). The aim today is small and specific: \
         you'll practice one move, get scored on how it lands, and walk away with one fix.
@@ -154,7 +155,8 @@ struct LectureDetailSheet: View {
     // MARK: Quiz
 
     private var quizScreen: some View {
-        let quiz = Curriculum.quizzes[lecture.id] ?? []
+        let realQuiz = lectures.quiz(for: lecture)
+        let quiz = realQuiz.isEmpty ? (Curriculum.quizzes[lecture.id] ?? []) : realQuiz
         return ScrollView {
             VStack(alignment: .leading, spacing: 18) {
                 header
@@ -221,5 +223,7 @@ struct LectureDetailSheet: View {
 
 #Preview {
     LectureDetailSheet(lecture: Curriculum.lectures[3])
-        .environment(AppState()).preferredColorScheme(.dark)
+        .environment(AppState())
+        .environment(LectureContentStore.shared)
+        .preferredColorScheme(.dark)
 }
