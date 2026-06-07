@@ -103,34 +103,45 @@ struct LivePracticeView: View {
 
     @ViewBuilder
     private func personaPortrait(persona: PartnerPersona) -> some View {
-        let name = persona.imageName(for: expression)
+        let url = AvatarImageURL.url(for: persona, expression: expression)
         ZStack {
-            if UIImage(named: name) != nil {
-                Image(name)
-                    .resizable()
-                    .scaledToFill()
-                    .frame(width: 360, height: 480)
-                    .clipShape(RoundedRectangle(cornerRadius: 36, style: .continuous))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 36, style: .continuous)
-                            .stroke(persona.palette.rimColor.opacity(0.55), lineWidth: 1.5)
-                    )
-                    .shadow(color: persona.palette.rimColor.opacity(0.45), radius: 30)
-                    .id(name) // forces crossfade on expression change
-                    .transition(.opacity)
+            if let url {
+                AsyncImage(url: url, transaction: Transaction(animation: .easeInOut(duration: 0.35))) { phase in
+                    switch phase {
+                    case .success(let image):
+                        image
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 360, height: 480)
+                            .clipShape(RoundedRectangle(cornerRadius: 36, style: .continuous))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 36, style: .continuous)
+                                    .stroke(persona.palette.rimColor.opacity(0.55), lineWidth: 1.5)
+                            )
+                            .shadow(color: persona.palette.rimColor.opacity(0.45), radius: 30)
+                            .transition(.opacity)
+                    default:
+                        fallbackAvatar(persona: persona)
+                    }
+                }
+                .id(url) // forces crossfade on expression change
             } else {
-                // Fallback abstract avatar
-                Circle()
-                    .fill(LinearGradient(colors: [Color.black.opacity(0.5), persona.palette.rimColor.opacity(0.4)],
-                                         startPoint: .top, endPoint: .bottom))
-                    .frame(width: 240, height: 240)
-                    .overlay(
-                        Image(systemName: "person.fill")
-                            .font(.system(size: 110, weight: .bold))
-                            .foregroundStyle(.white.opacity(0.6))
-                    )
+                fallbackAvatar(persona: persona)
             }
         }
+    }
+
+    @ViewBuilder
+    private func fallbackAvatar(persona: PartnerPersona) -> some View {
+        Circle()
+            .fill(LinearGradient(colors: [.black.opacity(0.5), persona.palette.rimColor.opacity(0.4)],
+                                 startPoint: .top, endPoint: .bottom))
+            .frame(width: 240, height: 240)
+            .overlay(
+                Image(systemName: "person.fill")
+                    .font(.system(size: 110, weight: .bold))
+                    .foregroundStyle(.white.opacity(0.6))
+            )
     }
 
     private var topBar: some View {
