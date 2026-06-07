@@ -71,6 +71,22 @@ struct LectureDetailSheet: View {
                     if app.canStartLivePractice {
                         app.recordWatched(lecture: lecture)
                         route = .practice
+                    } else {
+                        // Gated: either no access, or daily cap hit. Send to Superwall.
+                        let placement = app.hasAccess
+                            ? CharmsterSuperwall.Placement.dailyCapHit
+                            : CharmsterSuperwall.Placement.upgradePrompt
+                        CharmsterSuperwall.register(
+                            placement,
+                            source: "lecture_detail_practice_cta",
+                            params: ["lecture_id": lecture.id]
+                        ) {
+                            // If they convert, immediately enter practice.
+                            if app.canStartLivePractice {
+                                app.recordWatched(lecture: lecture)
+                                route = .practice
+                            }
+                        }
                     }
                 }
                 if !app.canStartLivePractice {
