@@ -35,17 +35,23 @@ final class AppState {
     var selectedPersona: PartnerPersona = PartnerPersona.defaults[0]
 
     // MARK: Subscription (Step 2 — hard paywall model)
-    var subscriptionStatus: SubscriptionStatus = .locked
+    // Production flow: new sign-up → onboarding → auto-start 3-day free trial.
+    // After the 3 days the user must subscribe to continue. This default
+    // matches that real flow so the simulator (no IAP) and a fresh real install
+    // behave the same. Once StoreKit/Superwall purchase wiring is live, the
+    // purchase result will flip this to `.pro`; trial expiry flips it to `.expired`.
+    var subscriptionStatus: SubscriptionStatus = .trial
     var subscriptionPlan: SubscriptionPlan? = nil
-    var trialStartedAt: Date? = nil
-    var trialEndsAt: Date? = nil
+    var trialStartedAt: Date? = Date()
+    var trialEndsAt: Date? = Calendar.current.date(byAdding: .day, value: 3, to: Date())
     var trialSessionsUsedToday: Int = 0
     var lastTrialResetDay: Date = Date()
     var cancelReason: String? = nil
     var saveOfferClaimedAt: Date? = nil
 
     // Trial config (server-config in production)
-    let trialDailyLiveSessionsCap: Int = 2
+    // Generous trial cap so new users can really evaluate the product across 3 days.
+    let trialDailyLiveSessionsCap: Int = 12
     let paidDailyLiveSessionsCap: Int = 12   // generous fair-use anti-abuse
     var paidSessionsUsedToday: Int = 0
 
