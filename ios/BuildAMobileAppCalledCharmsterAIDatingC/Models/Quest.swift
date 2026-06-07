@@ -3,11 +3,12 @@ import Foundation
 /// Charmster curriculum models. Mocked locally; will sync to Supabase later.
 
 struct Track: Identifiable, Hashable {
-    let id: Int            // 0...13
+    let id: Int            // 0...17
     let number: Int
     let name: String
     let blurb: String
     let symbol: String     // SF Symbol
+    let isInclusive: Bool  // Step 9 expansion tracks
 }
 
 struct Lecture: Identifiable, Hashable {
@@ -36,7 +37,7 @@ struct WeightProfile: Hashable {
 
 enum LectureState { case locked, current, mastered }
 
-struct LectureProgress: Hashable {
+struct LectureProgress: Hashable, Codable {
     var quizScore: Int = 0   // 0...3
     var practiced: Bool = false
     var mastered: Bool { quizScore >= 2 && practiced }
@@ -73,7 +74,7 @@ struct SessionResult: Hashable {
     var strengths: [String]
     var fixes: [String]
     var xpEarned: Int
-    var coinsEarned: Int
+    var coinsEarned: Int   // deprecated; still computed but no longer surfaced
 }
 
 // MARK: - Curriculum (seeded)
@@ -81,39 +82,54 @@ struct SessionResult: Hashable {
 enum Curriculum {
     static let tracks: [Track] = [
         Track(id: 0,  number: 0,  name: "Starter Assessment",
-              blurb: "Find your starting point.",          symbol: "sparkles"),
+              blurb: "Find your starting point.",          symbol: "sparkles", isInclusive: false),
         Track(id: 1,  number: 1,  name: "Foundations",
-              blurb: "Mindset & self-worth.",              symbol: "mountain.2.fill"),
+              blurb: "Mindset & self-worth.",              symbol: "mountain.2.fill", isInclusive: false),
         Track(id: 2,  number: 2,  name: "First Impressions",
-              blurb: "Approaches & openers.",              symbol: "hand.wave.fill"),
+              blurb: "Approaches & openers.",              symbol: "hand.wave.fill", isInclusive: false),
         Track(id: 3,  number: 3,  name: "Conversation",
-              blurb: "Keep it flowing.",                   symbol: "bubble.left.and.bubble.right.fill"),
+              blurb: "Keep it flowing.",                   symbol: "bubble.left.and.bubble.right.fill", isInclusive: false),
         Track(id: 4,  number: 4,  name: "Humor",
-              blurb: "Be playful, not performative.",      symbol: "face.smiling.fill"),
+              blurb: "Be playful, not performative.",      symbol: "face.smiling.fill", isInclusive: false),
         Track(id: 5,  number: 5,  name: "Reading Signals",
-              blurb: "Notice the subtext.",                symbol: "waveform.path.ecg"),
+              blurb: "Notice the subtext.",                symbol: "waveform.path.ecg", isInclusive: false),
         Track(id: 6,  number: 6,  name: "Presence",
-              blurb: "Body, voice, stillness.",            symbol: "figure.stand"),
+              blurb: "Body, voice, stillness.",            symbol: "figure.stand", isInclusive: false),
         Track(id: 7,  number: 7,  name: "Deep Connection",
-              blurb: "Vulnerability & depth.",             symbol: "heart.text.square.fill"),
+              blurb: "Vulnerability & depth.",             symbol: "heart.text.square.fill", isInclusive: false),
         Track(id: 8,  number: 8,  name: "Confidence",
-              blurb: "Calm under pressure.",               symbol: "flame.fill"),
+              blurb: "Calm under pressure.",               symbol: "flame.fill", isInclusive: false),
         Track(id: 9,  number: 9,  name: "Personalization",
-              blurb: "Your style, dialed in.",             symbol: "person.crop.circle.badge.checkmark"),
+              blurb: "Your style, dialed in.",             symbol: "person.crop.circle.badge.checkmark", isInclusive: false),
         Track(id: 10, number: 10, name: "Texting",
-              blurb: "Pace, timing, words.",               symbol: "message.fill"),
+              blurb: "Pace, timing, words.",               symbol: "message.fill", isInclusive: false),
         Track(id: 11, number: 11, name: "Dating App Strategy",
-              blurb: "Profiles & matches.",                symbol: "rectangle.stack.person.crop.fill"),
+              blurb: "Profiles & matches.",                symbol: "rectangle.stack.person.crop.fill", isInclusive: false),
         Track(id: 12, number: 12, name: "First-Date Logistics",
-              blurb: "Plan, propose, show up.",            symbol: "calendar.badge.clock"),
+              blurb: "Plan, propose, show up.",            symbol: "calendar.badge.clock", isInclusive: false),
         Track(id: 13, number: 13, name: "Dates → Relationship",
-              blurb: "From third date to real.",           symbol: "heart.circle.fill")
+              blurb: "From third date to real.",           symbol: "heart.circle.fill", isInclusive: false),
+
+        // ── Step 9: inclusive + accessibility tracks ──
+        Track(id: 14, number: 14, name: "All Genders & Orientations",
+              blurb: "Inclusive dating skills for everyone.",
+              symbol: "person.3.sequence.fill", isInclusive: true),
+        Track(id: 15, number: 15, name: "Dating with a Disability",
+              blurb: "Confidence, disclosure, accessible dates.",
+              symbol: "figure.roll", isInclusive: true),
+        Track(id: 16, number: 16, name: "Neurodivergent-Friendly",
+              blurb: "Cue decoding, scripts, sensory-aware dating.",
+              symbol: "brain.head.profile", isInclusive: true),
+        Track(id: 17, number: 17, name: "Social Anxiety",
+              blurb: "Graded exposure, pre-date calm, reframes.",
+              symbol: "wind", isInclusive: true),
     ]
 
-    /// Canonical lecture counts per track 1...13.
+    /// Canonical lecture counts per track.
     private static let counts: [Int: Int] = [
         0: 3, 1: 6, 2: 5, 3: 6, 4: 5, 5: 5, 6: 6,
-        7: 6, 8: 6, 9: 5, 10: 7, 11: 5, 12: 6, 13: 6
+        7: 6, 8: 6, 9: 5, 10: 7, 11: 5, 12: 6, 13: 6,
+        14: 5, 15: 5, 16: 5, 17: 5
     ]
 
     private static let lectureTitles: [Int: [String]] = [
@@ -122,30 +138,42 @@ enum Curriculum {
             "Outcome independence", "Your dating identity", "Rejection isn't fatal"],
         2: ["The first 7 seconds", "Conversational openers",
             "Approaching with calm", "Body language entry", "Exits without sting"],
-        3: ["The volley principle", "Following her thread", "Asking better questions",
+        3: ["The volley principle", "Following the thread", "Asking better questions",
             "Statements vs interrogations", "Silence as a tool", "The graceful close"],
         4: ["Playful, not performative", "Self-aware humor",
             "Callbacks & inside jokes", "Teasing without sting", "Reading laugh signals"],
         5: ["Verbal cues", "Pacing & energy match",
-            "When she's polite vs interested", "Disinterest, gently named", "Recovery moves"],
+            "Polite vs interested", "Disinterest, gently named", "Recovery moves"],
         6: ["Voice fundamentals", "Stillness > fidget", "Eye contact rhythm",
             "Posture & openness", "Warmth in the face", "The slow exhale"],
         7: ["Mutual vulnerability", "The deeper question",
-            "Listening louder", "Story instead of resume", "Holding space", "When she opens up"],
+            "Listening louder", "Story instead of resume", "Holding space", "When they open up"],
         8: ["Catching anxiety early", "Box breathing under fire", "Reframes that work",
             "Embracing nerves", "The 90-second wave", "Walking in calm"],
         9: ["Your flirting style", "The right kind of texts",
             "Coach mode that fits you", "Mistakes you keep making", "Your unfair advantage"],
         10: ["The opener that lands", "Pacing replies", "Memes, sparingly",
-             "Asking her out via text", "Recovering ghost threads",
+             "Asking them out via text", "Recovering ghost threads",
              "Voice notes, used well", "When to put down the phone"],
         11: ["Profile photo order", "The bio that filters", "Prompts that earn replies",
              "Swiping strategy", "Match → first message"],
         12: ["Choosing the spot", "The proposal text", "Day-of logistics",
              "Arriving grounded", "The first 60 seconds", "Closing the date well"],
         13: ["Third date energy", "Defining the thing",
-             "Conflict, calmly", "Meeting her people", "Long game choices",
-             "Becoming chosen"]
+             "Conflict, calmly", "Meeting their people", "Long game choices",
+             "Becoming chosen"],
+
+        14: ["Same-gender flirting & signals", "Queer dating contexts",
+             "Inclusive app strategy", "Identity-related conversations",
+             "Coming out in dating"],
+        15: ["Confidence with a disability", "Disclosure conversations",
+             "Handling assumptions", "Accessibility-aware date planning",
+             "Boundaries that protect joy"],
+        16: ["Decoding the unsaid", "Scripts for hard moments",
+             "Masking vs unmasking", "Sensory-aware dates",
+             "Stimming, info-dumping, regulating"],
+        17: ["Graded exposure", "Pre-date calming", "Reframing the worst case",
+             "Body-first regulation", "The exit you can use"],
     ]
 
     static let lectures: [Lecture] = {
@@ -175,34 +203,37 @@ enum Curriculum {
 
     private static func scenario(for trackId: Int, lesson: Int, title: String) -> String {
         switch trackId {
-        case 2: return "Mia is reading at a coffee shop. Approach warmly."
-        case 3: return "You matched yesterday — keep the thread alive without trying too hard."
-        case 5: return "She's polite but pulling back. Read it, name it kindly."
+        case 2:  return "Someone's reading at a coffee shop. Approach warmly."
+        case 3:  return "You matched yesterday — keep the thread alive without trying too hard."
+        case 5:  return "They're polite but pulling back. Read it, name it kindly."
         case 10: return "Text exchange after a fun first date — keep the pace."
         case 12: return "First date logistics: propose Thursday, 7pm."
+        case 14: return "A first conversation that's open about who you are."
+        case 15: return "An honest disclosure conversation about access needs."
+        case 16: return "Reading a moment where the cue is ambiguous."
+        case 17: return "The hour before a date — calm the spike."
         default: return "Practice: \(title)."
         }
     }
 
     static let quizzes: [String: [QuizQuestion]] = {
-        // Each lecture gets exactly 3 placeholder-but-meaningful Qs.
         var out: [String: [QuizQuestion]] = [:]
         for l in lectures {
             out[l.id] = [
                 QuizQuestion(
                     prompt: "What's the core idea of '\(l.title)'?",
                     options: [
-                        "Perform confidence so she believes it.",
-                        "Stay grounded and curious about her, not the outcome.",
+                        "Perform confidence so they believe it.",
+                        "Stay grounded and curious about them, not the outcome.",
                         "Lead the conversation no matter what."
                     ],
                     correctIndex: 1
                 ),
                 QuizQuestion(
-                    prompt: "She seems hesitant. The best next move is to…",
+                    prompt: "They seem hesitant. The best next move is to…",
                     options: [
-                        "Push harder so she warms up.",
-                        "Lighten the energy and give her room.",
+                        "Push harder so they warm up.",
+                        "Lighten the energy and give them room.",
                         "Apologize and exit."
                     ],
                     correctIndex: 1
@@ -210,9 +241,9 @@ enum Curriculum {
                 QuizQuestion(
                     prompt: "A win in this lesson looks like…",
                     options: [
-                        "She laughs once and gives you her number.",
+                        "They laugh once and give you their number.",
                         "You leave the interaction more like yourself, not less.",
-                        "You out-talk her by 2 to 1."
+                        "You out-talk them by 2 to 1."
                     ],
                     correctIndex: 1
                 )
