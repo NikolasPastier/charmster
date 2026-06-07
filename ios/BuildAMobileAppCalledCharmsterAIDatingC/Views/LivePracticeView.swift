@@ -245,14 +245,14 @@ struct PracticeHubView: View {
                         .font(.system(size: 13, weight: .heavy)).tracking(1)
                         .foregroundStyle(Theme.gold)
                     Spacer()
-                    Text(app.isPro ? "Pro — fair use" : "\(app.chargeMinutes) of \(app.chargeCap) min")
+                    Text(app.isPro ? "Pro — fair use" : "\(chargeMinutes) of \(chargeCap) min")
                         .font(.system(size: 13, weight: .bold))
                         .foregroundStyle(Theme.textPrimary).monospacedDigit()
                 }
                 ZStack(alignment: .leading) {
                     Capsule().fill(Theme.border).frame(height: 8)
                     Capsule().fill(Theme.aura)
-                        .frame(width: max(8, CGFloat(app.chargeMinutes) / CGFloat(app.chargeCap) * 300),
+                        .frame(width: max(8, CGFloat(chargeMinutes) / CGFloat(chargeCap) * 300),
                                height: 8)
                         .shadow(color: Theme.auraGlow, radius: 10)
                 }
@@ -261,6 +261,9 @@ struct PracticeHubView: View {
             }
         }
     }
+
+    private var chargeCap: Int { 15 }
+    private var chargeMinutes: Int { 15 }
 }
 
 private struct PracticeLectureCard: View {
