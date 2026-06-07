@@ -14,6 +14,8 @@ struct LivePracticeView: View {
     @State private var micOn = true
     @State private var camOn = true
     @State private var endingNow = false
+    @State private var partnerSpeaking = false
+    @State private var expression: PersonaExpression = .neutral
 
     private let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     private let tips = [
@@ -53,48 +55,81 @@ struct LivePracticeView: View {
             withAnimation(.smooth) {
                 feel = max(0.2, min(0.95, feel + Double.random(in: -0.06...0.08)))
             }
+            // Cycle who's "speaking" every few seconds so the avatar reacts.
+            if seconds % 4 == 0 { partnerSpeaking.toggle() }
             if seconds % 6 == 0 { tip = tips.randomElement() }
+            withAnimation(.easeInOut(duration: 0.35)) {
+                expression = PersonaExpression.forFeel(
+                    feel,
+                    isSpeaking: partnerSpeaking,
+                    isListening: micOn && !partnerSpeaking
+                )
+            }
         }
         .trackView("LivePracticeView")
     }
 
     private var avatarBackdrop: some View {
-        ZStack {
+        let persona = app.selectedPersona
+        return ZStack {
             LinearGradient(
-                colors: [Color(hex: 0x2A1530), Color(hex: 0x4A1A2E), Color(hex: 0x6B2434)],
+                colors: persona.palette.fillColors,
                 startPoint: .top, endPoint: .bottom
             )
-            // Abstract warm rim-lit silhouette of "Mia"
+            // Rim glow behind portrait
             Circle()
-                .fill(RadialGradient(colors: [Theme.pink.opacity(0.55), .clear],
-                                     center: .center, startRadius: 0, endRadius: 260))
-                .frame(width: 520, height: 520)
-                .offset(y: -40)
-                .blur(radius: 30)
-            ZStack {
-                Circle()
-                    .fill(LinearGradient(colors: [Color(hex: 0x1A0F1A), Color(hex: 0x33182A)],
-                                         startPoint: .top, endPoint: .bottom))
-                    .frame(width: 240, height: 240)
-                Circle()
-                    .stroke(Theme.aura, lineWidth: 2)
-                    .frame(width: 240, height: 240)
-                    .shadow(color: Theme.auraGlow, radius: 30)
-                Image(systemName: "person.fill")
-                    .font(.system(size: 110, weight: .bold))
-                    .foregroundStyle(Theme.aura.opacity(0.65))
-            }
-            .offset(y: -40)
+                .fill(RadialGradient(colors: [persona.palette.rimColor.opacity(0.55), .clear],
+                                     center: .center, startRadius: 0, endRadius: 280))
+                .frame(width: 560, height: 560)
+                .offset(y: -60)
+                .blur(radius: 40)
+
+            // Persona portrait — swaps based on expression
+            personaPortrait(persona: persona)
+                .offset(y: -30)
+
             // Bottom scrim
-            LinearGradient(colors: [.clear, .black.opacity(0.85)],
+            LinearGradient(colors: [.clear, .black.opacity(0.88)],
                            startPoint: .top, endPoint: .bottom)
-                .frame(height: 280)
+                .frame(height: 320)
                 .frame(maxHeight: .infinity, alignment: .bottom)
             // Top scrim
-            LinearGradient(colors: [.black.opacity(0.7), .clear],
+            LinearGradient(colors: [.black.opacity(0.65), .clear],
                            startPoint: .top, endPoint: .bottom)
                 .frame(height: 160)
                 .frame(maxHeight: .infinity, alignment: .top)
+        }
+    }
+
+    @ViewBuilder
+    private func personaPortrait(persona: PartnerPersona) -> some View {
+        let name = persona.imageName(for: expression)
+        ZStack {
+            if UIImage(named: name) != nil {
+                Image(name)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 360, height: 480)
+                    .clipShape(RoundedRectangle(cornerRadius: 36, style: .continuous))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 36, style: .continuous)
+                            .stroke(persona.palette.rimColor.opacity(0.55), lineWidth: 1.5)
+                    )
+                    .shadow(color: persona.palette.rimColor.opacity(0.45), radius: 30)
+                    .id(name) // forces crossfade on expression change
+                    .transition(.opacity)
+            } else {
+                // Fallback abstract avatar
+                Circle()
+                    .fill(LinearGradient(colors: [Color.black.opacity(0.5), persona.palette.rimColor.opacity(0.4)],
+                                         startPoint: .top, endPoint: .bottom))
+                    .frame(width: 240, height: 240)
+                    .overlay(
+                        Image(systemName: "person.fill")
+                            .font(.system(size: 110, weight: .bold))
+                            .foregroundStyle(.white.opacity(0.6))
+                    )
+            }
         }
     }
 

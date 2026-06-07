@@ -53,27 +53,62 @@ struct PartnerPersona: Identifiable, Hashable, Codable {
     let blurb: String
     let voiceId: String       // maps to TTS voice when wired
     let palette: PersonaPalette
+    /// Asset prefix for expression images, e.g. "Matteo" → "Matteo_neutral".
+    let assetPrefix: String
+
+    /// Image name for a given expression. Falls back to `_neutral`.
+    func imageName(for expression: PersonaExpression) -> String {
+        "\(assetPrefix)_\(expression.rawValue)"
+    }
 
     static let defaults: [PartnerPersona] = [
-        PartnerPersona(id: "mira",
-                       displayName: "Mira",
+        PartnerPersona(id: "zoe",
+                       displayName: "Zoe",
                        presentation: .feminine,
                        blurb: "Warm, thoughtful, asks the second question.",
                        voiceId: "tts-warm-1",
-                       palette: .rose),
-        PartnerPersona(id: "leo",
-                       displayName: "Leo",
+                       palette: .rose,
+                       assetPrefix: "Zoe"),
+        PartnerPersona(id: "matteo",
+                       displayName: "Matteo",
                        presentation: .masculine,
                        blurb: "Easygoing, dry sense of humor, slow to open up.",
                        voiceId: "tts-warm-2",
-                       palette: .ember),
+                       palette: .ember,
+                       assetPrefix: "Matteo"),
         PartnerPersona(id: "sam",
                        displayName: "Sam",
                        presentation: .androgynous,
                        blurb: "Curious, playful, reads the room fast.",
                        voiceId: "tts-warm-3",
-                       palette: .iris),
+                       palette: .iris,
+                       assetPrefix: "Zoe"), // fallback until Sam set ships
     ]
+}
+
+/// The 15 facial expressions every persona ships with.
+/// Asset names: `<Prefix>_<rawValue>` e.g. `Matteo_neutral`, `Zoe_flirty`.
+enum PersonaExpression: String, CaseIterable, Codable {
+    case neutral, smile, laughing, playful, flirty
+    case speaking, listening, thinking, surprised, impressed
+    case flustered, bored, cool
+    // Two more from the 15-expression set:
+    case shy, intrigued
+
+    /// Pick an expression based on a 0...1 connection/feel score.
+    static func forFeel(_ feel: Double, isSpeaking: Bool, isListening: Bool) -> PersonaExpression {
+        if isSpeaking { return .speaking }
+        if isListening { return .listening }
+        switch feel {
+        case ..<0.25:  return .bored
+        case ..<0.40:  return .neutral
+        case ..<0.55:  return .thinking
+        case ..<0.70:  return .smile
+        case ..<0.82:  return .impressed
+        case ..<0.92:  return .playful
+        default:       return .flirty
+        }
+    }
 }
 
 enum PersonaPalette: String, Codable {
