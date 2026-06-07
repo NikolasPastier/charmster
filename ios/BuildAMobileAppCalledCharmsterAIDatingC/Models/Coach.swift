@@ -166,6 +166,12 @@ struct QuizResult {
     var reminderEnabled: Bool = true
     var username: String = ""
 
+    // Inclusive onboarding (Step 7)
+    var selfIdentity: SelfIdentity? = nil
+    var datingContext: DatingContext? = nil
+    var partnerPresentation: PartnerPresentation? = nil
+    var partnerPersona: PartnerPersona? = nil
+
     var attachmentLabel: AttachmentLabel {
         let hiAnx = attachmentAnxiety >= 3.0
         let hiAvd = attachmentAvoidance >= 3.0
