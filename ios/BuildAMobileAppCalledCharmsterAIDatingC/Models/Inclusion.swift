@@ -62,13 +62,13 @@ struct PartnerPersona: Identifiable, Hashable, Codable {
     }
 
     static let defaults: [PartnerPersona] = [
-        PartnerPersona(id: "zoe",
-                       displayName: "Zoe",
+        PartnerPersona(id: "mia",
+                       displayName: "Mia",
                        presentation: .feminine,
                        blurb: "Warm, thoughtful, asks the second question.",
                        voiceId: "tts-warm-1",
                        palette: .rose,
-                       assetPrefix: "Zoe"),
+                       assetPrefix: "Mia"),
         PartnerPersona(id: "matteo",
                        displayName: "Matteo",
                        presentation: .masculine,
@@ -76,13 +76,13 @@ struct PartnerPersona: Identifiable, Hashable, Codable {
                        voiceId: "tts-warm-2",
                        palette: .ember,
                        assetPrefix: "Matteo"),
-        PartnerPersona(id: "sam",
-                       displayName: "Sam",
+        PartnerPersona(id: "zoe",
+                       displayName: "Zoe",
                        presentation: .androgynous,
                        blurb: "Curious, playful, reads the room fast.",
                        voiceId: "tts-warm-3",
                        palette: .iris,
-                       assetPrefix: "Zoe"), // fallback until Sam set ships
+                       assetPrefix: "Zoe"),
     ]
 }
 
