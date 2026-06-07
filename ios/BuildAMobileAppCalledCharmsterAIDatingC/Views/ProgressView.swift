@@ -66,10 +66,10 @@ struct ProgressDashboardView: View {
     private var coinsTile: some View {
         GlassCard(padding: 14, radius: 18) {
             VStack(alignment: .leading, spacing: 6) {
-                Label("Charm Coins", systemImage: "circle.hexagongrid.fill")
+                Label("Level", systemImage: "sparkles")
                     .font(.system(size: 11, weight: .heavy)).tracking(1)
                     .foregroundStyle(Theme.gold)
-                Text("\(app.charmCoins)")
+                Text("\(app.level)")
                     .font(.system(size: 28, weight: .heavy, design: .rounded))
                     .foregroundStyle(Theme.textPrimary).monospacedDigit()
             }

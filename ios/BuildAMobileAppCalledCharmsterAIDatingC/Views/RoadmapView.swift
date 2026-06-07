@@ -38,7 +38,7 @@ struct RoadmapView: View {
     private var topBar: some View {
         HStack(spacing: 10) {
             StatPill(icon: "flame.fill", value: "\(app.streakDays)", tint: Theme.ember)
-            StatPill(icon: "circle.hexagongrid.fill", value: "\(app.charmCoins)", tint: Theme.gold)
+            StatPill(icon: "bolt.fill", value: "\(app.totalXP)", tint: Theme.gold)
             Spacer()
             HStack(spacing: 8) {
                 ZStack {

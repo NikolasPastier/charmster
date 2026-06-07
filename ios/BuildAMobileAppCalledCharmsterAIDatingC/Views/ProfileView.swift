@@ -60,7 +60,6 @@ struct ProfileView: View {
             StatTile(label: "Aura", value: "\(Int(app.aura))", tint: AnyShapeStyle(Theme.aura))
             StatTile(label: "XP",   value: "\(app.totalXP)",   tint: AnyShapeStyle(Theme.gold))
             StatTile(label: "Streak", value: "\(app.streakDays)d", tint: AnyShapeStyle(Theme.ember))
-            StatTile(label: "Coins", value: "\(app.charmCoins)", tint: AnyShapeStyle(Theme.calmBlue))
         }
     }
 

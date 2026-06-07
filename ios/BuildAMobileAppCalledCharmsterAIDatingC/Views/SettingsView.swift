@@ -93,11 +93,11 @@ struct SettingsView: View {
         .alert("Reset progress?", isPresented: $confirmReset) {
             Button("Reset", role: .destructive) {
                 app.progress = [:]; app.totalXP = 0; app.level = 1
-                app.aura = 0; app.charmCoins = 0; app.streakDays = 0
+                app.aura = 0; app.streakDays = 0
             }
             Button("Cancel", role: .cancel) {}
         } message: {
-            Text("This clears mastery, XP, coins and streak. Personalization is kept.")
+            Text("This clears mastery, XP, aura and streak. Personalization is kept.")
         }
         .trackView("SettingsView")
     }
