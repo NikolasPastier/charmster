@@ -9,4 +9,5 @@
 - [x] Build Settings screen + push notification scheduling for streak reminder
 - [x] Restore original warm noir-tech visual theme (love-spectrum aura gradient, warm glows, score bands)
 - [x] Refresh intro carousel copy across the 3 pre-quiz onboarding slides
+- [x] Swap intro carousel branding to combined Supabase logo image with feathered blend and centered text layout
 - [ ] Wire Supabase auth (email + Apple), profiles/quests/progress/sessions tables, and OpenAI proxy Edge Function

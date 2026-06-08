@@ -32,46 +32,74 @@ private struct IntroCarouselView: View {
     let onContinue: () -> Void
     @State private var page: Int = 0
 
-    private let slides: [(String, String, String)] = [
+    private let slides: [(String, String)] = [
         ("Practice love.\nBuild real confidence.",
-         "Master the art of conversation and find genuine connection.",
-         "sparkles"),
+         "Master the art of conversation and find genuine connection."),
         ("A path, not a hack.",
-         "Daily quests and live practice — built around how you actually grow.",
-         "map.fill"),
+         "Daily quests and live practice — built around how you actually grow."),
         ("Your coach, your pace.",
-         "Pick a voice, set the difficulty, and learn the way that fits you.",
-         "person.line.dotted.person.fill")
+         "Pick a voice, set the difficulty, and learn the way that fits you.")
     ]
 
-    var body: some View {
-        VStack(spacing: 24) {
-            BrandLogo(size: .heroLockup(120))
-                .padding(.top, 40)
+    private static let newLogoURL = URL(string:
+        "https://uvjtrhvhldeeslgnvhyd.supabase.co/storage/v1/object/public/App%20logo/new%20logo.png"
+    )
 
-            TabView(selection: $page) {
-                ForEach(slides.indices, id: \.self) { i in
-                    VStack(spacing: 16) {
-                        Image(systemName: slides[i].2)
-                            .font(.system(size: 48, weight: .bold))
-                            .foregroundStyle(Theme.accent)
+    var body: some View {
+        ZStack {
+            Color(red: 0x0B/255, green: 0x09/255, blue: 0x10/255).ignoresSafeArea()
+
+            VStack(spacing: 0) {
+                TabView(selection: $page) {
+                    ForEach(slides.indices, id: \.self) { i in
+                        VStack(spacing: 18) {
+                            Spacer(minLength: 0)
+
+                            AsyncImage(url: Self.newLogoURL, transaction: Transaction(animation: .smooth)) { phase in
+                                switch phase {
+                                case .success(let image):
+                                    image.resizable().scaledToFit()
+                                case .empty:
+                                    ProgressView().tint(Theme.textMuted)
+                                default:
+                                    Color.clear
+                                }
+                            }
+                            .frame(width: 220, height: 220)
+                            .mask(
+                                RadialGradient(
+                                    gradient: Gradient(stops: [
+                                        .init(color: .black, location: 0.0),
+                                        .init(color: .black, location: 0.55),
+                                        .init(color: .black.opacity(0.6), location: 0.78),
+                                        .init(color: .clear, location: 1.0)
+                                    ]),
+                                    center: .center,
+                                    startRadius: 0,
+                                    endRadius: 130
+                                )
+                            )
                             .padding(.bottom, 8)
-                        Text(slides[i].0)
-                            .font(.system(size: 30, weight: .heavy))
-                            .multilineTextAlignment(.center)
-                            .foregroundStyle(Theme.text)
-                        Text(slides[i].1)
-                            .font(.system(size: 16))
-                            .multilineTextAlignment(.center)
-                            .foregroundStyle(Theme.textMuted)
-                            .padding(.horizontal, 24)
+
+                            Text(slides[i].0)
+                                .font(.system(size: 30, weight: .heavy))
+                                .multilineTextAlignment(.center)
+                                .foregroundStyle(Theme.text)
+                            Text(slides[i].1)
+                                .font(.system(size: 16))
+                                .multilineTextAlignment(.center)
+                                .foregroundStyle(Theme.textMuted)
+                                .padding(.horizontal, 24)
+
+                            Spacer(minLength: 0)
+                            Spacer(minLength: 0)
+                        }
+                        .padding(.horizontal, 24)
+                        .tag(i)
                     }
-                    .padding(.horizontal, 24)
-                    .tag(i)
                 }
-            }
-            .tabViewStyle(.page(indexDisplayMode: .always))
-            .frame(maxHeight: .infinity)
+                .tabViewStyle(.page(indexDisplayMode: .always))
+                .frame(maxHeight: .infinity)
 
             AuraButton(title: page == slides.count - 1 ? "Start the quiz" : "Continue",
                        systemImage: "arrow.right") {
@@ -85,6 +113,7 @@ private struct IntroCarouselView: View {
             .padding(.bottom, 32)
             .zIndex(10)
             .allowsHitTesting(true)
+            }
         }
     }
 }
