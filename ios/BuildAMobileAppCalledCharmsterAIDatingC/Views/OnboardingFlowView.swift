@@ -33,14 +33,14 @@ private struct IntroCarouselView: View {
     @State private var page: Int = 0
 
     private let slides: [(String, String, String)] = [
-        ("Practice the real thing.",
-         "Charmster is your judgment-free social coach. Run live conversations, get real feedback.",
+        ("Practice love.\nBuild real confidence.",
+         "Master the art of conversation and find genuine connection.",
          "sparkles"),
         ("A path, not a hack.",
-         "Daily quests, capstones, and spaced reviews — built around how you actually learn.",
+         "Daily quests and live practice — built around how you actually grow.",
          "map.fill"),
-        ("Coached by you, for you.",
-         "Pick a coach style. Your tone, your difficulty, your pace.",
+        ("Your coach, your pace.",
+         "Pick a voice, set the difficulty, and learn the way that fits you.",
          "person.line.dotted.person.fill")
     ]
 
