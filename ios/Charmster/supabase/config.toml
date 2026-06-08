@@ -1,0 +1,5 @@
+[functions.realtime_session]
+verify_jwt = false
+
+[functions.vision_review]
+verify_jwt = false
