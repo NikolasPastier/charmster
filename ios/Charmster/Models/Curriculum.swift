@@ -1,133 +1,243 @@
 import Foundation
 
-/// Hardcoded curriculum. 4 tracks × (4 lectures + 1 capstone) = 20 lectures total.
-/// Step 4 requirement: every track ends with a Capstone node.
+/// Canonical curriculum loaded from `Resources/curriculum.json` in the app bundle.
+/// 16 content tracks (1–16) + Track 0 onboarding shell = 17 tracks total.
+/// 117 lectures + 16 capstones.
+///
+/// This is the SINGLE SOURCE OF TRUTH for the app's curriculum shape at runtime.
+/// Per-lecture teaching copy / quizzes / scenarios still come from `LectureContentStore`.
 enum Curriculum {
 
-    static let tracks: [Track] = Track.library
+    // MARK: - Public surface (signatures preserved for call sites)
 
-    static let lectures: [Lecture] = build()
+    static var tracks: [Track] { loaded.tracks }
+    static var lectures: [Lecture] { loaded.lectures }
 
     static func lectures(in trackId: Int) -> [Lecture] {
-        lectures.filter { $0.trackId == trackId }.sorted { $0.number < $1.number }
+        loaded.byTrack[trackId, default: []]
     }
 
     static func lecture(id: String) -> Lecture? {
-        lectures.first { $0.id == id }
+        loaded.byId[id]
     }
 
     static func capstone(in trackId: Int) -> Lecture? {
-        lectures.first { $0.trackId == trackId && $0.isCapstone }
+        loaded.byTrack[trackId, default: []].first { $0.isCapstone }
     }
 
-    // MARK: - Build
+    /// Migration helper: rewrite legacy "t{N}_l{N}" lecture IDs from the old
+    /// 4-track placeholder curriculum to the new "<track>.<number>" scheme so
+    /// existing user progress survives the cutover.
+    static func migrateLegacyLectureId(_ legacyId: String) -> String? {
+        legacyIdMap[legacyId]
+    }
 
-    private static func build() -> [Lecture] {
-        var all: [Lecture] = []
-        for t in tracks {
-            let entries = entriesFor(track: t.id)
-            for (idx, entry) in entries.enumerated() {
-                all.append(Lecture(
-                    id: "t\(t.id)_l\(idx + 1)",
-                    trackId: t.id,
-                    number: idx + 1,
-                    title: entry.title,
-                    scenario: entry.scenario,
-                    minutes: entry.minutes,
-                    skill: entry.skill,
-                    isCapstone: entry.isCapstone
-                ))
-            }
+    // MARK: - Loaded model
+
+    fileprivate struct LoadedCurriculum {
+        let tracks: [Track]
+        let lectures: [Lecture]
+        let byTrack: [Int: [Lecture]]
+        let byId: [String: Lecture]
+    }
+
+    private static let loaded: LoadedCurriculum = {
+        do {
+            return try decodeFromBundle()
+        } catch {
+            #if DEBUG
+            assertionFailure("Curriculum failed to load from bundle: \(error). Falling back to preview sample.")
+            #endif
+            return previewSampleLoaded
         }
-        return all
+    }()
+
+    // MARK: - Decoding
+
+    private struct Manifest: Decodable {
+        let version: Int
+        let tracks: [TrackEntry]
     }
 
-    private struct Entry {
+    private struct TrackEntry: Decodable {
+        let id: Int
+        let slug: String
+        let emoji: String
+        let title: String
+        let coreQuestion: String
+        let subtitle: String
+        let symbol: String
+        let order: Int
+        let accessDefault: LectureAccess
+        let lectures: [LectureEntry]
+        let capstone: CapstoneEntry?
+    }
+
+    private struct LectureEntry: Decodable {
+        let number: Int
+        let title: String
+        let access: LectureAccess
+        let format: LectureFormat
+        let minutes: Int
+        let skill: String
+        let scenario: String?
+    }
+
+    private struct CapstoneEntry: Decodable {
         let title: String
         let scenario: String
         let minutes: Int
-        let skill: String
-        let isCapstone: Bool
+        let access: LectureAccess
+        let format: LectureFormat
     }
 
-    // swiftlint:disable function_body_length
-    private static func entriesFor(track: Int) -> [Entry] {
-        switch track {
-        case 0:
-            return [
-                .init(title: "The 3-second open",
-                      scenario: "You're in line for coffee. She's two people ahead.",
-                      minutes: 4, skill: "Opening", isCapstone: false),
-                .init(title: "Holding eye contact",
-                      scenario: "She looks up from her phone and clocks you.",
-                      minutes: 4, skill: "Presence", isCapstone: false),
-                .init(title: "Graceful exit",
-                      scenario: "The conversation peaked. Now what.",
-                      minutes: 5, skill: "Exits", isCapstone: false),
-                .init(title: "Reading interest",
-                      scenario: "Subtle signals across a crowded café.",
-                      minutes: 5, skill: "Calibration", isCapstone: false),
-                .init(title: "Capstone — First coffee, end to end",
-                      scenario: "Open, hold a real conversation, and exit cleanly.",
-                      minutes: 9, skill: "Beginner capstone", isCapstone: true)
-            ]
-        case 1:
-            return [
-                .init(title: "Callbacks",
-                      scenario: "She made a joke 4 minutes ago. Bring it back.",
-                      minutes: 5, skill: "Flow", isCapstone: false),
-                .init(title: "Storytelling tempo",
-                      scenario: "Tell a 90-second story and land the beat.",
-                      minutes: 6, skill: "Tempo", isCapstone: false),
-                .init(title: "Playful disagreement",
-                      scenario: "She says pineapple belongs on pizza.",
-                      minutes: 5, skill: "Banter", isCapstone: false),
-                .init(title: "Asking better questions",
-                      scenario: "Move past 'so what do you do.'",
-                      minutes: 5, skill: "Curiosity", isCapstone: false),
-                .init(title: "Capstone — A full bar conversation",
-                      scenario: "Hold 8 minutes of real flow without filler.",
-                      minutes: 10, skill: "Conversation capstone", isCapstone: true)
-            ]
-        case 2:
-            return [
-                .init(title: "Frame holding",
-                      scenario: "She tests your reaction. Don't flinch.",
-                      minutes: 5, skill: "Frame", isCapstone: false),
-                .init(title: "Vulnerability without leak",
-                      scenario: "Share something real without dumping.",
-                      minutes: 6, skill: "Presence", isCapstone: false),
-                .init(title: "Saying no warmly",
-                      scenario: "She asks for a favor you can't give today.",
-                      minutes: 5, skill: "Standards", isCapstone: false),
-                .init(title: "Owning silence",
-                      scenario: "Three seconds of nothing. Don't fill it.",
-                      minutes: 5, skill: "Presence", isCapstone: false),
-                .init(title: "Capstone — Dinner with friction",
-                      scenario: "She pushes; you stay grounded and warm.",
-                      minutes: 10, skill: "Confidence capstone", isCapstone: true)
-            ]
-        case 3:
-            return [
-                .init(title: "Reading subtext",
-                      scenario: "What she didn't say is louder than what she did.",
-                      minutes: 6, skill: "Reading", isCapstone: false),
-                .init(title: "Matching energy floor",
-                      scenario: "She's quiet. Don't go bigger.",
-                      minutes: 5, skill: "Calibration", isCapstone: false),
-                .init(title: "Repair after a miss",
-                      scenario: "Your joke landed wrong. Recover.",
-                      minutes: 5, skill: "Repair", isCapstone: false),
-                .init(title: "Closing the loop",
-                      scenario: "Time to ask for the next step.",
-                      minutes: 5, skill: "Closing", isCapstone: false),
-                .init(title: "Capstone — A full date",
-                      scenario: "Meet, eat, read her, close the loop.",
-                      minutes: 10, skill: "Mastery capstone", isCapstone: true)
-            ]
-        default:
-            return []
+    private static func decodeFromBundle() throws -> LoadedCurriculum {
+        guard let url = Bundle.main.url(forResource: "curriculum", withExtension: "json") else {
+            throw NSError(domain: "Curriculum", code: 404,
+                          userInfo: [NSLocalizedDescriptionKey: "curriculum.json missing from bundle"])
         }
+        let data = try Data(contentsOf: url)
+        let manifest = try JSONDecoder().decode(Manifest.self, from: data)
+        return assemble(from: manifest)
     }
-    // swiftlint:enable function_body_length
+
+    private static func assemble(from manifest: Manifest) -> LoadedCurriculum {
+        var tracks: [Track] = []
+        var lectures: [Lecture] = []
+        var byTrack: [Int: [Lecture]] = [:]
+        var byId: [String: Lecture] = [:]
+
+        for entry in manifest.tracks.sorted(by: { $0.order < $1.order }) {
+            var trackLectures: [Lecture] = []
+            for lec in entry.lectures.sorted(by: { $0.number < $1.number }) {
+                let id = "\(entry.id).\(lec.number)"
+                let scenario = lec.scenario ?? "\(entry.title) · \(lec.title)"
+                let lecture = Lecture(
+                    id: id,
+                    trackId: entry.id,
+                    number: lec.number,
+                    title: lec.title,
+                    scenario: scenario,
+                    minutes: lec.minutes,
+                    skill: lec.skill,
+                    isCapstone: false,
+                    access: lec.access,
+                    format: lec.format
+                )
+                trackLectures.append(lecture)
+            }
+            if let cap = entry.capstone {
+                let capLecture = Lecture(
+                    id: "\(entry.id).capstone",
+                    trackId: entry.id,
+                    number: trackLectures.count + 1,
+                    title: "Capstone — \(cap.title)",
+                    scenario: cap.scenario,
+                    minutes: cap.minutes,
+                    skill: "\(entry.title) capstone",
+                    isCapstone: true,
+                    access: cap.access,
+                    format: cap.format
+                )
+                trackLectures.append(capLecture)
+            }
+
+            let track = Track(
+                id: entry.id,
+                slug: entry.slug,
+                title: entry.title,
+                subtitle: entry.subtitle,
+                coreQuestion: entry.coreQuestion,
+                emoji: entry.emoji,
+                symbol: entry.symbol,
+                order: entry.order,
+                accessDefault: entry.accessDefault,
+                lectureCount: trackLectures.count
+            )
+            tracks.append(track)
+            lectures.append(contentsOf: trackLectures)
+            byTrack[entry.id] = trackLectures
+            for lecture in trackLectures { byId[lecture.id] = lecture }
+        }
+
+        #if DEBUG
+        let contentLectureCount = lectures.filter { !$0.isCapstone && $0.trackId != 0 }.count
+        let capstoneCount = lectures.filter { $0.isCapstone }.count
+        let contentTrackCount = tracks.filter { $0.id != 0 }.count
+        if contentTrackCount != 16 || contentLectureCount != 117 || capstoneCount != 16 {
+            assertionFailure("Curriculum manifest counts off: tracks=\(contentTrackCount) lectures=\(contentLectureCount) capstones=\(capstoneCount); expected 16/117/16")
+        }
+        #endif
+
+        return LoadedCurriculum(tracks: tracks, lectures: lectures, byTrack: byTrack, byId: byId)
+    }
+
+    // MARK: - Legacy ID migration (placeholder → canonical)
+
+    /// Old placeholder curriculum used 4 tracks × 5 entries. Map every key the
+    /// app may have written to UserDefaults onto the closest canonical lecture
+    /// so existing user progress isn't silently wiped.
+    private static let legacyIdMap: [String: String] = [
+        // Track 0 placeholder → Foundations of Attraction (Track 1)
+        "t0_l1": "1.1",
+        "t0_l2": "1.4",
+        "t0_l3": "1.7",
+        "t0_l4": "1.5",
+        "t0_l5": "1.capstone",
+
+        // Track 1 placeholder → Conversation Flow / Humor
+        "t1_l1": "4.4",
+        "t1_l2": "3.5",
+        "t1_l3": "4.3",
+        "t1_l4": "3.4",
+        "t1_l5": "3.capstone",
+
+        // Track 2 placeholder → Confidence / Connection
+        "t2_l1": "8.5",
+        "t2_l2": "7.3",
+        "t2_l3": "13.7",
+        "t2_l4": "6.6",
+        "t2_l5": "7.capstone",
+
+        // Track 3 placeholder → Mastery / Calibration
+        "t3_l1": "5.2",
+        "t3_l2": "5.4",
+        "t3_l3": "5.6",
+        "t3_l4": "13.4",
+        "t3_l5": "12.capstone"
+    ]
 }
+
+// MARK: - Preview / debug fallback (NEVER referenced in production code paths)
+
+#if DEBUG
+extension Curriculum {
+    /// Tiny, clearly-named sample used only if `Resources/curriculum.json` is
+    /// missing during a SwiftUI preview. Not wired into runtime code paths.
+    fileprivate static let previewSampleLoaded: Curriculum.LoadedCurriculum = {
+        let track = Track(
+            id: 1, slug: "preview", title: "Preview Track",
+            subtitle: "Debug-only fallback", coreQuestion: "Preview",
+            emoji: "🧪", symbol: "hammer.fill", order: 1,
+            accessDefault: .free, lectureCount: 1
+        )
+        let lecture = Lecture(
+            id: "1.1", trackId: 1, number: 1,
+            title: "Preview lecture", scenario: "Preview scenario",
+            minutes: 5, skill: "Preview", isCapstone: false,
+            access: .free, format: .video
+        )
+        return LoadedCurriculum(
+            tracks: [track], lectures: [lecture],
+            byTrack: [1: [lecture]], byId: ["1.1": lecture]
+        )
+    }()
+}
+#else
+extension Curriculum {
+    /// Production builds return an empty curriculum on load failure so the bug
+    /// is visible (empty roadmap) rather than masked by fake placeholders.
+    fileprivate static let previewSampleLoaded: Curriculum.LoadedCurriculum =
+        LoadedCurriculum(tracks: [], lectures: [], byTrack: [:], byId: [:])
+}
+#endif

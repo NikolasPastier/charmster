@@ -1,34 +1,50 @@
 import Foundation
 
+// MARK: - Access tier + format
+
+enum LectureAccess: String, Codable, Hashable {
+    case free
+    case taster
+    case pro
+}
+
+enum LectureFormat: String, Codable, Hashable {
+    case video
+    case text
+    case quiz
+    case assessment
+}
+
 // MARK: - Lecture
 
 struct Lecture: Identifiable, Hashable, Codable {
-    let id: String
+    let id: String            // "<track>.<number>" e.g. "3.4"; capstones use "<track>.capstone"
     let trackId: Int
-    let number: Int          // 1-based within track
+    let number: Int           // 1-based within track; capstone uses (lectures.count + 1)
     let title: String
     let scenario: String
     let minutes: Int
     let skill: String
     let isCapstone: Bool
+    let access: LectureAccess
+    let format: LectureFormat
 
-    var displayNumber: String { "\(trackId).\(number)" }
+    var displayNumber: String { isCapstone ? "\(trackId).★" : "\(trackId).\(number)" }
 }
 
 // MARK: - Track
 
 struct Track: Identifiable, Hashable, Codable {
     let id: Int
+    let slug: String
     let title: String
     let subtitle: String
+    let coreQuestion: String
+    let emoji: String
     let symbol: String
-
-    static let library: [Track] = [
-        .init(id: 0, title: "Beginner",     subtitle: "Open, hold, exit",         symbol: "leaf.fill"),
-        .init(id: 1, title: "Conversation", subtitle: "Flow and callbacks",       symbol: "bubble.left.and.bubble.right.fill"),
-        .init(id: 2, title: "Confidence",   subtitle: "Frame and presence",       symbol: "flame.fill"),
-        .init(id: 3, title: "Mastery",      subtitle: "Reading the room",         symbol: "sparkles")
-    ]
+    let order: Int
+    let accessDefault: LectureAccess
+    let lectureCount: Int
 }
 
 // MARK: - Progress

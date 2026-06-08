@@ -1,4 +1,4 @@
-name: BuildAMobileAppCalledCharmsterAIDatingC
+name: Charmster
 packages:
   Supabase:
     url: 'https://github.com/supabase/supabase-swift'
@@ -7,12 +7,12 @@ packages:
     url: 'https://github.com/superwall/Superwall-iOS'
     from: '4.0.0'
 targets:
-  BuildAMobileAppCalledCharmsterAIDatingC:
+  Charmster:
     type: application
     platform: iOS
     deploymentTarget: "26.0"
     sources:
-      - path: BuildAMobileAppCalledCharmsterAIDatingC
+      - path: Charmster
     dependencies:
           - package: Supabase
             product: Supabase
@@ -20,11 +20,11 @@ targets:
             product: SuperwallKit
     settings:
       base:
-        PRODUCT_NAME: BuildAMobileAppCalledCharmsterAIDatingC
-        PRODUCT_BUNDLE_IDENTIFIER: app.10x.build-a-mobile-app-called-charmster-ai-dating-c
+        PRODUCT_NAME: Charmster
+        PRODUCT_BUNDLE_IDENTIFIER: app.10x.charmster
         GENERATE_INFOPLIST_FILE: YES
-        INFOPLIST_KEY_CFBundleDisplayName: 'Build a mobile app called **Charmster AI: Dating C'
-        INFOPLIST_KEY_CFBundleName: 'Build a mobile app called **Charmster AI: Dating C'
+        INFOPLIST_KEY_CFBundleDisplayName: 'Charmster'
+        INFOPLIST_KEY_CFBundleName: 'Charmster'
         INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
         INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: YES

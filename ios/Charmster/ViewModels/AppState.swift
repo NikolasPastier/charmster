@@ -110,6 +110,7 @@ final class AppState {
     // MARK: - Lifecycle
 
     func bootstrap() async {
+        migrateLegacyProgressKeysIfNeeded()
         // Seed locked/current state — first lecture of track 0 is current.
         if progress.isEmpty {
             if let first = Curriculum.lectures.first {
@@ -117,6 +118,23 @@ final class AppState {
             }
         }
         rollDailyResetIfNeeded()
+    }
+
+    /// One-time migration from the old "t{N}_l{N}" placeholder IDs to the
+    /// canonical "<track>.<number>" scheme. Safe to call on every launch.
+    private func migrateLegacyProgressKeysIfNeeded() {
+        guard progress.keys.contains(where: { $0.hasPrefix("t") && $0.contains("_l") }) else { return }
+        var migrated: [String: LectureProgress] = [:]
+        for (key, value) in progress {
+            if let newId = Curriculum.migrateLegacyLectureId(key) {
+                // If both old + new exist, keep the more-progressed record.
+                if let existing = migrated[newId], existing.isMastered { continue }
+                migrated[newId] = value
+            } else {
+                migrated[key] = value
+            }
+        }
+        progress = migrated
     }
 
     // MARK: - Derived
