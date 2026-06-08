@@ -1,13 +1,12 @@
 import SwiftUI
 
 /// Charmster brand assets loaded from the Supabase `App logo` bucket.
-/// Both PNGs are transparent — render them without surface fills or clipping.
 struct BrandLogo: View {
     enum Size {
-        case mark(CGFloat)          // square glyph only
-        case hero(CGFloat)          // glyph + glow aura
-        case lockup(CGFloat)        // glyph stacked above "Charmster" wordmark
-        case heroLockup(CGFloat)    // glow aura + glyph + wordmark below
+        case mark(CGFloat)
+        case hero(CGFloat)
+        case lockup(CGFloat)
+        case heroLockup(CGFloat)
     }
 
     let size: Size
@@ -21,10 +20,8 @@ struct BrandLogo: View {
 
     var body: some View {
         switch size {
-        case .mark(let dim):
-            glyph(dim: dim)
-        case .hero(let dim):
-            heroGlyph(dim: dim)
+        case .mark(let dim):       glyph(dim: dim)
+        case .hero(let dim):       heroGlyph(dim: dim)
         case .lockup(let dim):
             VStack(spacing: dim * 0.12) {
                 glyph(dim: dim)
@@ -37,8 +34,6 @@ struct BrandLogo: View {
             }
         }
     }
-
-    // MARK: - Pieces
 
     private func heroGlyph(dim: CGFloat) -> some View {
         ZStack {
@@ -68,40 +63,23 @@ struct BrandLogo: View {
     private func remoteImage(url: URL?, fallback: AnyView) -> some View {
         AsyncImage(url: url, transaction: Transaction(animation: .smooth)) { phase in
             switch phase {
-            case .success(let image):
-                image.resizable().scaledToFit()
-            case .failure:
-                fallback
-            case .empty:
-                ProgressView().tint(Theme.textMuted)
-            @unknown default:
-                fallback
+            case .success(let image): image.resizable().scaledToFit()
+            case .failure: fallback
+            case .empty:   ProgressView().tint(Theme.textMuted)
+            @unknown default: fallback
             }
         }
     }
 
     private var fallbackGlyph: some View {
         Image(systemName: "heart.fill")
-            .resizable()
-            .scaledToFit()
+            .resizable().scaledToFit()
             .foregroundStyle(Theme.aura)
     }
 
     private var fallbackWordmark: some View {
         Text("Charmster")
             .font(.system(size: 32, weight: .heavy, design: .rounded))
-            .foregroundStyle(Theme.textPrimary)
+            .foregroundStyle(Theme.text)
     }
-}
-
-#Preview {
-    ZStack {
-        Theme.background.ignoresSafeArea()
-        VStack(spacing: 36) {
-            BrandLogo(size: .heroLockup(150))
-            BrandLogo(size: .lockup(72))
-            BrandLogo(size: .mark(48))
-        }
-    }
-    .preferredColorScheme(.dark)
 }
