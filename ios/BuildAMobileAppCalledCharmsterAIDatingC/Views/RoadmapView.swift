@@ -6,40 +6,43 @@ struct RoadmapView: View {
     @State private var presentedLecture: Lecture?
 
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(spacing: 28) {
-                    headerCard
-                    ForEach(Curriculum.tracks) { track in
-                        trackSection(track: track)
+        Group {
+            NavigationStack {
+                ScrollView {
+                    VStack(spacing: 28) {
+                        headerCard
+                        ForEach(Curriculum.tracks) { track in
+                            trackSection(track: track)
+                        }
+                    }
+                    .padding(.horizontal, 18)
+                    .padding(.vertical, 18)
+                }
+                .background(Theme.bg.ignoresSafeArea())
+                .navigationTitle("Your path")
+                .toolbar {
+                    ToolbarItem(placement: .topBarLeading) {
+                        HStack(spacing: 6) {
+                            Image(systemName: "flame.fill").foregroundStyle(Theme.coral)
+                            Text("\(app.streakDays)").font(.system(size: 14, weight: .heavy))
+                        }
+                    }
+                    ToolbarItem(placement: .topBarTrailing) {
+                        HStack(spacing: 6) {
+                            Image(systemName: "bolt.fill").foregroundStyle(Theme.accent)
+                            Text("\(app.xp)").font(.system(size: 14, weight: .heavy))
+                        }
                     }
                 }
-                .padding(.horizontal, 18)
-                .padding(.vertical, 18)
             }
-            .background(Theme.bg.ignoresSafeArea())
-            .navigationTitle("Your path")
-            .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    HStack(spacing: 6) {
-                        Image(systemName: "flame.fill").foregroundStyle(Theme.coral)
-                        Text("\(app.streakDays)").font(.system(size: 14, weight: .heavy))
-                    }
-                }
-                ToolbarItem(placement: .topBarTrailing) {
-                    HStack(spacing: 6) {
-                        Image(systemName: "bolt.fill").foregroundStyle(Theme.accent)
-                        Text("\(app.xp)").font(.system(size: 14, weight: .heavy))
-                    }
-                }
+            .sheet(item: $presentedLecture) { lec in
+                LectureDetailSheet(lecture: lec)
+                    .environment(app)
+                    .presentationDetents([.large])
+                    .presentationDragIndicator(.visible)
             }
         }
-        .sheet(item: $presentedLecture) { lec in
-            LectureDetailSheet(lecture: lec)
-                .environment(app)
-                .presentationDetents([.large])
-                .presentationDragIndicator(.visible)
-        }
+        .trackView("RoadmapView")
     }
 
     private var headerCard: some View {
