@@ -1,0 +1,2 @@
+[functions.peek_lecture]
+verify_jwt = false
