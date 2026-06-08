@@ -31,30 +31,33 @@ struct LivePracticeView: View {
     private var remaining: Int { max(0, practiceLimitSeconds - elapsed) }
 
     var body: some View {
-        ZStack {
-            backdrop
-            VStack {
-                topBar
-                Spacer()
-                avatarBlock
-                Spacer()
-                if showCaptions, !pipeline.captionsBuffer.isEmpty {
-                    Text(pipeline.captionsBuffer)
-                        .font(.system(size: 14, weight: .semibold))
-                        .foregroundStyle(Theme.text)
-                        .padding(.horizontal, 16).padding(.vertical, 10)
-                        .background(Capsule().fill(.ultraThinMaterial))
-                        .padding(.horizontal, 22)
+        Group {
+            ZStack {
+                backdrop
+                VStack {
+                    topBar
+                    Spacer()
+                    avatarBlock
+                    Spacer()
+                    if showCaptions, !pipeline.captionsBuffer.isEmpty {
+                        Text(pipeline.captionsBuffer)
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundStyle(Theme.text)
+                            .padding(.horizontal, 16).padding(.vertical, 10)
+                            .background(Capsule().fill(.ultraThinMaterial))
+                            .padding(.horizontal, 22)
+                    }
+                    bottomBar
                 }
-                bottomBar
+                if winddown { winddownOverlay }
             }
-            if winddown { winddownOverlay }
+            .ignoresSafeArea(edges: .top)
+            .background(Theme.bg)
+            .task { await pipeline.start(prefersCamera: config.mode == .videoVoice) }
+            .onReceive(timer) { _ in tickFrame() }
+            .onDisappear { pipeline.stop() }
         }
-        .ignoresSafeArea(edges: .top)
-        .background(Theme.bg)
-        .task { await pipeline.start(prefersCamera: config.mode == .videoVoice) }
-        .onReceive(timer) { _ in tickFrame() }
-        .onDisappear { pipeline.stop() }
+        .trackView("LivePracticeView")
     }
 
     // MARK: - Backdrop

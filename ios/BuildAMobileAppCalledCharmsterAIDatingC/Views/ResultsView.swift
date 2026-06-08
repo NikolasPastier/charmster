@@ -9,17 +9,20 @@ struct ResultsView: View {
     let onDone: () -> Void
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 16) {
-                heroScore
-                rewardsCard
-                breakdownCard
-                coachDebriefCard
-                actions
+        Group {
+            ScrollView {
+                VStack(spacing: 16) {
+                    heroScore
+                    rewardsCard
+                    breakdownCard
+                    coachDebriefCard
+                    actions
+                }
+                .padding(18)
             }
-            .padding(18)
+            .background(Theme.bg.ignoresSafeArea())
         }
-        .background(Theme.bg.ignoresSafeArea())
+        .trackView("ResultsView")
     }
 
     private var heroScore: some View {

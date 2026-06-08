@@ -18,28 +18,31 @@ struct PracticeHubView: View {
     private let focusOptions = ["Opening", "Flow", "Calibration", "Frame", "Closing"]
 
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(spacing: 14) {
-                    intro
-                    settingCard
-                    personaCard
-                    premiseCard
-                    optionsCard
-                    sandboxModeCard
-                    startCard
+        Group {
+            NavigationStack {
+                ScrollView {
+                    VStack(spacing: 14) {
+                        intro
+                        settingCard
+                        personaCard
+                        premiseCard
+                        optionsCard
+                        sandboxModeCard
+                        startCard
+                    }
+                    .padding(18)
                 }
-                .padding(18)
+                .background(Theme.bg.ignoresSafeArea())
+                .navigationTitle("Sandbox")
             }
-            .background(Theme.bg.ignoresSafeArea())
-            .navigationTitle("Sandbox")
-        }
-        .fullScreenCover(item: $presentedConfig) { cfg in
-            SandboxRunner(config: cfg) { _ in
-                presentedConfig = nil
+            .fullScreenCover(item: $presentedConfig) { cfg in
+                SandboxRunner(config: cfg) { _ in
+                    presentedConfig = nil
+                }
+                .environment(app)
             }
-            .environment(app)
         }
+        .trackView("PracticeHubView")
     }
 
     private var intro: some View {

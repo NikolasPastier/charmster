@@ -23,38 +23,41 @@ struct PracticeConfiguratorView: View {
     }
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 16) {
-                header
-                personaPicker
-                settingPicker
-                tierPicker
-                coachPicker
-                modePicker
-
-                if cfg.isSandbox {
-                    sandboxModePicker
+        Group {
+            ScrollView {
+                VStack(spacing: 16) {
+                    header
+                    personaPicker
+                    settingPicker
+                    tierPicker
+                    coachPicker
+                    modePicker
+            
+                    if cfg.isSandbox {
+                        sandboxModePicker
+                    }
+            
+                    AuraButton(title: "Start practice", systemImage: "play.fill") {
+                        onStart(cfg)
+                    }
+            
+                    GlassButton(title: "Use recommended defaults", systemImage: "wand.and.stars") {
+                        cfg = SessionConfig.recommended(from: app, lecture: lecture)
+                        cfg.isSandbox = lecture == nil
+                    }
+                    GlassButton(title: "Cancel", systemImage: "xmark", action: onCancel)
                 }
-
-                AuraButton(title: "Start practice", systemImage: "play.fill") {
-                    onStart(cfg)
-                }
-
-                GlassButton(title: "Use recommended defaults", systemImage: "wand.and.stars") {
+                .padding(18)
+            }
+            .background(Theme.bg.ignoresSafeArea())
+            .onAppear {
+                if cfg.persona == .default && cfg.setting == .default {
                     cfg = SessionConfig.recommended(from: app, lecture: lecture)
                     cfg.isSandbox = lecture == nil
                 }
-                GlassButton(title: "Cancel", systemImage: "xmark", action: onCancel)
-            }
-            .padding(18)
-        }
-        .background(Theme.bg.ignoresSafeArea())
-        .onAppear {
-            if cfg.persona == .default && cfg.setting == .default {
-                cfg = SessionConfig.recommended(from: app, lecture: lecture)
-                cfg.isSandbox = lecture == nil
             }
         }
+        .trackView("PracticeConfiguratorView")
     }
 
     private var header: some View {

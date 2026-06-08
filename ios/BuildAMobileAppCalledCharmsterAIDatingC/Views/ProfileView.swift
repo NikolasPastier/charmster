@@ -5,23 +5,26 @@ struct ProfileView: View {
     @State private var goToSettings: Bool = false
 
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(spacing: 14) {
-                    headerCard
-                    statsRow
-                    upgradeCard
-                    pillsRow
-                    recentResultsCard
+        Group {
+            NavigationStack {
+                ScrollView {
+                    VStack(spacing: 14) {
+                        headerCard
+                        statsRow
+                        upgradeCard
+                        pillsRow
+                        recentResultsCard
+                    }
+                    .padding(18)
                 }
-                .padding(18)
-            }
-            .background(Theme.bg.ignoresSafeArea())
-            .navigationTitle("Profile")
-            .navigationDestination(isPresented: $goToSettings) {
-                SettingsView()
+                .background(Theme.bg.ignoresSafeArea())
+                .navigationTitle("Profile")
+                .navigationDestination(isPresented: $goToSettings) {
+                    SettingsView()
+                }
             }
         }
+        .trackView("ProfileView")
     }
 
     private var headerCard: some View {

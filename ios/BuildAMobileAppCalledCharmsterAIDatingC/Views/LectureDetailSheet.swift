@@ -15,26 +15,29 @@ struct LectureDetailSheet: View {
     )
 
     var body: some View {
-        NavigationStack {
-            ZStack {
-                Theme.bg.ignoresSafeArea()
-                switch route {
-                case .lecture:        lectureScreen
-                case .configurator:   configuratorScreen
-                case .practice(let cfg): practiceScreen(cfg: cfg)
-                case .results(let r): resultsScreen(result: r)
-                case .quiz:           quizScreen
+        Group {
+            NavigationStack {
+                ZStack {
+                    Theme.bg.ignoresSafeArea()
+                    switch route {
+                    case .lecture:        lectureScreen
+                    case .configurator:   configuratorScreen
+                    case .practice(let cfg): practiceScreen(cfg: cfg)
+                    case .results(let r): resultsScreen(result: r)
+                    case .quiz:           quizScreen
+                    }
+                }
+                .toolbar {
+                    ToolbarItem(placement: .topBarLeading) {
+                        Button { dismiss() } label: { Image(systemName: "xmark").font(.system(size: 14, weight: .bold)) }
+                            .tint(Theme.textMuted)
+                    }
                 }
             }
-            .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button { dismiss() } label: { Image(systemName: "xmark").font(.system(size: 14, weight: .bold)) }
-                        .tint(Theme.textMuted)
-                }
-            }
+            .onAppear { loadContent() }
+            .onDisappear { narrator.stop() }
         }
-        .onAppear { loadContent() }
-        .onDisappear { narrator.stop() }
+        .trackView("LectureDetailSheet")
     }
 
     private func loadContent() {

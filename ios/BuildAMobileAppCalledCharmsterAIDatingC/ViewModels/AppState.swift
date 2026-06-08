@@ -249,8 +249,8 @@ final class AppState {
     var dueReviews: [Lecture] {
         let now = Date()
         return Curriculum.lectures.filter {
-            guard let due = progress[$0.id]?.dueAt else { return false }
-            return due <= now && progress[$0.id]?.mastery != MasteryTier.none
+            guard let p = progress[$0.id], let due = p.dueAt else { return false }
+            return due <= now && p.mastery != .none
         }
     }
 

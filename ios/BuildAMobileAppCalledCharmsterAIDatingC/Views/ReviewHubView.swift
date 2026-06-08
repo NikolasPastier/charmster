@@ -6,27 +6,30 @@ struct ReviewHubView: View {
     @State private var presentedLecture: Lecture?
 
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(spacing: 14) {
-                    intro
-                    if app.dueReviews.isEmpty {
-                        emptyState
-                    } else {
-                        ForEach(app.dueReviews) { lec in
-                            row(for: lec)
+        Group {
+            NavigationStack {
+                ScrollView {
+                    VStack(spacing: 14) {
+                        intro
+                        if app.dueReviews.isEmpty {
+                            emptyState
+                        } else {
+                            ForEach(app.dueReviews) { lec in
+                                row(for: lec)
+                            }
                         }
+                        masterySummary
                     }
-                    masterySummary
+                    .padding(18)
                 }
-                .padding(18)
+                .background(Theme.bg.ignoresSafeArea())
+                .navigationTitle("Review")
             }
-            .background(Theme.bg.ignoresSafeArea())
-            .navigationTitle("Review")
+            .sheet(item: $presentedLecture) { lec in
+                LectureDetailSheet(lecture: lec).environment(app)
+            }
         }
-        .sheet(item: $presentedLecture) { lec in
-            LectureDetailSheet(lecture: lec).environment(app)
-        }
+        .trackView("ReviewHubView")
     }
 
     private var intro: some View {

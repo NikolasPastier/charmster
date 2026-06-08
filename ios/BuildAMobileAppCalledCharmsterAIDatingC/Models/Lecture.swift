@@ -45,7 +45,7 @@ struct LectureProgress: Codable, Hashable {
     var srsRepetitions: Int = 0
     var dueAt: Date?
 
-    var isMastered: Bool { mastery != .none && mastery != .none && quizCorrect >= 2 && practiced }
+    var isMastered: Bool { mastery != .none && quizCorrect >= 2 && practiced }
 }
 
 // MARK: - Session result
