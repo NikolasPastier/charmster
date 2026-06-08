@@ -16,7 +16,14 @@ struct GlassCard<Content: View>: View {
             )
             .overlay(
                 RoundedRectangle(cornerRadius: radius, style: .continuous)
-                    .stroke(Theme.border, lineWidth: 1)
+                    .stroke(
+                        LinearGradient(
+                            colors: [Theme.border, Theme.pink.opacity(0.18), Theme.border],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        ),
+                        lineWidth: 1
+                    )
             )
     }
 }
@@ -129,7 +136,15 @@ struct AuraButton: View {
                     .fill(gradient)
                     .opacity(enabled ? 1 : 0.4)
             )
-            .shadow(color: (tone == .accent ? Theme.accent : Theme.gold).opacity(enabled ? 0.4 : 0), radius: 14, y: 6)
+            .overlay(
+                RoundedRectangle(cornerRadius: 18, style: .continuous)
+                    .stroke(Color.white.opacity(0.18), lineWidth: 1)
+                    .blendMode(.overlay)
+            )
+            .shadow(color: (tone == .accent ? Theme.pink : (tone == .coral ? Theme.red : Theme.gold))
+                        .opacity(enabled ? 0.45 : 0), radius: 18, y: 8)
+            .shadow(color: (tone == .accent ? Theme.purple : (tone == .coral ? Theme.red : Theme.orange))
+                        .opacity(enabled ? 0.25 : 0), radius: 32, y: 0)
         }
         .buttonStyle(.plain)
         .disabled(!enabled)
@@ -210,6 +225,8 @@ struct ScoreBar: View {
     let value: Int          // 0..100
     var tone: Color = Theme.accent
 
+    private var bandColor: Color { Theme.scoreColor(for: value) }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             HStack {
@@ -225,8 +242,17 @@ struct ScoreBar: View {
                 ZStack(alignment: .leading) {
                     Capsule().fill(Theme.border)
                     Capsule()
-                        .fill(tone)
+                        .fill(
+                            LinearGradient(
+                                colors: value >= 75
+                                    ? [Theme.pink, Theme.orange, Theme.gold]
+                                    : [bandColor.opacity(0.7), bandColor],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
                         .frame(width: geo.size.width * CGFloat(min(max(value, 0), 100)) / 100.0)
+                        .shadow(color: bandColor.opacity(value >= 60 ? 0.45 : 0.15), radius: 8, y: 0)
                 }
             }
             .frame(height: 8)

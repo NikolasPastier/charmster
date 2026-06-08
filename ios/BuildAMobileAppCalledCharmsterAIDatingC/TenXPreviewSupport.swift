@@ -9,6 +9,12 @@ enum TenXPreviewSupport {
         return docs.appendingPathComponent("tenx-view-log.json")
     }()
 
+    /// The file used by preview diagnostics to expose readable runtime breadcrumbs.
+    private static let runtimeLogURL: URL = {
+        let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+        return docs.appendingPathComponent("tenx-runtime.log")
+    }()
+
     /// Records the visible screen for TenX preview capture.
     static func track(_ viewName: String) {
         let entry: [String: Any] = [
@@ -18,6 +24,27 @@ enum TenXPreviewSupport {
 
         if let data = try? JSONSerialization.data(withJSONObject: entry) {
             try? data.write(to: viewLogURL, options: .atomic)
+        }
+        log("view=\(viewName)")
+    }
+
+    /// Records readable runtime diagnostics for live_preview_logs.
+    static func log(_ message: String) {
+        let normalizedMessage = message
+            .replacingOccurrences(of: "\n", with: " ")
+            .replacingOccurrences(of: "\r", with: " ")
+        let timestamp = ISO8601DateFormatter().string(from: Date())
+        let line = "\(timestamp) \(normalizedMessage)"
+        print("[10x-runtime] \(line)")
+
+        guard let data = "\(line)\n".data(using: .utf8) else { return }
+        if FileManager.default.fileExists(atPath: runtimeLogURL.path),
+           let handle = try? FileHandle(forWritingTo: runtimeLogURL) {
+            _ = handle.seekToEndOfFile()
+            handle.write(data)
+            handle.closeFile()
+        } else {
+            try? data.write(to: runtimeLogURL, options: .atomic)
         }
     }
 }

@@ -7,4 +7,5 @@
 - [x] Build Profile & Progress tab: stats, coach mode toggle, badge grid, weekly activity chart
 - [x] Build Voice Simulation Room: animated orb, live transcript, mic controls, post-session scorecard
 - [x] Build Settings screen + push notification scheduling for streak reminder
+- [x] Restore original warm noir-tech visual theme (love-spectrum aura gradient, warm glows, score bands)
 - [ ] Wire Supabase auth (email + Apple), profiles/quests/progress/sessions tables, and OpenAI proxy Edge Function
