@@ -131,18 +131,12 @@ struct OnboardingFlowView: View {
     private var welcomeStep: some View {
         VStack(spacing: 22) {
             Spacer(minLength: 24)
-            ZStack {
-                Circle().fill(Theme.aura).frame(width: 140, height: 140)
-                    .shadow(color: Theme.auraGlow, radius: 40)
-                Image(systemName: "heart.fill")
-                    .font(.system(size: 64, weight: .bold))
-                    .foregroundStyle(.white)
-                Image(systemName: "sparkle")
-                    .font(.system(size: 26, weight: .bold))
-                    .foregroundStyle(Theme.gold)
-                    .offset(x: 38, y: -42)
-            }
+            BrandLogo(size: .hero(140))
             VStack(spacing: 10) {
+                Text("Charmster")
+                    .font(.system(size: 14, weight: .heavy, design: .rounded))
+                    .tracking(3)
+                    .foregroundStyle(Theme.textMuted)
                 Text("Practice love.\nBuild real confidence.")
                     .font(.system(size: 32, weight: .heavy, design: .rounded))
                     .multilineTextAlignment(.center)
