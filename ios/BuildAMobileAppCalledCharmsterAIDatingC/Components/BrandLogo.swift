@@ -1,43 +1,72 @@
 import SwiftUI
 
-/// Charmster brand logo loaded from the Supabase `App logo` bucket.
-/// The asset has a transparent background, so we render it without surface fills
-/// or rounded clipping — the glyph itself carries the shape.
+/// Charmster brand assets loaded from the Supabase `App logo` bucket.
+/// Both PNGs are transparent — render them without surface fills or clipping.
 struct BrandLogo: View {
     enum Size {
-        case mark(CGFloat)     // square logo mark
-        case hero(CGFloat)     // hero with glow ring
+        case mark(CGFloat)          // square glyph only
+        case hero(CGFloat)          // glyph + glow aura
+        case lockup(CGFloat)        // glyph stacked above "Charmster" wordmark
+        case heroLockup(CGFloat)    // glow aura + glyph + wordmark below
     }
 
     let size: Size
 
-    static let url = URL(string:
-        "https://uvjtrhvhldeeslgnvhyd.supabase.co/storage/v1/object/public/App%20logo/Untitled%20design.png"
+    static let markURL = URL(string:
+        "https://uvjtrhvhldeeslgnvhyd.supabase.co/storage/v1/object/public/App%20logo/Untitled%20design-3.png"
+    )
+    static let wordmarkURL = URL(string:
+        "https://uvjtrhvhldeeslgnvhyd.supabase.co/storage/v1/object/public/App%20logo/Untitled%20design-4.png"
     )
 
     var body: some View {
         switch size {
         case .mark(let dim):
-            logoImage
-                .frame(width: dim, height: dim)
+            glyph(dim: dim)
         case .hero(let dim):
-            ZStack {
-                Circle()
-                    .fill(Theme.aura)
-                    .frame(width: dim + 28, height: dim + 28)
-                    .shadow(color: Theme.auraGlow, radius: 40)
-                    .opacity(0.45)
-                    .blur(radius: 18)
-                logoImage
-                    .frame(width: dim, height: dim)
-                    .shadow(color: Theme.auraGlow.opacity(0.6), radius: 20)
+            heroGlyph(dim: dim)
+        case .lockup(let dim):
+            VStack(spacing: dim * 0.12) {
+                glyph(dim: dim)
+                wordmark(width: dim * 1.55)
+            }
+        case .heroLockup(let dim):
+            VStack(spacing: dim * 0.14) {
+                heroGlyph(dim: dim)
+                wordmark(width: dim * 1.7)
             }
         }
     }
 
+    // MARK: - Pieces
+
+    private func heroGlyph(dim: CGFloat) -> some View {
+        ZStack {
+            Circle()
+                .fill(Theme.aura)
+                .frame(width: dim + 36, height: dim + 36)
+                .shadow(color: Theme.auraGlow, radius: 44)
+                .opacity(0.45)
+                .blur(radius: 22)
+            glyph(dim: dim)
+                .shadow(color: Theme.auraGlow.opacity(0.6), radius: 22)
+        }
+    }
+
+    private func glyph(dim: CGFloat) -> some View {
+        remoteImage(url: Self.markURL, fallback: AnyView(fallbackGlyph))
+            .frame(width: dim, height: dim)
+    }
+
+    private func wordmark(width: CGFloat) -> some View {
+        remoteImage(url: Self.wordmarkURL, fallback: AnyView(fallbackWordmark))
+            .frame(width: width)
+            .frame(maxHeight: width * 0.32)
+    }
+
     @ViewBuilder
-    private var logoImage: some View {
-        AsyncImage(url: Self.url, transaction: Transaction(animation: .smooth)) { phase in
+    private func remoteImage(url: URL?, fallback: AnyView) -> some View {
+        AsyncImage(url: url, transaction: Transaction(animation: .smooth)) { phase in
             switch phase {
             case .success(let image):
                 image.resizable().scaledToFit()
@@ -51,19 +80,26 @@ struct BrandLogo: View {
         }
     }
 
-    private var fallback: some View {
+    private var fallbackGlyph: some View {
         Image(systemName: "heart.fill")
             .resizable()
             .scaledToFit()
             .foregroundStyle(Theme.aura)
+    }
+
+    private var fallbackWordmark: some View {
+        Text("Charmster")
+            .font(.system(size: 32, weight: .heavy, design: .rounded))
+            .foregroundStyle(Theme.textPrimary)
     }
 }
 
 #Preview {
     ZStack {
         Theme.background.ignoresSafeArea()
-        VStack(spacing: 30) {
-            BrandLogo(size: .hero(140))
+        VStack(spacing: 36) {
+            BrandLogo(size: .heroLockup(150))
+            BrandLogo(size: .lockup(72))
             BrandLogo(size: .mark(48))
         }
     }
