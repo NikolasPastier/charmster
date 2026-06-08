@@ -15,4 +15,7 @@
 - [x] Wire `LectureContentStore` / `CurriculumService` to overlay Supabase curriculum on launch with bundled fallback
 - [x] Render all 17 tracks (0 + 1–16) in `RoadmapView` with capstone nodes and access-tier lock treatment bound to Superwall
 - [x] Remove XP system project-wide; Aura is now the sole progression metric (model, scorer, AppState, Roadmap/Profile/Results/Practice UI)
-- [ ] Wire Supabase auth (email + Apple), profiles/quests/progress/sessions tables, and OpenAI proxy Edge Function
+- [x] Real live video+voice review pipeline: AVCaptureSession (mic + front cam) + OpenAI Realtime voice loop (ephemeral token via `realtime_session` edge function) + 2.5s sampled-frame `vision_review` edge function; real signals feed SessionScorer with SplitMix64 mock retained strictly as offline fallback; daily practice cap enforced before any AV session opens
+- [x] Replace illustrated AsyncImage avatar with photoreal video-clip AvatarView (AVPlayerLayer state machine, crossfade, looping base + one-shot mood-tag reactions, bundled still + Aura-gradient fallback, reduced-motion still), plus reactive AuraGlowLayer (pink→gold radial bound to live atmosphere, subtle pulse on partner speech)
+- [ ] Deploy `realtime_session` + `vision_review` edge functions and populate `avatar-clips` Supabase Storage bucket with per-persona/state .mp4 clips
+- [ ] Wire Supabase auth (email + Apple), profiles/quests/progress/sessions tables

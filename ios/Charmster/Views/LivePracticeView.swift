@@ -1,7 +1,10 @@
 import SwiftUI
 
-/// Neutral conversation screen. Camera + mic stay ON (powers the review), but
-/// the UI does NOT look like a phone call. No big red hang-up, no recording dot.
+/// Live practice screen — neutral conversation feel, no phone-call chrome.
+/// Camera + mic stay ON to power the review. Behind the UI: an AuraGlowLayer
+/// bound to the live atmosphere score, and a photoreal video-clip AvatarView
+/// driven by who is speaking + the per-turn mood tag streamed from the
+/// Realtime model.
 struct LivePracticeView: View {
     @Environment(AppState.self) private var app
     let lecture: Lecture?
@@ -11,61 +14,93 @@ struct LivePracticeView: View {
 
     @State private var pipeline = LiveSessionPipeline()
     @State private var elapsed: Int = 0
-    @State private var expression: PersonaExpression = .neutral
     @State private var showSelfView: Bool = true
     @State private var showCaptions: Bool = true
     @State private var winddown: Bool = false
     @State private var ended: Bool = false
+    @State private var dailyCapHit: Bool = false
+    @State private var pendingReaction: AvatarState?
+    @State private var lastReactionTag: AvatarState?
     private let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+
+    private var avatarPersona: AvatarPersona { AvatarPersona.resolve(from: config.persona.id) }
 
     private var practiceLimitSeconds: Int {
         let base: Int
         if let lec = lecture {
             base = lec.isCapstone ? max(480, lec.minutes * 60) : lec.minutes * 60
         } else {
-            base = 7 * 60  // sandbox: ~7 min
+            base = 7 * 60
         }
         return min(max(base, 150), lecture?.isCapstone == true ? 600 : 600)
     }
 
     private var remaining: Int { max(0, practiceLimitSeconds - elapsed) }
 
+    // MARK: - Avatar driving inputs
+
+    private var avatarBaseState: AvatarState {
+        if pipeline.partnerSpeaking { return .talking }
+        if pipeline.userSpeaking    { return .listening }
+        if let tag = pipeline.lastMoodTag, tag.isLooping { return tag }
+        return .idle
+    }
+
     var body: some View {
         Group {
             ZStack {
-                backdrop
-                VStack {
-                    topBar
-                    Spacer()
-                    avatarBlock
-                    Spacer()
-                    if showCaptions, !pipeline.captionsBuffer.isEmpty {
-                        Text(pipeline.captionsBuffer)
-                            .font(.system(size: 14, weight: .semibold))
-                            .foregroundStyle(Theme.text)
-                            .padding(.horizontal, 16).padding(.vertical, 10)
-                            .background(Capsule().fill(.ultraThinMaterial))
-                            .padding(.horizontal, 22)
-                    }
-                    bottomBar
-                }
-                if winddown { winddownOverlay }
+                AuraGlowLayer(intensity: pipeline.liveFeel,
+                              partnerSpeaking: pipeline.partnerSpeaking)
+                AvatarView(
+                    persona: avatarPersona,
+                    baseState: avatarBaseState,
+                    reaction: pendingReaction,
+                    onReactionFinished: { pendingReaction = nil }
+                )
+                .ignoresSafeArea()
+
+                // Soft top/bottom vignette so overlay UI stays legible.
+                LinearGradient(colors: [.black.opacity(0.45), .clear,
+                                        .clear, .black.opacity(0.55)],
+                               startPoint: .top, endPoint: .bottom)
+                    .ignoresSafeArea()
+                    .allowsHitTesting(false)
+
+                if dailyCapHit { dailyCapOverlay } else { mainOverlay }
+                if winddown && !dailyCapHit { winddownOverlay }
             }
             .ignoresSafeArea(edges: .top)
-            .background(Theme.bg)
-            .task { await pipeline.start(prefersCamera: config.mode == .videoVoice) }
+            .task { await openSession() }
             .onReceive(timer) { _ in tickFrame() }
+            .onChange(of: pipeline.lastMoodTag) { _, tag in
+                guard let tag, !tag.isLooping, tag != lastReactionTag else { return }
+                lastReactionTag = tag
+                pendingReaction = tag
+            }
             .onDisappear { pipeline.stop() }
         }
         .trackView("LivePracticeView")
     }
 
-    // MARK: - Backdrop
+    // MARK: - Main overlay
 
-    private var backdrop: some View {
-        LinearGradient(colors: config.persona.palette.fillColors,
-                       startPoint: .top, endPoint: .bottom)
-            .ignoresSafeArea()
+    private var mainOverlay: some View {
+        VStack {
+            topBar
+            Spacer()
+            if showCaptions, !pipeline.captionsBuffer.isEmpty {
+                Text(pipeline.captionsBuffer)
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundStyle(Theme.text)
+                    .lineLimit(3)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 16).padding(.vertical, 10)
+                    .background(RoundedRectangle(cornerRadius: 16, style: .continuous)
+                        .fill(.ultraThinMaterial))
+                    .padding(.horizontal, 22)
+            }
+            bottomBar
+        }
     }
 
     // MARK: - Top bar (minimal)
@@ -90,7 +125,9 @@ struct LivePracticeView: View {
             Button {
                 showSelfView.toggle()
             } label: {
-                Image(systemName: showSelfView ? "rectangle.inset.filled.and.person.filled" : "person.crop.rectangle")
+                Image(systemName: showSelfView
+                      ? "rectangle.inset.filled.and.person.filled"
+                      : "person.crop.rectangle")
                     .font(.system(size: 14, weight: .heavy))
                     .foregroundStyle(Theme.text)
                     .frame(width: 36, height: 36)
@@ -100,35 +137,11 @@ struct LivePracticeView: View {
         }
         .padding(.horizontal, 18)
         .padding(.top, 14)
-    }
-
-    // MARK: - Avatar
-
-    private var avatarBlock: some View {
-        ZStack {
-            Circle()
-                .fill(Theme.aura.opacity(0.18))
-                .frame(width: 240, height: 240)
-                .blur(radius: 28)
-            AsyncImage(url: AvatarImageURL.url(for: config.persona, expression: expression)) { phase in
-                switch phase {
-                case .success(let img):
-                    img.resizable().scaledToFill()
-                case .empty: ProgressView().tint(Theme.textMuted)
-                default:
-                    Image(systemName: "person.crop.circle.fill")
-                        .resizable().foregroundStyle(Theme.textFaint)
-                }
-            }
-            .frame(width: 220, height: 220)
-            .clipShape(Circle())
-            .overlay(Circle().stroke(Color.white.opacity(0.15), lineWidth: 2))
-            .shadow(color: .black.opacity(0.5), radius: 30, y: 12)
-        }
-        .overlay(alignment: .topTrailing) {
+        .overlay(alignment: .bottomTrailing) {
             if showSelfView {
                 SelfViewPlaceholder(active: pipeline.cameraAvailable)
-                    .offset(x: 130, y: -90)
+                    .padding(.trailing, 18)
+                    .offset(y: 12)
             }
         }
     }
@@ -137,16 +150,27 @@ struct LivePracticeView: View {
 
     private var bottomBar: some View {
         VStack(spacing: 10) {
-            // Live "feel" meter — thin and subtle
-            GeometryReader { geo in
-                ZStack(alignment: .leading) {
-                    Capsule().fill(Color.white.opacity(0.10))
-                    Capsule()
-                        .fill(Theme.accent)
-                        .frame(width: geo.size.width * CGFloat(pipeline.liveFeel))
+            // Atmosphere meter.
+            VStack(spacing: 4) {
+                HStack {
+                    Text("Atmosphere")
+                        .font(.system(size: 10, weight: .heavy)).tracking(1.2)
+                        .foregroundStyle(Theme.textMuted).textCase(.uppercase)
+                    Spacer()
+                    Text(atmosphereLabel)
+                        .font(.system(size: 11, weight: .bold))
+                        .foregroundStyle(Theme.text)
                 }
+                GeometryReader { geo in
+                    ZStack(alignment: .leading) {
+                        Capsule().fill(Color.white.opacity(0.10))
+                        Capsule()
+                            .fill(Theme.accentGradient)
+                            .frame(width: geo.size.width * CGFloat(pipeline.liveFeel))
+                    }
+                }
+                .frame(height: 5)
             }
-            .frame(height: 4)
             .padding(.horizontal, 22)
 
             HStack(spacing: 10) {
@@ -165,11 +189,20 @@ struct LivePracticeView: View {
                         .font(.system(size: 14, weight: .heavy))
                         .foregroundStyle(.black)
                         .padding(.horizontal, 16).padding(.vertical, 10)
-                        .background(Capsule().fill(Theme.accent))
+                        .background(Capsule().fill(Theme.gold))
                 }
                 .buttonStyle(.plain)
             }
             .padding(.horizontal, 22).padding(.bottom, 26)
+        }
+    }
+
+    private var atmosphereLabel: String {
+        switch pipeline.liveFeel {
+        case ..<0.35: return "Cool"
+        case ..<0.55: return "Warming"
+        case ..<0.75: return "Warm"
+        default:      return "Hot"
         }
     }
 
@@ -178,7 +211,9 @@ struct LivePracticeView: View {
             Circle()
                 .fill(pipeline.partnerSpeaking ? Theme.coral : Theme.accent)
                 .frame(width: 8, height: 8)
-            Text(pipeline.partnerSpeaking ? "She's speaking" : "Listening")
+            Text(pipeline.partnerSpeaking
+                 ? "\(config.persona.displayName) is speaking"
+                 : (pipeline.userSpeaking ? "You're speaking" : "Listening"))
                 .font(.system(size: 12, weight: .bold))
                 .foregroundStyle(Theme.textMuted)
         }
@@ -186,7 +221,7 @@ struct LivePracticeView: View {
         .background(Capsule().fill(.ultraThinMaterial))
     }
 
-    // MARK: - Winddown overlay
+    // MARK: - Winddown / daily cap
 
     private var winddownOverlay: some View {
         VStack {
@@ -200,25 +235,62 @@ struct LivePracticeView: View {
         }
     }
 
-    // MARK: - Tick / end
+    private var dailyCapOverlay: some View {
+        VStack(spacing: 16) {
+            Spacer()
+            Image(systemName: "bolt.slash.fill")
+                .font(.system(size: 36, weight: .light))
+                .foregroundStyle(Theme.coral)
+            Text("Daily practice cap reached")
+                .font(.system(size: 22, weight: .heavy))
+                .foregroundStyle(Theme.text)
+            Text("You've used \(app.dailyLiveSessionsUsed)/\(app.dailyLiveSessionsCap) live reps today. Reviews still open.")
+                .font(.system(size: 14))
+                .multilineTextAlignment(.center)
+                .foregroundStyle(Theme.textMuted)
+                .padding(.horizontal, 32)
+            Button(action: onClose) {
+                Text("Got it")
+                    .font(.system(size: 15, weight: .heavy))
+                    .foregroundStyle(.black)
+                    .padding(.horizontal, 22).padding(.vertical, 12)
+                    .background(Capsule().fill(Theme.gold))
+            }
+            .buttonStyle(.plain)
+            Spacer()
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color.black.opacity(0.6).ignoresSafeArea())
+    }
+
+    // MARK: - Session lifecycle
+
+    private func openSession() async {
+        // Enforce the daily cap BEFORE opening any AV session.
+        guard app.canStartLivePractice else {
+            dailyCapHit = true
+            return
+        }
+        await AvatarClipCatalog.shared.preload(persona: avatarPersona)
+        await pipeline.start(
+            prefersCamera: config.mode == .videoVoice,
+            persona: config.persona,
+            avatarPersona: avatarPersona,
+            coach: config.coach,
+            lecture: lecture,
+            setting: config.setting,
+            userId: app.userId
+        )
+    }
 
     private func tickFrame() {
-        guard !ended else { return }
+        guard !ended, !dailyCapHit else { return }
         elapsed += 1
-        pipeline.tickMockSignals()
-        withAnimation(.easeInOut(duration: 0.35)) {
-            expression = PersonaExpression.forFeel(
-                pipeline.liveFeel,
-                isSpeaking: pipeline.partnerSpeaking,
-                isListening: !pipeline.partnerSpeaking
-            )
-        }
+        pipeline.tick()
         if remaining <= 30 && !winddown {
             withAnimation { winddown = true }
         }
-        if remaining == 0 {
-            endNow()
-        }
+        if remaining == 0 { endNow() }
     }
 
     private func endNow() {
