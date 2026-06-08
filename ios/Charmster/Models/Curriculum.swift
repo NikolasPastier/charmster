@@ -10,20 +10,49 @@ enum Curriculum {
 
     // MARK: - Public surface (signatures preserved for call sites)
 
-    static var tracks: [Track] { loaded.tracks }
-    static var lectures: [Lecture] { loaded.lectures }
+    static var tracks: [Track] { current.tracks }
+    static var lectures: [Lecture] { current.lectures }
 
     static func lectures(in trackId: Int) -> [Lecture] {
-        loaded.byTrack[trackId, default: []]
+        current.byTrack[trackId, default: []]
     }
 
     static func lecture(id: String) -> Lecture? {
-        loaded.byId[id]
+        current.byId[id]
     }
 
     static func capstone(in trackId: Int) -> Lecture? {
-        loaded.byTrack[trackId, default: []].first { $0.isCapstone }
+        current.byTrack[trackId, default: []].first { $0.isCapstone }
     }
+
+    /// Source the curriculum is currently reading from. Starts as `.bundle`.
+    /// Flips to `.remote` once `CurriculumService` overlays Supabase data.
+    enum Source { case bundle, remote }
+    static private(set) var source: Source = .bundle
+
+    /// Overlay a remotely-loaded curriculum. Called by `CurriculumService` on
+    /// successful Supabase fetch. Bundle remains the fallback on failure.
+    static func overlayRemote(tracks remoteTracks: [Track], lectures remoteLectures: [Lecture]) {
+        var byTrack: [Int: [Lecture]] = [:]
+        var byId: [String: Lecture] = [:]
+        for l in remoteLectures {
+            byTrack[l.trackId, default: []].append(l)
+            byId[l.id] = l
+        }
+        for key in byTrack.keys {
+            byTrack[key]?.sort { $0.number < $1.number }
+        }
+        overlay = LoadedCurriculum(
+            tracks: remoteTracks.sorted { $0.order < $1.order },
+            lectures: remoteLectures,
+            byTrack: byTrack,
+            byId: byId
+        )
+        source = .remote
+    }
+
+    private static var overlay: LoadedCurriculum?
+    private static var current: LoadedCurriculum { overlay ?? loaded }
 
     /// Migration helper: rewrite legacy "t{N}_l{N}" lecture IDs from the old
     /// 4-track placeholder curriculum to the new "<track>.<number>" scheme so

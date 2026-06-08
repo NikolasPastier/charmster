@@ -11,7 +11,7 @@
 - [x] Refresh intro carousel copy across the 3 pre-quiz onboarding slides
 - [x] Swap intro carousel branding to combined Supabase logo image with feathered blend and centered text layout
 - [x] Restore canonical 16-track / 117-lecture curriculum as in-app source of truth via bundled `Resources/curriculum.json` (with access tiers, formats, capstones, stable `<track>.<number>` IDs, legacy progress migration)
-- [ ] Seed Supabase `tracks` + `lectures` (+ capstones) from the canonical manifest and stand up the `curriculum` Storage bucket with per-lecture JSON
-- [ ] Wire `LectureContentStore` to fetch curriculum from Supabase on launch with bundled-JSON fallback and a loud dev-only count assertion
-- [ ] Render all 17 tracks (0 + 1–16) in `RoadmapView` with capstone nodes and access-tier lock treatment bound to Superwall
+- [x] Seed Supabase `tracks` + `lectures` (+ capstones) from the canonical manifest and stand up the `curriculum` Storage bucket with per-lecture JSON
+- [x] Wire `LectureContentStore` to fetch curriculum from Supabase on launch with bundled-JSON fallback and a loud dev-only count assertion
+- [x] Render all 17 tracks (0 + 1–16) in `RoadmapView` with capstone nodes and access-tier lock treatment bound to Superwall
 - [ ] Wire Supabase auth (email + Apple), profiles/quests/progress/sessions tables, and OpenAI proxy Edge Function

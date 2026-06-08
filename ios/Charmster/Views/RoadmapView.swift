@@ -72,13 +72,26 @@ struct RoadmapView: View {
                         if idx.isMultiple(of: 2) { Spacer() }
                         LectureNode(
                             lecture: lec,
-                            state: app.state(of: lec),
+                            state: effectiveState(for: lec),
                             onTap: { presentedLecture = lec }
                         )
                         if !idx.isMultiple(of: 2) { Spacer() }
                     }
                 }
             }
+        }
+    }
+
+    /// Apply access-tier gating on top of progression state. Pro-only lectures
+    /// render as locked when the user isn't on a paid tier; the lecture sheet
+    /// then routes them through Superwall.
+    private func effectiveState(for lecture: Lecture) -> LectureState {
+        let base = app.state(of: lecture)
+        guard !app.isPro, lecture.access == .pro else { return base }
+        switch base {
+        case .mastered, .capstoneMastered: return base
+        case .capstoneLocked, .capstoneAvailable: return .capstoneLocked
+        default: return .locked
         }
     }
 }

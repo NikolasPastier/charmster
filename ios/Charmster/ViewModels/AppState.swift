@@ -111,6 +111,7 @@ final class AppState {
 
     func bootstrap() async {
         migrateLegacyProgressKeysIfNeeded()
+        CurriculumService.shared.refreshIfNeeded()
         // Seed locked/current state — first lecture of track 0 is current.
         if progress.isEmpty {
             if let first = Curriculum.lectures.first {
