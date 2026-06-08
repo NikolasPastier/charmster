@@ -6,14 +6,17 @@ struct OnboardingFlowView: View {
     @State private var step: Int = 0
 
     var body: some View {
-        ZStack {
-            Theme.bg.ignoresSafeArea()
-            switch step {
-            case 0: IntroCarouselView { step = 1 }
-            case 1: CoachQuizView { step = 2 }
-            default: CharmScoreRevealView { finish() }
+        Group {
+            ZStack {
+                Theme.bg.ignoresSafeArea()
+                switch step {
+                case 0: IntroCarouselView { step = 1 }
+                case 1: CoachQuizView { step = 2 }
+                default: CharmScoreRevealView { finish() }
+                }
             }
         }
+        .trackView("OnboardingFlowView")
     }
 
     private func finish() {
