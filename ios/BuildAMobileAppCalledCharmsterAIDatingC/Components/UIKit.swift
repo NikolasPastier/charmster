@@ -121,7 +121,7 @@ struct AuraButton: View {
                 }
                 Text(title).font(.system(size: 16, weight: .heavy))
             }
-            .foregroundStyle(.black)
+            .foregroundStyle(tone == .gold ? .black : .white)
             .frame(maxWidth: .infinity)
             .padding(.vertical, 16)
             .background(

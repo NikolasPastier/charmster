@@ -15,8 +15,10 @@ enum Theme {
     static let textFaint     = Color.white.opacity(0.4)
 
     // MARK: - Accents
-    static let accent        = Color(hex: 0x00E676) // emerald — XP / CTA / progress
-    static let accentDim     = Color(hex: 0x00B85A)
+    // Primary accent is the brand aura pink/coral seen in the logo.
+    static let accent        = Color(hex: 0xFF5E7E) // brand pink — XP / CTA / progress
+    static let accentDim     = Color(hex: 0xE0356A)
+    static let xp            = Color(hex: 0x00E676) // legacy emerald — kept for XP chips
     static let coral         = Color(hex: 0xFF5E62) // boss / streak / urgency
     static let teal          = Color(hex: 0x4DD0E1)
     static let gold          = Color(hex: 0xFFC857) // capstones

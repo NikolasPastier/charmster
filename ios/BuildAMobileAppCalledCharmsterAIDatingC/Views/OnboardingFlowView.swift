@@ -75,10 +75,16 @@ private struct IntroCarouselView: View {
 
             AuraButton(title: page == slides.count - 1 ? "Start the quiz" : "Continue",
                        systemImage: "arrow.right") {
-                if page < slides.count - 1 { page += 1 } else { onContinue() }
+                if page < slides.count - 1 {
+                    withAnimation(.smooth) { page += 1 }
+                } else {
+                    onContinue()
+                }
             }
             .padding(.horizontal, 22)
             .padding(.bottom, 32)
+            .zIndex(10)
+            .allowsHitTesting(true)
         }
     }
 }
