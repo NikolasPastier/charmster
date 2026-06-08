@@ -53,7 +53,6 @@ struct ResultsView: View {
             VStack(spacing: 12) {
                 SectionHeader(title: "Rewards", systemImage: "gift.fill")
                 HStack(spacing: 10) {
-                    RewardChip(icon: "bolt.fill", label: "+\(result.xpEarned) XP", tone: Theme.accent)
                     RewardChip(icon: "sparkles", label: "+\(result.auraEarned) Aura", tone: Theme.aura)
                     if result.streakKept {
                         RewardChip(icon: "flame.fill",
@@ -122,7 +121,7 @@ struct ResultsView: View {
             id: UUID(), lectureId: "t0_l1", isCapstone: false, isSandbox: false,
             responsiveness: 78, voice: 72, face: 65, body: 70,
             synchrony: 80, calibration: 74, comfort: 68,
-            sessionScore: 73, xpEarned: 95, auraEarned: 36,
+            sessionScore: 73, auraEarned: 36,
             streakKept: true, coinsEarned: 10, durationSeconds: 240,
             safetyCapApplied: false, createdAt: .now
         ),

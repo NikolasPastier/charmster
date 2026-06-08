@@ -137,7 +137,7 @@ struct PracticeConfiguratorView: View {
                                 Text(t.title)
                                     .font(.system(size: 14, weight: .heavy))
                                     .foregroundStyle(Theme.text)
-                                Text(String(format: "×%.1f XP", t.xpMultiplier))
+                                Text(String(format: "×%.1f Aura", t.xpMultiplier))
                                     .font(.system(size: 11, weight: .bold))
                                     .foregroundStyle(t.color)
                             }
@@ -210,7 +210,7 @@ struct PracticeConfiguratorView: View {
             VStack(alignment: .leading, spacing: 12) {
                 SectionHeader(title: "Sandbox mode", systemImage: "sparkles")
                 HStack(spacing: 10) {
-                    sandboxChip(title: "Coached", sub: "Tips + scoring (½ XP)",
+                    sandboxChip(title: "Coached", sub: "Tips + scoring (½ Aura)",
                                 selected: cfg.sandboxScored) { cfg.sandboxScored = true }
                     sandboxChip(title: "Just Vibe", sub: "No tips, no scoring",
                                 selected: !cfg.sandboxScored) { cfg.sandboxScored = false }

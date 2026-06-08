@@ -81,7 +81,6 @@ final class AppState {
 
     // Progress
     var progress: [String: LectureProgress] = [:]
-    var xp: Int = 0
     var aura: Int = 0
     var streakDays: Int = 0
     var lastActiveDay: Date?
@@ -217,7 +216,6 @@ final class AppState {
     }
 
     private func applyRewards(_ result: SessionResult) {
-        xp += result.xpEarned
         aura += result.auraEarned
         if result.streakKept { streakDays += 1 }
     }
@@ -341,7 +339,7 @@ final class AppState {
     func resetProgress() {
         progress.removeAll()
         recentResults.removeAll()
-        xp = 0; aura = 0; streakDays = 0
+        aura = 0; streakDays = 0
         dailyLiveSessionsUsed = 0; sandboxUsedToday = false
         Task { await bootstrap() }
     }
@@ -361,7 +359,7 @@ final class AppState {
     static var preview: AppState {
         let s = AppState()
         s.hasCompletedOnboarding = true
-        s.xp = 1240; s.aura = 320; s.streakDays = 5
+        s.aura = 320; s.streakDays = 5
         s.profile.name = "Alex"
         s.profile.focusAreas = ["Opening", "Flow", "Calibration"]
         if let first = Curriculum.lectures.first {

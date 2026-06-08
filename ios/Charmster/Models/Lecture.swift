@@ -82,7 +82,6 @@ struct SessionResult: Identifiable, Hashable, Codable {
     let comfort: Int
 
     let sessionScore: Int
-    let xpEarned: Int
     let auraEarned: Int
     let streakKept: Bool
     let coinsEarned: Int          // kept in model, hidden from UI

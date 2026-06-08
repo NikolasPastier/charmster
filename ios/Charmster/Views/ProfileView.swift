@@ -35,7 +35,7 @@ struct ProfileView: View {
                     Text(app.profile.name.isEmpty ? "Charmster" : app.profile.name)
                         .font(.system(size: 20, weight: .heavy))
                         .foregroundStyle(Theme.text)
-                    Text("Level \(max(1, app.xp / 500 + 1)) · \(app.profile.attachmentLabel)")
+                    Text("Level \(max(1, app.aura / 500 + 1)) · \(app.profile.attachmentLabel)")
                         .font(.system(size: 13)).foregroundStyle(Theme.textMuted)
                 }
                 Spacer()
@@ -45,9 +45,8 @@ struct ProfileView: View {
 
     private var statsRow: some View {
         HStack(spacing: 10) {
-            stat("XP",     "\(app.xp)",          icon: "bolt.fill",   tone: Theme.accent)
-            stat("Streak", "\(app.streakDays)",  icon: "flame.fill",  tone: Theme.coral)
             stat("Aura",   "\(app.aura)",        icon: "sparkles",    tone: Theme.aura)
+            stat("Streak", "\(app.streakDays)",  icon: "flame.fill",  tone: Theme.coral)
         }
     }
 
@@ -136,8 +135,8 @@ struct ProfileView: View {
                                     .font(.system(size: 11)).foregroundStyle(Theme.textMuted)
                             }
                             Spacer()
-                            Text("+\(r.xpEarned) XP").font(.system(size: 12, weight: .heavy))
-                                .foregroundStyle(Theme.accent)
+                            Text("+\(r.auraEarned) Aura").font(.system(size: 12, weight: .heavy))
+                                .foregroundStyle(Theme.aura)
                         }
                     }
                 }

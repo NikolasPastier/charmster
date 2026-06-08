@@ -75,18 +75,17 @@ enum SessionScorer {
             safetyCap = true
         }
 
-        // XP curves
-        let baseXP: Int
+        // Aura is the sole progression metric.
+        let auraBase: Int
         if let lec = lecture {
-            baseXP = lec.isCapstone ? 220 : 90
+            auraBase = lec.isCapstone ? 120 : 50
         } else {
-            baseXP = 60
+            auraBase = 35
         }
-        var xp = Int(Double(baseXP) * tier.xpMultiplier * Double(session) / 80.0)
-        if isSandbox && sandboxScored { xp = Int(Double(xp) * 0.5) }
-        if isSandbox && !sandboxScored { xp = 0 }
+        var aura = Int(Double(auraBase) * tier.xpMultiplier * Double(session) / 80.0)
+        if isSandbox && sandboxScored { aura = Int(Double(aura) * 0.5) }
+        if isSandbox && !sandboxScored { aura = 0 }
 
-        let aura  = max(0, Int(Double(session) * 0.5))
         let coins = 10 // disabled in UI but kept for data integrity
 
         return SessionResult(
@@ -102,7 +101,6 @@ enum SessionScorer {
             calibration: calibration,
             comfort: comfort,
             sessionScore: session,
-            xpEarned: xp,
             auraEarned: aura,
             streakKept: session >= 60,
             coinsEarned: coins,

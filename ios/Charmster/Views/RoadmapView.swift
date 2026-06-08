@@ -29,8 +29,8 @@ struct RoadmapView: View {
                     }
                     ToolbarItem(placement: .topBarTrailing) {
                         HStack(spacing: 6) {
-                            Image(systemName: "bolt.fill").foregroundStyle(Theme.accent)
-                            Text("\(app.xp)").font(.system(size: 14, weight: .heavy))
+                            Image(systemName: "sparkles").foregroundStyle(Theme.aura)
+                            Text("\(app.aura)").font(.system(size: 14, weight: .heavy))
                         }
                     }
                 }

@@ -1,8 +1,8 @@
 - [x] Scaffold dark design system tokens, typography, and reusable components (cards, pills, score rings, progress bar, CTA buttons)
 - [x] Build onboarding: 3 slides + 4-question coach quiz + Charm Score reveal with progress ring
-- [x] Build Roadmap home: top bar (avatar / streak / XP), section headers, snaking path with locked / active / completed / boss node states
+- [x] Build Roadmap home: top bar (avatar / streak / Aura), section headers, snaking path with locked / active / completed / boss node states
 - [x] Build Quest Detail bottom sheet (standard + Boss Fight variant) and lock-state toast
-- [x] Build Text Mission Mode: screenshot upload, analyzing state, Conversation Autopsy scorecard, coach feedback, 3 reply templates, +50 XP banner
+- [x] Build Text Mission Mode: screenshot upload, analyzing state, Conversation Autopsy scorecard, coach feedback, 3 reply templates, +Aura banner
 - [x] Integrate Superwall paywall with monthly/yearly toggle and 3-day free trial CTA
 - [x] Build Profile & Progress tab: stats, coach mode toggle, badge grid, weekly activity chart
 - [x] Build Voice Simulation Room: animated orb, live transcript, mic controls, post-session scorecard
@@ -10,8 +10,9 @@
 - [x] Restore original warm noir-tech visual theme (love-spectrum aura gradient, warm glows, score bands)
 - [x] Refresh intro carousel copy across the 3 pre-quiz onboarding slides
 - [x] Swap intro carousel branding to combined Supabase logo image with feathered blend and centered text layout
-- [x] Restore canonical 16-track / 117-lecture curriculum as in-app source of truth via bundled `Resources/curriculum.json` (with access tiers, formats, capstones, stable `<track>.<number>` IDs, legacy progress migration)
-- [x] Seed Supabase `tracks` + `lectures` (+ capstones) from the canonical manifest and stand up the `curriculum` Storage bucket with per-lecture JSON
-- [x] Wire `LectureContentStore` to fetch curriculum from Supabase on launch with bundled-JSON fallback and a loud dev-only count assertion
+- [x] Restore canonical 16-track / 117-lecture curriculum as in-app source of truth via bundled `Resources/curriculum.json`
+- [x] Seed Supabase `tracks` + `lectures` (+ capstones) from the canonical manifest
+- [x] Wire `LectureContentStore` / `CurriculumService` to overlay Supabase curriculum on launch with bundled fallback
 - [x] Render all 17 tracks (0 + 1–16) in `RoadmapView` with capstone nodes and access-tier lock treatment bound to Superwall
+- [x] Remove XP system project-wide; Aura is now the sole progression metric (model, scorer, AppState, Roadmap/Profile/Results/Practice UI)
 - [ ] Wire Supabase auth (email + Apple), profiles/quests/progress/sessions tables, and OpenAI proxy Edge Function
