@@ -249,40 +249,39 @@ final class LiveSessionPipeline: NSObject {
 
 extension LiveSessionPipeline: AVCaptureVideoDataOutputSampleBufferDelegate {
 
-    func captureOutput(_ output: AVCaptureOutput,
+    nonisolated func captureOutput(_ output: AVCaptureOutput,
                        didOutput sampleBuffer: CMSampleBuffer,
                        from connection: AVCaptureConnection) {
-        let now = Date()
-        if let last = lastFrameSampleAt, now.timeIntervalSince(last) < frameSampleInterval { return }
-        if visionInFlight { return }
         guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
-        guard let jpeg = jpegDataFromPixelBuffer(pixelBuffer, quality: 0.55) else { return }
-        lastFrameSampleAt = now
-        visionInFlight = true
+        guard let jpeg = Self.jpegDataFromPixelBuffer(pixelBuffer, quality: 0.55) else { return }
 
-        let userId = self.userId
-        let sessionId = self.sessionId
-        let lectureId = self.lectureId
-        let snippet = realtime.lastUserUtterance.isEmpty ? nil : realtime.lastUserUtterance
+        Task { @MainActor [weak self] in
+            guard let self else { return }
+            let now = Date()
+            if let last = self.lastFrameSampleAt, now.timeIntervalSince(last) < self.frameSampleInterval { return }
+            if self.visionInFlight { return }
+            self.lastFrameSampleAt = now
+            self.visionInFlight = true
 
-        Task.detached(priority: .utility) { [weak self] in
+            let userId = self.userId
+            let sessionId = self.sessionId
+            let lectureId = self.lectureId
+            let snippet = self.realtime.lastUserUtterance.isEmpty ? nil : self.realtime.lastUserUtterance
+
             let result = await VisionReviewService.score(
                 jpeg: jpeg, userId: userId, sessionId: sessionId,
                 lectureId: lectureId, transcriptSnippet: snippet
             )
-            await MainActor.run {
-                guard let self else { return }
-                self.visionInFlight = false
-                if let r = result {
-                    self.lastVisionFace = r.face
-                    self.lastVisionBody = r.body
-                    self.lastVisionWarmth = r.warmth
-                }
+            self.visionInFlight = false
+            if let r = result {
+                self.lastVisionFace = r.face
+                self.lastVisionBody = r.body
+                self.lastVisionWarmth = r.warmth
             }
         }
     }
 
-    private func jpegDataFromPixelBuffer(_ pixelBuffer: CVPixelBuffer, quality: CGFloat) -> Data? {
+    private static func jpegDataFromPixelBuffer(_ pixelBuffer: CVPixelBuffer, quality: CGFloat) -> Data? {
         let ci = CIImage(cvPixelBuffer: pixelBuffer)
         let context = CIContext(options: nil)
         guard let cg = context.createCGImage(ci, from: ci.extent) else { return nil }

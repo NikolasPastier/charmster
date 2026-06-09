@@ -29,6 +29,7 @@ struct ResultsView: View {
         VStack(spacing: 12) {
             ScoreRing(value: result.sessionScore, size: 180, lineWidth: 14,
                       label: result.isCapstone ? "capstone" : "session")
+            auraSummary
             if result.safetyCapApplied {
                 TagPill(label: "Safety cap applied",
                         systemImage: "shield.fill", tone: .coral)
@@ -44,6 +45,36 @@ struct ResultsView: View {
             }
         }
         .padding(.top, 16)
+    }
+
+    /// Aura is a 0–100 rolling average. Show the current value, the tier band
+    /// it lands in, and the signed delta from this session so the user can
+    /// see whether they moved up or down.
+    private var auraSummary: some View {
+        let tier = AuraTier.forAura(app.aura)
+        let delta = result.auraEarned
+        let deltaText: String = {
+            if delta > 0 { return "▲ +\(delta)" }
+            if delta < 0 { return "▼ \(delta)" }
+            return "● no change"
+        }()
+        let deltaTone: Color = delta > 0 ? Theme.aura : (delta < 0 ? Theme.coral : Theme.textMuted)
+        return HStack(spacing: 10) {
+            HStack(spacing: 6) {
+                Image(systemName: "sparkles").foregroundStyle(tier.color)
+                Text("\(app.aura)")
+                    .font(.system(size: 18, weight: .heavy))
+                    .foregroundStyle(Theme.text)
+                Text(tier.title)
+                    .font(.system(size: 12, weight: .bold))
+                    .foregroundStyle(tier.color)
+                    .padding(.horizontal, 8).padding(.vertical, 3)
+                    .background(Capsule().fill(tier.color.opacity(0.15)))
+            }
+            Text(deltaText)
+                .font(.system(size: 13, weight: .heavy))
+                .foregroundStyle(deltaTone)
+        }
     }
 
     /// Step 7: removed RewardChip(icon: "circle.hexagongrid.fill", label: "+coins").
