@@ -144,6 +144,11 @@ struct ProfileView: View {
             }
         }
     }
+    private func auraDeltaLabel(_ d: Int) -> String {
+        if d > 0 { return "+\(d) Aura" }
+        if d < 0 { return "\(d) Aura" }
+        return "Aura held"
+    }
 }
 
 #Preview {
