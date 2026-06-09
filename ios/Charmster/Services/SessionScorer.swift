@@ -76,16 +76,20 @@ enum SessionScorer {
             safetyCap = true
         }
 
-        // Aura is the sole progression metric.
-        let auraBase: Int
-        if let lec = lecture {
-            auraBase = lec.isCapstone ? 120 : 50
-        } else {
-            auraBase = 35
-        }
-        var aura = Int(Double(auraBase) * tier.xpMultiplier * Double(session) / 80.0)
-        if isSandbox && sandboxScored { aura = Int(Double(aura) * 0.5) }
-        if isSandbox && !sandboxScored { aura = 0 }
+        // Aura is a 0–100 rolling average. Each session pulls Aura toward
+        // `session` via an EMA whose weight scales with the difficulty tier:
+        //   newAura = (1 - w) * oldAura + w * session
+        // Gold sessions move Aura more (up or down); Bronze sessions less.
+        let baseWeight = 0.20
+        var w = baseWeight * tier.tierWeight
+        if isSandbox && sandboxScored { w *= 0.5 }
+        if isSandbox && !sandboxScored { w = 0 }
+        w = max(0.05, min(0.40, w))
+
+        let oldAura = max(0, min(100, currentAura))
+        let blended = (1.0 - w) * Double(oldAura) + w * Double(session)
+        let newAura = max(0, min(100, Int(blended.rounded())))
+        let auraDelta = newAura - oldAura
 
         let coins = 10 // disabled in UI but kept for data integrity
 
