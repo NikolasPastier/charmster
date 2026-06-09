@@ -92,6 +92,11 @@ final class AppState {
     var sandboxUsedToday: Bool = false
     var dailyResetAt: Date = .now
 
+    // Streak freezes (monthly allowance of "rest day" protections)
+    var streakFreezesRemaining: Int = 2
+    var streakFreezeMonthlyAllowance: Int = 2
+    var lastStreakFreezeRefill: Date = .distantPast
+
     // Subscription
     var subscriptionStatus: SubscriptionStatus = .locked
     var subscriptionPlan: SubscriptionPlan = .none
@@ -109,6 +114,9 @@ final class AppState {
     // MARK: - Lifecycle
 
     func bootstrap() async {
+        // Restore persisted prefs first so progress migration / daily reset use them.
+        loadPersistedPrefs()
+        refillStreakFreezesIfNeeded()
         migrateLegacyProgressKeysIfNeeded()
         await CurriculumService.shared.refreshIfNeeded()
         // Seed locked/current state — first lecture of track 0 is current.
@@ -118,6 +126,51 @@ final class AppState {
             }
         }
         rollDailyResetIfNeeded()
+    }
+
+    // MARK: - Persistence
+
+    /// Pull saved Settings prefs from `SettingsStore` into the runtime model.
+    private func loadPersistedPrefs() {
+        if let saved = SettingsStore.loadProfile() { profile = saved }
+        if let coach = SettingsStore.loadCoach()   { coachMode = coach }
+        if let tier  = SettingsStore.loadTier()    { difficultyTier = tier }
+        if let n     = SettingsStore.loadStreakFreezes() { streakFreezesRemaining = n }
+        if let d     = SettingsStore.loadLastFreezeRefill() { lastStreakFreezeRefill = d }
+    }
+
+    /// Persist everything Settings can edit. Called by the Settings screen's
+    /// binding helper on every mutation so changes survive across launches.
+    func persistSettings() {
+        SettingsStore.saveProfile(profile)
+        SettingsStore.saveCoach(coachMode)
+        SettingsStore.saveTier(difficultyTier)
+        SettingsStore.saveStreakFreezes(streakFreezesRemaining)
+        SettingsStore.saveLastFreezeRefill(lastStreakFreezeRefill)
+    }
+
+    /// Refill the monthly streak-freeze allowance on the first launch of a new
+    /// calendar month. The first run after install also seeds the count.
+    private func refillStreakFreezesIfNeeded() {
+        let cal = Calendar.current
+        let now = Date()
+        let sameMonth = cal.isDate(lastStreakFreezeRefill, equalTo: now, toGranularity: .month)
+        if !sameMonth {
+            streakFreezesRemaining = streakFreezeMonthlyAllowance
+            lastStreakFreezeRefill = now
+            SettingsStore.saveStreakFreezes(streakFreezesRemaining)
+            SettingsStore.saveLastFreezeRefill(lastStreakFreezeRefill)
+        }
+    }
+
+    /// User-initiated: spend one freeze to protect the current streak today.
+    /// Returns true on success. UI presents a confirm before calling this.
+    @discardableResult
+    func useStreakFreeze() -> Bool {
+        guard streakFreezesRemaining > 0 else { return false }
+        streakFreezesRemaining -= 1
+        SettingsStore.saveStreakFreezes(streakFreezesRemaining)
+        return true
     }
 
     /// One-time migration from the old "t{N}_l{N}" placeholder IDs to the
@@ -354,6 +407,11 @@ final class AppState {
         subscriptionPlan = .none
         trialStartedAt = nil; trialEndsAt = nil
         cancelReason = nil; saveOfferClaimedAt = nil
+        streakFreezesRemaining = streakFreezeMonthlyAllowance
+        lastStreakFreezeRefill = .distantPast
+        SettingsStore.wipeAll()
+        // TODO(backend): call Supabase /delete-account RPC to wipe server-side
+        // profile, sessions, and progress once the auth/edge-function path lands.
     }
 
     // MARK: - Preview

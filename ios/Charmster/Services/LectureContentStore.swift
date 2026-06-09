@@ -83,16 +83,56 @@ final class LectureContentStore {
     }
 
     func debriefText(coach: CoachStyle, result: SessionResult) -> String {
+        debriefText(coach: coach, result: result, gentleness: 0.5)
+    }
+
+    /// Same debrief copy, but biased by the user's `feedbackGentleness` slider
+    /// (0 = direct, 1 = gentle). At gentleness >= 0.65 we lead with the win and
+    /// soften the next-rep ask; at gentleness <= 0.35 we strip the warm framing
+    /// and keep the call-to-action bluntly direct.
+    func debriefText(coach: CoachStyle, result: SessionResult, gentleness: Double) -> String {
+        let direct = gentleness <= 0.35
+        let gentle = gentleness >= 0.65
         switch coach {
         case .bigBrother:
+            if direct {
+                return "You went \(result.sessionScore). Voice \(qual(result.voice)), face \(qual(result.face)). Slow the opener. Let her finish."
+            }
+            if gentle {
+                return "Solid run — \(result.sessionScore). Voice was \(qual(result.voice)) and the face read \(qual(result.face)). When you're ready, try slowing the opener so she can land her thought first."
+            }
             return "Straight up — you went \(result.sessionScore). The voice was \(qual(result.voice)), the face read \(qual(result.face)). Next rep: slow the opener and let her finish before you respond."
         case .scientist:
+            if direct {
+                return "Score \(result.sessionScore). Synchrony \(result.synchrony), lag ~\(latencyHint(result)). Replicate the calibration spike."
+            }
+            if gentle {
+                return "You scored \(result.sessionScore). Synchrony \(result.synchrony) points to a small turn-taking lag (~\(latencyHint(result))). The moment your calibration jumped is the pattern worth gently leaning into next time."
+            }
             return "Session score \(result.sessionScore). Synchrony \(result.synchrony) suggests turn-taking lag of roughly \(latencyHint(result)). Replicate the moment your calibration jumped — that's the pattern worth repeating."
         case .alphaMentor:
+            if direct {
+                return "\(result.sessionScore). Frame \(qual(result.face)). Don't chase. Own second three."
+            }
+            if gentle {
+                return "Score: \(result.sessionScore). Your frame held \(qual(result.face)). No need to chase warmth — set the floor and give her room to step up. One small thing for the next rep: hold the silence at second three."
+            }
             return "Score: \(result.sessionScore). Frame held \(qual(result.face)). Don't chase warmth — set the floor and let her step up. One thing for next rep: own the silence at second three."
         case .therapist:
+            if direct {
+                return "Comfort \(result.comfort). Score \(result.sessionScore). Drop your shoulders. One breath before answering."
+            }
+            if gentle {
+                return "Really nice job showing up. Your comfort registered \(result.comfort) and your session was \(result.sessionScore). Notice the moments your shoulders dropped — that's your system telling you it felt safe. No pressure: try one slow breath before answering next time."
+            }
             return "Nice job showing up. Comfort \(result.comfort), session \(result.sessionScore). Notice where your shoulders dropped — that's safety. Next time, try one slow breath before answering."
         case .wingman:
+            if direct {
+                return "\(result.sessionScore)/100. Voice \(qual(result.voice)), body \(qual(result.body)). One callback to the first 30 seconds."
+            }
+            if gentle {
+                return "Mission run, \(result.sessionScore)/100 — that's a real run. Voice \(qual(result.voice)), body \(qual(result.body)). When you're ready: one callback to something she said in the first 30 seconds."
+            }
             return "Mission run, \(result.sessionScore)/100. Voice \(qual(result.voice)), body \(qual(result.body)). Next mission: one callback to something she said in the first 30 seconds."
         }
     }

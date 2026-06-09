@@ -138,7 +138,9 @@ struct ResultsView: View {
         GlassCard {
             VStack(alignment: .leading, spacing: 10) {
                 SectionHeader(title: "Coach", systemImage: app.coachMode.icon)
-                Text(LectureContentStore.shared.debriefText(coach: app.coachMode, result: result))
+                Text(LectureContentStore.shared.debriefText(coach: app.coachMode,
+                                                            result: result,
+                                                            gentleness: app.profile.feedbackGentleness))
                     .font(.system(size: 15))
                     .foregroundStyle(Theme.text)
             }

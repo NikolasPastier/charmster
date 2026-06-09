@@ -15,13 +15,15 @@ struct LivePracticeView: View {
     @State private var pipeline = LiveSessionPipeline()
     @State private var elapsed: Int = 0
     @State private var showSelfView: Bool = true
-    @State private var showCaptions: Bool = true
     @State private var winddown: Bool = false
     @State private var ended: Bool = false
     @State private var dailyCapHit: Bool = false
     @State private var pendingReaction: AvatarState?
     @State private var lastReactionTag: AvatarState?
     private let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+
+    /// Captions visibility comes from `profile.captionsEnabled` (Settings).
+    private var showCaptions: Bool { app.profile.captionsEnabled }
 
     private var avatarPersona: AvatarPersona { AvatarPersona.resolve(from: config.persona.id) }
 
