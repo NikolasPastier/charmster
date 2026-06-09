@@ -15,6 +15,7 @@ import UIKit
 ///   unavailable (offline, perms denied, function missing), SessionScorer
 ///   falls back to the deterministic SplitMix64 mock.
 @Observable
+@MainActor
 final class LiveSessionPipeline: NSObject {
 
     enum Status {
