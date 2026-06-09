@@ -84,7 +84,9 @@ struct ResultsView: View {
             VStack(spacing: 12) {
                 SectionHeader(title: "Rewards", systemImage: "gift.fill")
                 HStack(spacing: 10) {
-                    RewardChip(icon: "sparkles", label: "+\(result.auraEarned) Aura", tone: Theme.aura)
+                    RewardChip(icon: "sparkles",
+                               label: auraChipLabel,
+                               tone: result.auraEarned >= 0 ? Theme.aura : Theme.coral)
                     if result.streakKept {
                         RewardChip(icon: "flame.fill",
                                    label: "Streak \(app.streakDays)",
@@ -102,6 +104,13 @@ struct ResultsView: View {
                 }
             }
         }
+    }
+
+    private var auraChipLabel: String {
+        let d = result.auraEarned
+        if d > 0 { return "+\(d) Aura" }
+        if d < 0 { return "\(d) Aura" }
+        return "Aura held"
     }
 
     private var milestoneLabel: String {

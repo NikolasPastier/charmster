@@ -281,7 +281,7 @@ extension LiveSessionPipeline: AVCaptureVideoDataOutputSampleBufferDelegate {
         }
     }
 
-    private static func jpegDataFromPixelBuffer(_ pixelBuffer: CVPixelBuffer, quality: CGFloat) -> Data? {
+    nonisolated private static func jpegDataFromPixelBuffer(_ pixelBuffer: CVPixelBuffer, quality: CGFloat) -> Data? {
         let ci = CIImage(cvPixelBuffer: pixelBuffer)
         let context = CIContext(options: nil)
         guard let cg = context.createCGImage(ci, from: ci.extent) else { return nil }

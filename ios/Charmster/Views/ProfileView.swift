@@ -35,7 +35,7 @@ struct ProfileView: View {
                     Text(app.profile.name.isEmpty ? "Charmster" : app.profile.name)
                         .font(.system(size: 20, weight: .heavy))
                         .foregroundStyle(Theme.text)
-                    Text("Level \(max(1, app.aura / 500 + 1)) · \(app.profile.attachmentLabel)")
+                    Text("\(AuraTier.forAura(app.aura).title) · \(app.profile.attachmentLabel)")
                         .font(.system(size: 13)).foregroundStyle(Theme.textMuted)
                 }
                 Spacer()
@@ -135,8 +135,9 @@ struct ProfileView: View {
                                     .font(.system(size: 11)).foregroundStyle(Theme.textMuted)
                             }
                             Spacer()
-                            Text("+\(r.auraEarned) Aura").font(.system(size: 12, weight: .heavy))
-                                .foregroundStyle(Theme.aura)
+                            Text(auraDeltaLabel(r.auraEarned))
+                                .font(.system(size: 12, weight: .heavy))
+                                .foregroundStyle(r.auraEarned >= 0 ? Theme.aura : Theme.coral)
                         }
                     }
                 }
