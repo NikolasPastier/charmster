@@ -361,7 +361,7 @@ final class AppState {
     static var preview: AppState {
         let s = AppState()
         s.hasCompletedOnboarding = true
-        s.aura = 320; s.streakDays = 5
+        s.aura = 72; s.streakDays = 5
         s.profile.name = "Alex"
         s.profile.focusAreas = ["Opening", "Flow", "Calibration"]
         if let first = Curriculum.lectures.first {
