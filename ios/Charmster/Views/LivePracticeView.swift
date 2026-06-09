@@ -178,7 +178,7 @@ struct LivePracticeView: View {
             HStack(spacing: 10) {
                 listeningIndicator
                 Spacer()
-                Button { showCaptions.toggle() } label: {
+                Button { app.profile.captionsEnabled.toggle() } label: {
                     Image(systemName: showCaptions ? "captions.bubble.fill" : "captions.bubble")
                         .font(.system(size: 14, weight: .bold))
                         .foregroundStyle(Theme.text)
