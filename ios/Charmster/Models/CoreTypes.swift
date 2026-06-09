@@ -89,18 +89,87 @@ enum DifficultyTier: String, CaseIterable, Identifiable, Codable {
         case .gold:   return "Gold"
         }
     }
-    var xpMultiplier: Double {
+    /// How strongly a session at this tier pulls Aura toward the session
+    /// rating. Reuses the legacy 0.8 / 1.0 / 1.3 spread, but now scales the
+    /// EMA blend weight in `AppState.applyRewards` — a strong Gold session
+    /// moves Aura more (and a weak one moves it down more); a Bronze session
+    /// nudges it less. Aura is a 0–100 rolling average, so we never grant
+    /// flat "+N" Aura points.
+    var tierWeight: Double {
         switch self {
         case .bronze: return 0.8
         case .silver: return 1.0
         case .gold:   return 1.3
         }
     }
+
+    /// One-line label describing the tier's effect on Aura, for the
+    /// configurator and other surfaces that used to show "×1.3 XP".
+    var auraEffectLabel: String {
+        switch self {
+        case .bronze: return "Smaller Aura swing"
+        case .silver: return "Standard Aura swing"
+        case .gold:   return "Bigger Aura swing"
+        }
+    }
+
     var color: Color {
         switch self {
         case .bronze: return Color(hex: 0xCD7F32)
         case .silver: return Color(hex: 0xC0C0C0)
         case .gold:   return Theme.gold
+        }
+    }
+}
+
+// MARK: - Aura tier (Spark -> Glow -> Magnetic -> Radiant)
+
+/// The user's overall progress band, derived from the 0–100 `AppState.aura`
+/// rolling average. This is the single primary progress metric in the app —
+/// the XP / Level system was removed.
+enum AuraTier: String, CaseIterable, Codable {
+    case spark
+    case glow
+    case magnetic
+    case radiant
+
+    var title: String {
+        switch self {
+        case .spark:    return "Spark"
+        case .glow:     return "Glow"
+        case .magnetic: return "Magnetic"
+        case .radiant:  return "Radiant"
+        }
+    }
+
+    /// Tagline shown under the headline number on Profile / Results.
+    var blurb: String {
+        switch self {
+        case .spark:    return "Finding your footing."
+        case .glow:     return "Warming up. Conversations feel easier."
+        case .magnetic: return "People lean in. Your reps show."
+        case .radiant:  return "Calibrated, present, hard to fake."
+        }
+    }
+
+    var color: Color {
+        switch self {
+        case .spark:    return Theme.teal
+        case .glow:     return Theme.gold
+        case .magnetic: return Theme.aura
+        case .radiant:  return Theme.auraGlow
+        }
+    }
+
+    /// Map a 0–100 Aura value to a tier. Bands are tuned so the first
+    /// promotion (Spark → Glow) lands around the same place a free user
+    /// reaches after a handful of solid sessions.
+    static func forAura(_ aura: Int) -> AuraTier {
+        switch aura {
+        case ..<35:     return .spark
+        case 35..<60:   return .glow
+        case 60..<82:   return .magnetic
+        default:        return .radiant
         }
     }
 }
