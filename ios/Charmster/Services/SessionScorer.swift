@@ -41,7 +41,8 @@ enum SessionScorer {
         coach: CoachStyle,
         signals: SessionSignals,
         isSandbox: Bool,
-        sandboxScored: Bool
+        sandboxScored: Bool,
+        currentAura: Int
     ) -> SessionResult {
 
         let seed = UInt64(durationSeconds &+ 17) &* 0xA5A5_A5A5
