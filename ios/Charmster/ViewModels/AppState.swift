@@ -216,7 +216,9 @@ final class AppState {
     }
 
     private func applyRewards(_ result: SessionResult) {
-        aura += result.auraEarned
+        // auraEarned is a signed delta produced by SessionScorer's EMA pull.
+        // Aura itself is the 0–100 rolling average — clamp on apply.
+        aura = max(0, min(100, aura + result.auraEarned))
         if result.streakKept { streakDays += 1 }
     }
 
