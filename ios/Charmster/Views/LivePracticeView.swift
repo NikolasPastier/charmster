@@ -304,7 +304,8 @@ struct LivePracticeView: View {
             coach: config.coach,
             signals: pipeline.signals,
             isSandbox: config.isSandbox,
-            sandboxScored: config.sandboxScored
+            sandboxScored: config.sandboxScored,
+            currentAura: app.aura
         )
         onFinish(result)
     }
