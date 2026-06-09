@@ -106,7 +106,7 @@ enum SessionScorer {
             calibration: calibration,
             comfort: comfort,
             sessionScore: session,
-            auraEarned: aura,
+            auraEarned: auraDelta,
             streakKept: session >= 60,
             coinsEarned: coins,
             durationSeconds: durationSeconds,

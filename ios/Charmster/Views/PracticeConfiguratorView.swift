@@ -137,7 +137,7 @@ struct PracticeConfiguratorView: View {
                                 Text(t.title)
                                     .font(.system(size: 14, weight: .heavy))
                                     .foregroundStyle(Theme.text)
-                                Text(String(format: "×%.1f Aura", t.xpMultiplier))
+                                Text(String(format: "×%.1f Aura", t.tierWeight))
                                     .font(.system(size: 11, weight: .bold))
                                     .foregroundStyle(t.color)
                             }
