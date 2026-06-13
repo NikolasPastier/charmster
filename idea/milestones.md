@@ -17,5 +17,6 @@
 - [x] Remove XP system project-wide; Aura is now the sole progression metric (model, scorer, AppState, Roadmap/Profile/Results/Practice UI)
 - [x] Real live video+voice review pipeline: AVCaptureSession (mic + front cam) + OpenAI Realtime voice loop (ephemeral token via `realtime_session` edge function) + 2.5s sampled-frame `vision_review` edge function; real signals feed SessionScorer with SplitMix64 mock retained strictly as offline fallback; daily practice cap enforced before any AV session opens
 - [x] Replace illustrated AsyncImage avatar with photoreal video-clip AvatarView (AVPlayerLayer state machine, crossfade, looping base + one-shot mood-tag reactions, bundled still + Aura-gradient fallback, reduced-motion still), plus reactive AuraGlowLayer (pink→gold radial bound to live atmosphere, subtle pulse on partner speech)
-- [ ] Deploy `realtime_session` + `vision_review` edge functions and populate `avatar-clips` Supabase Storage bucket with per-persona/state .mp4 clips
+- [x] Wire AvatarClipCatalog manifest to the real Mia photoreal clips in Supabase Storage (`Avatars/Mia photorealistic/*.mp4`): talking/listening loops + smile/laugh/flirty/surprised reactions, with idle/thinking/reassure stand-ins and graceful fallback for unmapped states
+- [ ] Deploy `realtime_session` + `vision_review` edge functions; upload remaining Mia clips (dedicated idle/thinking/cool) and add Mateo/other persona clip sets
 - [ ] Wire Supabase auth (email + Apple), profiles/quests/progress/sessions tables
