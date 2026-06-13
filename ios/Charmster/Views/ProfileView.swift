@@ -3,6 +3,7 @@ import SwiftUI
 struct ProfileView: View {
   @Environment(AppState.self) private var app
   @State private var goToSettings: Bool = false
+  @State private var showCoachGallery: Bool = false
 
   var body: some View {
     Group {
@@ -101,22 +102,41 @@ struct ProfileView: View {
 
   private var pillsRow: some View {
     GlassCard {
-      VStack(alignment: .leading, spacing: 10) {
-        SectionHeader(title: "Defaults", systemImage: "slider.horizontal.3")
+      VStack(alignment: .leading, spacing: 12) {
+        SectionHeader(title: "Your coach", systemImage: "person.crop.circle.badge.checkmark")
+        Button {
+          showCoachGallery = true
+        } label: {
+          HStack(spacing: 12) {
+            CoachAvatarView(coach: app.selectedCoach)
+              .frame(width: 52, height: 52)
+              .clipShape(Circle())
+              .overlay(Circle().stroke(Theme.border, lineWidth: 1))
+            VStack(alignment: .leading, spacing: 2) {
+              Text(app.selectedCoach.humanName)
+                .font(.system(size: 17, weight: .heavy))
+                .foregroundStyle(Theme.text)
+              Text("Tap to switch coach")
+                .font(.system(size: 12))
+                .foregroundStyle(Theme.textMuted)
+            }
+            Spacer()
+            Image(systemName: "chevron.right").foregroundStyle(Theme.textFaint)
+          }
+        }
+        .buttonStyle(.plain)
         HStack {
           TagPill(
             label: "Tier: \(app.difficultyTier.title)",
             systemImage: "flame.fill",
             tone: .accent,
             onTap: { goToSettings = true })
-          TagPill(
-            label: "Coach: \(app.coachMode.title)",
-            systemImage: app.coachMode.icon,
-            tone: .gold,
-            onTap: { goToSettings = true })
           Spacer()
         }
       }
+    }
+    .sheet(isPresented: $showCoachGallery) {
+      CoachGalleryView().environment(app)
     }
   }
 

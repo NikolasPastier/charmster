@@ -19,7 +19,8 @@ struct CharmsterApp: App {
         .task {
           await appState.bootstrap()
           CharmsterSuperwall.identify(userId: appState.userId)
-          NotificationManager.applyDailyReminder(profile: appState.profile)
+          NotificationManager.applyDailyReminder(
+            profile: appState.profile, coachName: appState.selectedCoach.humanName)
         }
     }
   }

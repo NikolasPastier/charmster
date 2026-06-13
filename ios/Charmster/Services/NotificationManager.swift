@@ -38,7 +38,7 @@ enum NotificationManager {
   /// - `notificationsStreak` is true,
   /// - the reminder hour isn't inside the quiet-hours window.
   /// Always cancels the existing daily reminder first so toggling OFF works.
-  static func applyDailyReminder(profile: PersonalizationProfile) {
+  static func applyDailyReminder(profile: PersonalizationProfile, coachName: String? = nil) {
     let center = UNUserNotificationCenter.current()
     center.removePendingNotificationRequests(withIdentifiers: [dailyReminderId])
 
@@ -52,8 +52,15 @@ enum NotificationManager {
     comps.second = 0
 
     let content = UNMutableNotificationContent()
-    content.title = "Keep your streak"
-    content.body = "Two minutes of practice keeps the rhythm alive."
+    // Coach-voiced nudge (human name only — the in-game rule). Falls back to a
+    // neutral line when no coach name is supplied.
+    if let coachName {
+      content.title = "\(coachName) queued today's practice"
+      content.body = "Two minutes keeps your rhythm — \(coachName) is ready when you are."
+    } else {
+      content.title = "Keep your streak"
+      content.body = "Two minutes of practice keeps the rhythm alive."
+    }
     content.sound = .default
 
     let trigger = UNCalendarNotificationTrigger(dateMatching: comps, repeats: true)

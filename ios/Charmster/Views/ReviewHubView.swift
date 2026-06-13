@@ -75,19 +75,48 @@ struct ReviewHubView: View {
   }
 
   private var emptyState: some View {
-    GlassCard {
-      VStack(spacing: 10) {
-        Image(systemName: "checkmark.seal.fill")
-          .font(.system(size: 38)).foregroundStyle(Theme.accent)
-        Text("All caught up").font(.system(size: 18, weight: .heavy))
-          .foregroundStyle(Theme.text)
-        Text("Nothing due today. Run a sandbox or push the path forward.")
-          .multilineTextAlignment(.center)
-          .font(.system(size: 13))
-          .foregroundStyle(Theme.textMuted)
+    VStack(spacing: 14) {
+      GlassCard {
+        VStack(spacing: 10) {
+          Image(systemName: "checkmark.seal.fill")
+            .font(.system(size: 38)).foregroundStyle(Theme.accent)
+            .auraGlow(radius: 18, intensity: 0.4)
+          Text("You're ahead").font(.system(size: 18, weight: .heavy))
+            .foregroundStyle(Theme.text)
+          Text("Nothing's due — your skills are holding. Want a stretch to push higher?")
+            .multilineTextAlignment(.center)
+            .font(.system(size: 13))
+            .foregroundStyle(Theme.textMuted)
+        }
+        .padding(.vertical, 12)
+        .frame(maxWidth: .infinity)
       }
-      .padding(.vertical, 12)
-      .frame(maxWidth: .infinity)
+      if let stretch = DailyRouter.goldStretch(app: app) ?? app.tasterLecture {
+        Button {
+          presentedLecture = stretch
+        } label: {
+          GlassCard {
+            HStack(spacing: 12) {
+              Image(systemName: "crown.fill")
+                .font(.system(size: 18, weight: .heavy))
+                .foregroundStyle(Theme.gold)
+                .frame(width: 38, height: 38)
+                .background(Circle().fill(Theme.gold.opacity(0.14)))
+              VStack(alignment: .leading, spacing: 3) {
+                Text("Optional stretch")
+                  .font(.system(size: 11, weight: .heavy)).tracking(1.4)
+                  .foregroundStyle(Theme.gold)
+                Text(stretch.title)
+                  .font(.system(size: 15, weight: .heavy))
+                  .foregroundStyle(Theme.text)
+              }
+              Spacer()
+              Image(systemName: "chevron.right").foregroundStyle(Theme.textFaint)
+            }
+          }
+        }
+        .buttonStyle(.plain)
+      }
     }
   }
 

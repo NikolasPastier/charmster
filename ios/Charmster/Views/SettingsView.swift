@@ -122,8 +122,21 @@ struct SettingsView: View {
 
   private var coachingSection: some View {
     Section("Coaching & difficulty") {
-      Picker("Coach", selection: bindingFor(\.coachMode)) {
-        ForEach(CoachStyle.allCases) { Text($0.title).tag($0) }
+      NavigationLink {
+        CoachGalleryView().environment(app)
+      } label: {
+        HStack(spacing: 12) {
+          CoachAvatarView(coach: app.selectedCoach)
+            .frame(width: 38, height: 38)
+            .clipShape(Circle())
+          VStack(alignment: .leading, spacing: 2) {
+            Text("Coach")
+            Text("\(app.selectedCoach.humanName) · \(app.selectedCoach.roleTag)")
+              .font(.caption).foregroundStyle(Theme.textMuted)
+          }
+          Spacer()
+          Text("Switch").font(.caption).foregroundStyle(Theme.accent)
+        }
       }
       Picker("Difficulty", selection: bindingFor(\.difficultyTier)) {
         ForEach(DifficultyTier.allCases) { Text($0.title).tag($0) }

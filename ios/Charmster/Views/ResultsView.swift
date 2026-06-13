@@ -143,7 +143,17 @@ struct ResultsView: View {
   private var coachDebriefCard: some View {
     GlassCard {
       VStack(alignment: .leading, spacing: 10) {
-        SectionHeader(title: "Coach", systemImage: app.coachMode.icon)
+        HStack(spacing: 10) {
+          CoachAvatarView(coach: app.selectedCoach)
+            .frame(width: 34, height: 34)
+            .clipShape(Circle())
+          Text(app.selectedCoach.humanName)
+            .font(.system(size: 13, weight: .heavy))
+            .tracking(1.0)
+            .foregroundStyle(Theme.textMuted)
+            .textCase(.uppercase)
+          Spacer()
+        }
         Text(
           LectureContentStore.shared.debriefText(
             coach: app.coachMode,

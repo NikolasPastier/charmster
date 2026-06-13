@@ -13,6 +13,7 @@ enum SettingsStore {
 
   private static let profileKey = "charmster.profile.v1"
   private static let coachKey = "charmster.coachMode.v1"
+  private static let coachIdKey = "charmster.selectedCoachId.v1"
   private static let tierKey = "charmster.difficultyTier.v1"
   private static let streakFreezeKey = "charmster.streakFreezes.v1"
   private static let lastFreezeRefillKey = "charmster.lastFreezeRefill.v1"
@@ -37,6 +38,14 @@ enum SettingsStore {
 
   static func saveCoach(_ coach: CoachStyle) {
     UserDefaults.standard.set(coach.rawValue, forKey: coachKey)
+  }
+
+  static func loadCoachId() -> String? {
+    UserDefaults.standard.string(forKey: coachIdKey)
+  }
+
+  static func saveCoachId(_ id: String) {
+    UserDefaults.standard.set(id, forKey: coachIdKey)
   }
 
   static func loadTier() -> DifficultyTier? {
@@ -70,7 +79,7 @@ enum SettingsStore {
 
   static func wipeAll() {
     let d = UserDefaults.standard
-    [profileKey, coachKey, tierKey, streakFreezeKey, lastFreezeRefillKey].forEach {
+    [profileKey, coachKey, coachIdKey, tierKey, streakFreezeKey, lastFreezeRefillKey].forEach {
       d.removeObject(forKey: $0)
     }
   }

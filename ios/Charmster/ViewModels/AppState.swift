@@ -86,6 +86,9 @@ final class AppState {
 
   // Coaching defaults
   var coachMode: CoachStyle = .wingman
+  /// The named coach CHARACTER the user has joined. Drives the EXISTING tone
+  /// engine via `selectedCoach.style` (kept in sync with `coachMode`).
+  var selectedCoachId: String = CoachPersona.default.id
   var difficultyTier: DifficultyTier = .silver
   var selectedPersona: PartnerPersona = .default
   var selectedSetting: PracticeSetting = .default
@@ -122,6 +125,19 @@ final class AppState {
   // Recent session history (for review hub)
   var recentResults: [SessionResult] = []
 
+  // MARK: - Progress Journal (persisted session history + personal bests)
+
+  /// Durable session-history rows (P6). Mirrors the feedback-card data; not a
+  /// new source of truth. Loaded on bootstrap, appended on every completion.
+  var journal: [JournalEntry] = []
+  /// Running max per dimension key, used for personal-best detection.
+  var dimensionBests: [String: Int] = [:]
+  /// Latest just-fired personal-best (dimension, value) — drives the toast.
+  var lastPersonalBest: (dimension: String, value: Int)? = nil
+
+  /// Min sessions before PR alerts start firing (avoids "PR" on session #1).
+  private let prMinSessions = 3
+
   // MARK: - Lifecycle
 
   func bootstrap() async {
@@ -145,9 +161,19 @@ final class AppState {
   private func loadPersistedPrefs() {
     if let saved = SettingsStore.loadProfile() { profile = saved }
     if let coach = SettingsStore.loadCoach() { coachMode = coach }
+    // Coach character: prefer the saved character id; otherwise migrate from
+    // the legacy `coachMode` style so existing users land on the matching coach.
+    if let coachId = SettingsStore.loadCoachId() {
+      selectedCoachId = coachId
+      coachMode = CoachPersona.resolve(id: coachId).style
+    } else {
+      selectedCoachId = CoachPersona.forStyle(coachMode).id
+    }
     if let tier = SettingsStore.loadTier() { difficultyTier = tier }
     if let n = SettingsStore.loadStreakFreezes() { streakFreezesRemaining = n }
     if let d = SettingsStore.loadLastFreezeRefill() { lastStreakFreezeRefill = d }
+    journal = JournalStore.loadEntries()
+    dimensionBests = JournalStore.loadBests()
   }
 
   /// Persist everything Settings can edit. Called by the Settings screen's
@@ -155,6 +181,7 @@ final class AppState {
   func persistSettings() {
     SettingsStore.saveProfile(profile)
     SettingsStore.saveCoach(coachMode)
+    SettingsStore.saveCoachId(selectedCoachId)
     SettingsStore.saveTier(difficultyTier)
     SettingsStore.saveStreakFreezes(streakFreezesRemaining)
     SettingsStore.saveLastFreezeRefill(lastStreakFreezeRefill)
@@ -205,6 +232,21 @@ final class AppState {
 
   var isPro: Bool {
     subscriptionStatus == .pro || subscriptionStatus == .trial
+  }
+
+  // MARK: - Coach persona
+
+  /// The joined coach character. Single read surface for coach name/voice.
+  var selectedCoach: CoachPersona {
+    CoachPersona.resolve(id: selectedCoachId)
+  }
+
+  /// Join a coach character. Keeps the legacy `coachMode` tone engine in sync
+  /// so the EXISTING coach system prompt / TTS path is driven unchanged.
+  func joinCoach(_ persona: CoachPersona) {
+    selectedCoachId = persona.id
+    coachMode = persona.style
+    persistSettings()
   }
 
   var hasAccess: Bool { isPro }
@@ -270,12 +312,14 @@ final class AppState {
     if recentResults.count > 40 { recentResults.removeLast(recentResults.count - 40) }
     maybePromoteMastery(lecture)
     scheduleSRSReview(for: lecture, quality: srsQuality(from: result))
+    recordJournalEntry(result, lecture: lecture)
     dailyLiveSessionsUsed += 1
   }
 
   func completeSandbox(result: SessionResult, scored: Bool) {
     applyRewards(result)
     recentResults.insert(result, at: 0)
+    recordJournalEntry(result, lecture: nil)
     sandboxUsedToday = true
     if scored { dailyLiveSessionsUsed += 1 }
   }
@@ -348,6 +392,123 @@ final class AppState {
     scheduleSRSReview(for: lecture, quality: srsQuality(from: result))
     applyRewards(result)
     recentResults.insert(result, at: 0)
+    recordJournalEntry(result, lecture: lecture)
+  }
+
+  // MARK: - Progress Journal recording + analytics
+
+  /// Persist a journal row for a completed session and update per-dimension
+  /// personal bests, firing a PR alert on a new high (after a small threshold).
+  func recordJournalEntry(_ result: SessionResult, lecture: Lecture?) {
+    let entry = JournalEntry(
+      id: result.id,
+      timestamp: result.createdAt,
+      lectureId: result.lectureId,
+      skill: lecture?.skill ?? "Sandbox",
+      coachId: selectedCoachId,
+      setting: selectedSetting.title,
+      tier: difficultyTier.rawValue,
+      isSandbox: result.isSandbox,
+      responsiveness: result.responsiveness,
+      voice: result.voice,
+      face: result.face,
+      body: result.body,
+      synchrony: result.synchrony,
+      calibration: result.calibration,
+      comfort: result.comfort,
+      sessionScore: result.sessionScore,
+      auraAfter: aura,
+      feltLine: Self.feltLine(for: result))
+    journal.append(entry)
+    JournalStore.saveEntries(journal)
+    detectPersonalBest(entry)
+  }
+
+  /// Coach's simulated "she'd feel …" line, derived from the same scores the
+  /// feedback card uses. Kept here so the journal has a durable copy.
+  static func feltLine(for r: SessionResult) -> String {
+    let warmth = (r.calibration + r.synchrony + r.comfort) / 3
+    switch warmth {
+    case 82...: return "She'd feel genuinely drawn in — easy, warm, wanting more."
+    case 68..<82: return "She'd feel comfortable and curious about you."
+    case 52..<68: return "She'd feel it was pleasant but a little surface-level."
+    default: return "She'd feel a bit of distance — the warmth didn't quite land yet."
+    }
+  }
+
+  private func detectPersonalBest(_ entry: JournalEntry) {
+    guard journal.count >= prMinSessions else {
+      // Still seed bests during the warm-up window (no alert).
+      for key in JournalEntry.dimensionKeys {
+        dimensionBests[key] = max(dimensionBests[key] ?? 0, entry.value(forDimension: key))
+      }
+      JournalStore.saveBests(dimensionBests)
+      return
+    }
+    var fired: (String, Int)?
+    for key in JournalEntry.dimensionKeys {
+      let v = entry.value(forDimension: key)
+      let prev = dimensionBests[key] ?? 0
+      if v > prev {
+        dimensionBests[key] = v
+        if fired == nil || v > fired!.1 { fired = (key, v) }
+      }
+    }
+    JournalStore.saveBests(dimensionBests)
+    if let fired { lastPersonalBest = (dimension: fired.0, value: fired.1) }
+  }
+
+  func clearPersonalBestToast() { lastPersonalBest = nil }
+
+  // MARK: - Journal analytics (read-only over `journal`)
+
+  /// Aura trend points (chronological), for the Profile trend line.
+  var auraTrend: [Int] { journal.map(\.auraAfter) }
+
+  /// Per-dimension trend points (chronological) for a dimension key.
+  func dimensionTrend(_ key: String) -> [Int] {
+    journal.map { $0.value(forDimension: key) }
+  }
+
+  /// Week-over-week delta for a dimension, in plain language. Returns nil when
+  /// there isn't enough data in either window.
+  func weekOverWeekDelta(_ key: String) -> (pct: Int, phrase: String)? {
+    let cal = Calendar.current
+    let now = Date()
+    guard let weekAgo = cal.date(byAdding: .day, value: -7, to: now),
+      let twoWeeksAgo = cal.date(byAdding: .day, value: -14, to: now)
+    else { return nil }
+    let thisWeek = journal.filter { $0.timestamp > weekAgo }
+    let lastWeek = journal.filter { $0.timestamp > twoWeeksAgo && $0.timestamp <= weekAgo }
+    guard !thisWeek.isEmpty, !lastWeek.isEmpty else { return nil }
+    let avg: ([JournalEntry]) -> Double = { rows in
+      Double(rows.map { $0.value(forDimension: key) }.reduce(0, +)) / Double(rows.count)
+    }
+    let now1 = avg(thisWeek)
+    let prev = avg(lastWeek)
+    guard prev > 0 else { return nil }
+    let pct = Int(((now1 - prev) / prev * 100).rounded())
+    let verb = pct >= 0 ? "improved" : "dipped"
+    let phrase = "your \(key.lowercased()) \(verb) \(abs(pct))% this week"
+    return (pct, phrase)
+  }
+
+  /// Pre-session coach memory: the user's weakest recent dimension, phrased in
+  /// the coach's voice. Feeds nudges + the pre-session framing.
+  var coachMemoryLine: String? {
+    let recent = Array(journal.suffix(6))
+    guard recent.count >= 2 else { return nil }
+    var worstKey = ""
+    var worstAvg = Int.max
+    for key in JournalEntry.dimensionKeys {
+      let avg = recent.map { $0.value(forDimension: key) }.reduce(0, +) / recent.count
+      if avg < worstAvg {
+        worstAvg = avg
+        worstKey = key
+      }
+    }
+    guard !worstKey.isEmpty else { return nil }
+    return "Last few sessions, \(worstKey) was your soft spot — let's watch that today."
   }
 
   // MARK: - Personalization
@@ -440,7 +601,10 @@ final class AppState {
   /// field and interpolate it into the system prompt once deployed.
   var coachPersonalizationSummary: String {
     let gentleness = profile.feedbackGentleness > 0.6 ? "gentle, encouraging" : "direct, candid"
+    let coach = selectedCoach
     return [
+      "Coach character: \(coach.humanName) — the \(coach.roleTag). \(coach.philosophyLine)",
+      "Speak as \(coach.humanName) in first person; never break character.",
       "Goal: \(profile.goal).",
       "Experience: \(profile.experience).",
       "Confidence: \(profile.confidence)/10.",
@@ -512,6 +676,10 @@ final class AppState {
   func resetProgress() {
     progress.removeAll()
     recentResults.removeAll()
+    journal.removeAll()
+    dimensionBests.removeAll()
+    lastPersonalBest = nil
+    JournalStore.wipe()
     aura = 0
     streakDays = 0
     dailyLiveSessionsUsed = 0
@@ -525,6 +693,8 @@ final class AppState {
     hasCompletedOnboarding = false
     subscriptionStatus = .locked
     subscriptionPlan = .none
+    selectedCoachId = CoachPersona.default.id
+    coachMode = CoachPersona.default.style
     trialStartedAt = nil
     trialEndsAt = nil
     cancelReason = nil

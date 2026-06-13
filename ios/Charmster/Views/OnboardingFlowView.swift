@@ -358,20 +358,15 @@ private struct CoachStyleStep: View {
   var body: some View {
     OnboardingStep(
       step: step, total: total,
-      title: "How do you want me\nto coach you?",
-      subtitle: "This sets the tone of every debrief. Switch anytime.",
+      title: "Meet your coaches",
+      subtitle: "Pick the one whose voice you want in your corner. Switch anytime.",
       onBack: onBack
     ) {
-      VStack(spacing: 10) {
-        ForEach(CoachStyle.allCases) { style in
-          OnboardingOptionCard(
-            title: style.title, subtitle: style.blurb, systemImage: style.icon,
-            isSelected: app.coachMode == style
-          ) { app.coachMode = style }
-        }
-      }
+      CoachGalleryView(embedded: true)
     } footer: {
-      AuraButton(title: "Continue", systemImage: "arrow.right", action: onNext)
+      AuraButton(
+        title: "Continue with \(app.selectedCoach.humanName)", systemImage: "arrow.right",
+        action: onNext)
     }
   }
 }
