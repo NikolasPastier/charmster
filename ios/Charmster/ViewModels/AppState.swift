@@ -29,7 +29,18 @@ struct PersonalizationProfile: Codable {
   var attachmentAnxiety: Double = 0.4
   var attachmentAvoidance: Double = 0.3
   var attachmentLabel: String = "Secure-leaning"
+  /// Raw 1–5 answers to the 6-item attachment check-in, in spec order:
+  /// 0–2 anxiety items, 3–5 avoidance items. Empty until the user completes
+  /// (or skips, which keeps the secure-leaning defaults) that step.
+  var attachmentAnswers: [Int] = []
   var feedbackGentleness: Double = 0.5  // 0 direct .. 1 gentle (auto-set, manually overridable)
+  // Avatar look picked in onboarding (Step 4). Defaults to Mia.
+  var avatarLookId: String = "mia"
+  var avatarName: String = "Mia"
+  // Account + age gate (Step 6 / 11). 17+ confirmed once, timestamped.
+  var username: String = ""
+  var ageConfirmed17: Bool = false
+  var ageConfirmedAt: Date? = nil
   var dailyGoalMinutes: Int = 10
   var dailyReminderTime: Date? = nil
   var practiceModeDefault: PracticeMode = .videoVoice
@@ -341,8 +352,56 @@ final class AppState {
 
   // MARK: - Personalization
 
+  /// Goal → recommended starting track (per the onboarding spec). Track IDs map
+  /// to `curriculum.json` content tracks (1–16). Editable later in Settings via
+  /// `recomputePersonalization()`.
+  static let goalToTrackId: [String: Int] = [
+    "Date with intention": 7,  // Deep Connection & Emotional Intimacy
+    "Date casually": 4,  // Humor, Playfulness & Banter
+    "Get unstuck": 8,  // Confidence, Anxiety & Handling Rejection
+    "Confidence in general": 6,  // Presence: Body Language & Vocal Charisma
+  ]
+
+  /// The track the personalized plan recommends the user starts in, derived
+  /// from their Goal. Falls back to Track 1 (Foundations) if unmapped.
+  var recommendedStartTrack: Track {
+    let id = Self.goalToTrackId[profile.goal] ?? 1
+    return Curriculum.tracks.first { $0.id == id }
+      ?? Curriculum.tracks.first { $0.id == 1 }
+      ?? Curriculum.tracks.first(where: { $0.id != 0 })
+      ?? Curriculum.tracks.first!
+  }
+
+  /// One-line "why this fits you" copy for the recommended track.
+  var recommendedStartReason: String {
+    switch profile.goal {
+    case "Date with intention":
+      return "You want something real — so we start where chats turn into a bond."
+    case "Date casually":
+      return "Keeping it light is a skill. We start with playfulness and banter."
+    case "Get unstuck":
+      return "Let's quiet the inner critic first, so the rest gets easier."
+    case "Confidence in general":
+      return "Presence is the foundation. We build how you carry yourself first."
+    default:
+      return "We start with the fundamentals of why people actually click."
+    }
+  }
+
   func recomputePersonalization() {
-    // Map confidence + attachment_anxiety -> recommended tier & gentleness.
+    // Recompute attachment scores from the raw 6-item check-in if present.
+    // Items 0–2 = anxiety, 3–5 = avoidance, each on a 1–5 scale.
+    if profile.attachmentAnswers.count == 6 {
+      let anxItems = profile.attachmentAnswers[0..<3]
+      let avoItems = profile.attachmentAnswers[3..<6]
+      let anx = Double(anxItems.reduce(0, +)) / 15.0  // 0..1
+      let avo = Double(avoItems.reduce(0, +)) / 15.0  // 0..1
+      profile.attachmentAnxiety = anx
+      profile.attachmentAvoidance = avo
+      profile.attachmentLabel = Self.attachmentLabel(anxiety: anx, avoidance: avo)
+    }
+
+    // Map confidence -> recommended tier.
     let conf = profile.confidence
     difficultyTier = conf >= 7 ? .gold : (conf >= 4 ? .silver : .bronze)
     profile.feedbackGentleness = min(
@@ -351,7 +410,9 @@ final class AppState {
         0.0,
         0.4 + (profile.attachmentAnxiety - 0.4) * 0.7
       ))
-    // Coach style suggestion
+    // Coach style suggestion (only if the user hasn't explicitly picked one in
+    // onboarding — the Coach Style step sets `coachMode` directly, which we
+    // respect here by only nudging on high-signal extremes).
     if profile.attachmentAnxiety > 0.65 {
       coachMode = .therapist
     } else if profile.confidence >= 8 {
@@ -359,6 +420,54 @@ final class AppState {
     } else if profile.flirtingStyle.localizedCaseInsensitiveContains("playful") {
       coachMode = .wingman
     }
+  }
+
+  /// Strength-framed attachment label (never a clinical diagnosis). Used on the
+  /// personalized plan as a starting point, not a verdict.
+  static func attachmentLabel(anxiety: Double, avoidance: Double) -> String {
+    switch (anxiety > 0.55, avoidance > 0.55) {
+    case (false, false): return "Secure-leaning"
+    case (true, false): return "Warm & invested"
+    case (false, true): return "Independent & measured"
+    case (true, true): return "Guarded but growing"
+    }
+  }
+
+  /// Compact personalization summary injected into the AI coach system prompt
+  /// (passed to the `coach` edge function). Keeps the model grounded in the
+  /// user's goals, tone preference, and growth edges.
+  /// TODO(backend): the `coach` edge function must read this `personalization`
+  /// field and interpolate it into the system prompt once deployed.
+  var coachPersonalizationSummary: String {
+    let gentleness = profile.feedbackGentleness > 0.6 ? "gentle, encouraging" : "direct, candid"
+    return [
+      "Goal: \(profile.goal).",
+      "Experience: \(profile.experience).",
+      "Confidence: \(profile.confidence)/10.",
+      "Flirting style: \(profile.flirtingStyle).",
+      "Attachment lean: \(profile.attachmentLabel).",
+      "Focus areas: \(profile.focusAreas.sorted().joined(separator: ", ")).",
+      "Preferred feedback tone: \(gentleness).",
+    ].joined(separator: " ")
+  }
+
+  /// Called when onboarding completes. Seeds the recommended starting track's
+  /// first lecture as `current` (in addition to Track 1's first lecture, which
+  /// always stays available) so the personalized plan's first lesson is real.
+  func unlockRecommendedStart() {
+    let track = recommendedStartTrack
+    if let first = Curriculum.lectures(in: track.id).first(where: { !$0.isCapstone }),
+      progress[first.id] == nil
+    {
+      progress[first.id] = LectureProgress()
+    }
+  }
+
+  /// The free taster lecture surfaced right after the personalized plan. Prefer
+  /// the recommended track's opener; fall back to the first overall lecture.
+  var tasterLecture: Lecture? {
+    Curriculum.lectures(in: recommendedStartTrack.id).first(where: { !$0.isCapstone })
+      ?? Curriculum.lectures.first
   }
 
   // MARK: - Subscription

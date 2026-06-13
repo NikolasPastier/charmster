@@ -8,15 +8,14 @@
 - [x] Build Voice Simulation Room: animated orb, live transcript, mic controls, post-session scorecard
 - [x] Build Settings screen + push notification scheduling for streak reminder
 - [x] Restore original warm noir-tech visual theme (love-spectrum aura gradient, warm glows, score bands)
-- [x] Refresh intro carousel copy across the 3 pre-quiz onboarding slides
-- [x] Swap intro carousel branding to combined Supabase logo image with feathered blend and centered text layout
 - [x] Restore canonical 16-track / 117-lecture curriculum as in-app source of truth via bundled `Resources/curriculum.json`
 - [x] Seed Supabase `tracks` + `lectures` (+ capstones) from the canonical manifest
 - [x] Wire `LectureContentStore` / `CurriculumService` to overlay Supabase curriculum on launch with bundled fallback
 - [x] Render all 17 tracks (0 + 1–16) in `RoadmapView` with capstone nodes and access-tier lock treatment bound to Superwall
-- [x] Remove XP system project-wide; Aura is now the sole progression metric (model, scorer, AppState, Roadmap/Profile/Results/Practice UI)
-- [x] Real live video+voice review pipeline: AVCaptureSession (mic + front cam) + OpenAI Realtime voice loop (ephemeral token via `realtime_session` edge function) + 2.5s sampled-frame `vision_review` edge function; real signals feed SessionScorer with SplitMix64 mock retained strictly as offline fallback; daily practice cap enforced before any AV session opens
-- [x] Replace illustrated AsyncImage avatar with photoreal video-clip AvatarView (AVPlayerLayer state machine, crossfade, looping base + one-shot mood-tag reactions, bundled still + Aura-gradient fallback, reduced-motion still), plus reactive AuraGlowLayer (pink→gold radial bound to live atmosphere, subtle pulse on partner speech)
-- [x] Wire AvatarClipCatalog manifest to the real Mia photoreal clips in Supabase Storage (`Avatars/Mia photorealistic/*.mp4`): talking/listening loops + smile/laugh/flirty/surprised reactions, with idle/thinking/reassure stand-ins and graceful fallback for unmapped states
-- [ ] Deploy `realtime_session` + `vision_review` edge functions; upload remaining Mia clips (dedicated idle/thinking/cool) and add Mateo/other persona clip sets
-- [ ] Wire Supabase auth (email + Apple), profiles/quests/progress/sessions tables
+- [x] Remove XP system project-wide; Aura is now the sole progression metric
+- [x] Real live video+voice review pipeline (AVCaptureSession + OpenAI Realtime + vision_review) with SplitMix64 mock retained as offline fallback; daily practice cap enforced
+- [x] Photoreal video-clip AvatarView (AVPlayerLayer state machine, crossfade, looping base + one-shot mood reactions, still/reduced-motion fallback) + reactive AuraGlowLayer
+- [x] Wire AvatarClipCatalog manifest to real Mia photoreal clips in Supabase Storage (`Avatars/Mia photorealistic/*.mp4`)
+- [x] Rebuild onboarding into the optimal 13-step flow: single hero, Goal→start-track mapping, all 5 coach styles, attachment (6-item) + flirting (skippable), daily goal + opt-in reminder, name + avatar look picker, privacy/cam-mic primer, account + 17+ gate, growth-framed personalized plan, free taster session before paywall; gradient progress bar + Aura-gradient option cards + haptics; new fields persisted and editable in Settings
+- [ ] Deploy `realtime_session` + `vision_review` + `coach` edge functions; have `coach` interpolate `coachPersonalizationSummary`; upload remaining Mia clips (dedicated idle/thinking/cool) and add Mateo/other persona clip sets
+- [ ] Wire Supabase auth (email + Apple); persist the personalization profile as one row per user; server-side username uniqueness + profanity screen; profiles/quests/progress/sessions tables

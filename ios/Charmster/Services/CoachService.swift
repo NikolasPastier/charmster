@@ -21,6 +21,11 @@ struct CoachService {
     let coachStyle: String
     let transcript: String?
     let kind: String  // "teaching" | "debrief" | "tip"
+    /// Compact personalization summary (goal, experience, attachment lean,
+    /// focus areas, preferred tone). Built from `AppState.coachPersonalizationSummary`.
+    /// TODO(backend): the `coach` edge function must interpolate this into the
+    /// system prompt once auth + profiles land.
+    var personalization: String? = nil
   }
 
   struct Response: Decodable {

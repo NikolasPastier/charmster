@@ -112,6 +112,7 @@ struct SettingsView: View {
       }
       NavigationLink("Focus areas") { FocusAreasView() }
       NavigationLink("Attachment check-in") { AttachmentCheckInView() }
+      NavigationLink("Practice partner & name") { AvatarLookView() }
       Button("Redo personalization") { showRedoOnboarding = true }
         .foregroundStyle(Theme.accent)
     }
@@ -395,13 +396,9 @@ private struct AttachmentCheckInView: View {
         }
       }
       Button("Save") {
-        let anxiety = (answers[0] + answers[2]) / 2
-        let avoidance = (answers[1] + answers[3]) / 2
-        app.profile.attachmentAnxiety = anxiety
-        app.profile.attachmentAvoidance = avoidance
-        app.profile.attachmentLabel =
-          anxiety > 0.65
-          ? "Anxious-leaning" : avoidance > 0.65 ? "Avoidant-leaning" : "Secure-leaning"
+        // Persist raw 1–5 answers so `recomputePersonalization` derives anxiety,
+        // avoidance, and the strength-framed label from one source of truth.
+        app.profile.attachmentAnswers = answers.map { Int(($0 * 4).rounded()) + 1 }
         app.recomputePersonalization()
       }
       .foregroundStyle(Theme.accent)
@@ -409,6 +406,51 @@ private struct AttachmentCheckInView: View {
     .scrollContentBackground(.hidden)
     .background(Theme.bg.ignoresSafeArea())
     .navigationTitle("Attachment check-in")
+  }
+}
+
+// MARK: - Avatar look + name editor
+
+private struct AvatarLookView: View {
+  @Environment(AppState.self) private var app
+  @State private var name: String = ""
+
+  var body: some View {
+    Form {
+      Section("Partner look") {
+        ForEach(AvatarPersona.library) { persona in
+          Button {
+            app.profile.avatarLookId = persona.id
+            if name.trimmingCharacters(in: .whitespaces).isEmpty
+              || AvatarPersona.library.contains(where: { $0.displayName == name })
+            {
+              name = persona.displayName
+              app.profile.avatarName = persona.displayName
+            }
+          } label: {
+            HStack {
+              Image(systemName: persona.gender == .masculine ? "person.fill" : "person.fill")
+                .foregroundStyle(Theme.accent)
+              Text(persona.displayName).foregroundStyle(Theme.text)
+              Spacer()
+              if app.profile.avatarLookId == persona.id {
+                Image(systemName: "checkmark.circle.fill").foregroundStyle(Theme.accent)
+              }
+            }
+          }
+        }
+      }
+      Section("Partner name") {
+        TextField("Mia", text: $name)
+          .onChange(of: name) { _, v in
+            app.profile.avatarName = v.trimmingCharacters(in: .whitespaces)
+          }
+      }
+    }
+    .scrollContentBackground(.hidden)
+    .background(Theme.bg.ignoresSafeArea())
+    .navigationTitle("Practice partner")
+    .onAppear { name = app.profile.avatarName.isEmpty ? "Mia" : app.profile.avatarName }
   }
 }
 
