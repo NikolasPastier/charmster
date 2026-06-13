@@ -39,6 +39,23 @@ struct MainTabView: View {
         .tabItem { Label("Settings", systemImage: "gearshape.fill") }
     }
     .tint(Theme.accent)
+    .overlay(alignment: .top) {
+      if let pb = app.lastPersonalBest {
+        PersonalBestToast(dimension: pb.dimension, value: pb.value)
+          .padding(.top, 8)
+          .transition(.move(edge: .top).combined(with: .opacity))
+          .onAppear {
+            #if canImport(UIKit)
+              UINotificationFeedbackGenerator().notificationOccurred(.success)
+            #endif
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2.6) {
+              app.clearPersonalBestToast()
+            }
+          }
+      }
+    }
+    .animation(
+      .spring(response: 0.42, dampingFraction: 0.82), value: app.lastPersonalBest?.dimension)
   }
 }
 

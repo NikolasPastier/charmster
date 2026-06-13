@@ -2,5 +2,9 @@
 - [x] Personalized plan + free taster handoff
 - [x] Practice hub, live practice, configurator
 - [x] Settings (profile, avatar partner, notifications, privacy)
-- [x] Fix daily-reminder DatePicker time legibility on dark chip
-- [x] Confirm userName vs avatarName remain distinct (no swap)
+- [x] Coach persona model + coach avatar manifest (shared foundation, owned here)
+- [x] "Meet your coaches" gallery + join flow (onboarding / Profile / Settings)
+- [x] Today hero + daily session router (reuses progression + spaced-rep + weekly drop)
+- [x] Progress Journal (history, trends, WoW deltas, PR alerts, coach memory)
+- [x] Weekly fresh content drop with Pro gating
+- [x] Surface coach everywhere (human name in-game; role/desc on selection only)

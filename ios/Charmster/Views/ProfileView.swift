@@ -3,6 +3,7 @@ import SwiftUI
 struct ProfileView: View {
   @Environment(AppState.self) private var app
   @State private var goToSettings: Bool = false
+  @State private var goToJournal: Bool = false
   @State private var showCoachGallery: Bool = false
 
   var body: some View {
@@ -12,6 +13,7 @@ struct ProfileView: View {
           VStack(spacing: 14) {
             headerCard
             statsRow
+            journalCard
             upgradeCard
             pillsRow
             recentResultsCard
@@ -22,6 +24,9 @@ struct ProfileView: View {
         .navigationTitle("Profile")
         .navigationDestination(isPresented: $goToSettings) {
           SettingsView()
+        }
+        .navigationDestination(isPresented: $goToJournal) {
+          JournalView()
         }
       }
     }
@@ -61,6 +66,40 @@ struct ProfileView: View {
       }
       .frame(maxWidth: .infinity)
     }
+  }
+
+  private var journalCard: some View {
+    Button {
+      goToJournal = true
+    } label: {
+      GlassCard {
+        HStack(spacing: 12) {
+          Image(systemName: "chart.line.uptrend.xyaxis")
+            .font(.system(size: 18, weight: .heavy))
+            .foregroundStyle(Theme.aura)
+            .frame(width: 38, height: 38)
+            .background(Circle().fill(Theme.aura.opacity(0.14)))
+          VStack(alignment: .leading, spacing: 2) {
+            Text("Progress Journal")
+              .font(.system(size: 16, weight: .heavy))
+              .foregroundStyle(Theme.text)
+            Text(journalSubtitle)
+              .font(.system(size: 12))
+              .foregroundStyle(Theme.textMuted)
+          }
+          Spacer()
+          Image(systemName: "chevron.right").foregroundStyle(Theme.textFaint)
+        }
+      }
+    }
+    .buttonStyle(.plain)
+  }
+
+  private var journalSubtitle: String {
+    if app.journal.isEmpty {
+      return "Trends, deltas, and personal bests after your first session"
+    }
+    return "\(app.journal.count) session\(app.journal.count == 1 ? "" : "s") logged · trends & PRs"
   }
 
   private var upgradeCard: some View {
