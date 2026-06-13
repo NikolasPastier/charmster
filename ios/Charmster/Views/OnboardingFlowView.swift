@@ -989,7 +989,8 @@ private struct TasterStep: View {
 
   private var tasterConfig: SessionConfig? {
     SessionConfig(
-      persona: PartnerPersona.resolve(from: app.profile.avatarLookId),
+      persona: PartnerPersona.library.first { $0.id == app.profile.avatarLookId }
+        ?? .default,
       setting: .default,
       tier: app.difficultyTier,
       coach: app.coachMode,
