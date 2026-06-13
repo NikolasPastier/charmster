@@ -1,0 +1,6 @@
+- [x] Onboarding flow (quiz, daily goal, name + avatar, privacy, account)
+- [x] Personalized plan + free taster handoff
+- [x] Practice hub, live practice, configurator
+- [x] Settings (profile, avatar partner, notifications, privacy)
+- [x] Fix daily-reminder DatePicker time legibility on dark chip
+- [x] Confirm userName vs avatarName remain distinct (no swap)

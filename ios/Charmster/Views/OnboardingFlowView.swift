@@ -513,6 +513,11 @@ private struct DailyGoalStep: View {
               )
               .tint(Theme.accent)
               .foregroundStyle(Theme.text)
+              // The compact time pill is rendered by the system control, so its
+              // label color follows the environment color scheme rather than
+              // `foregroundStyle`. Force dark so the time reads as light text on
+              // the dark chip instead of near-black-on-dark.
+              .environment(\.colorScheme, .dark)
             }
           }
         }
