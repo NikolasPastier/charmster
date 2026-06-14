@@ -1,19 +1,29 @@
 import SwiftUI
 
+#if canImport(UIKit)
+  import UIKit
+#endif
+
 /// Centralized design tokens for Charmster.
 /// Dark, cinematic, premium "noir-tech" base lit by a warm love-spectrum gradient.
 enum Theme {
-  // MARK: - Base neutrals (near-black with subtle violet tint, never pure black)
-  static let bg = Color(hex: 0x0B0910)  // app background
-  static let surface = Color(hex: 0x14111C)  // cards, sheets, tab bar
-  static let surfaceRaised = Color(hex: 0x1D1928)  // modals, active tiles (elevated)
-  static let border = Color(hex: 0x2C2740)  // strokes / dividers
-  static let divider = Color(hex: 0x2C2740)
+  // MARK: - Base neutrals (adaptive: warm near-white in Light, noir-violet in Dark)
+  //
+  // Dark values are the original Charmster palette (unchanged so the dark UI is
+  // byte-identical). Light values are a warm, low-glare near-white set tuned for
+  // contrast against the brand accents. Because these are dynamic colors, the
+  // single root `.preferredColorScheme` re-skins ALL tabs — including the custom
+  // token-painted ones — not just native chrome.
+  static let bg = Color(lightHex: 0xFAF7FB, darkHex: 0x0B0910)  // app background
+  static let surface = Color(lightHex: 0xFFFFFF, darkHex: 0x14111C)  // cards, sheets, tab bar
+  static let surfaceRaised = Color(lightHex: 0xF1ECF5, darkHex: 0x1D1928)  // elevated tiles
+  static let border = Color(lightHex: 0xE6DEEE, darkHex: 0x2C2740)  // strokes / dividers
+  static let divider = Color(lightHex: 0xE6DEEE, darkHex: 0x2C2740)
 
   // MARK: - Type
-  static let text = Color(hex: 0xF6F4FA)
-  static let textMuted = Color(hex: 0xABA4BD)
-  static let textFaint = Color(hex: 0x6C6580)  // hints, disabled, locked
+  static let text = Color(lightHex: 0x1A1622, darkHex: 0xF6F4FA)
+  static let textMuted = Color(lightHex: 0x6B6479, darkHex: 0xABA4BD)
+  static let textFaint = Color(lightHex: 0xA59CB4, darkHex: 0x6C6580)  // hints, disabled, locked
 
   // MARK: - Love spectrum (warm accents)
   static let purple = Color(hex: 0xA24BFF)
@@ -106,6 +116,23 @@ extension Color {
     let g = Double((hex >> 8) & 0xFF) / 255.0
     let b = Double(hex & 0xFF) / 255.0
     self.init(.sRGB, red: r, green: g, blue: b, opacity: alpha)
+  }
+
+  /// Adaptive color that resolves per trait collection. Drives Light/Dark
+  /// re-skin across every Theme token from the single root color scheme.
+  init(lightHex: UInt32, darkHex: UInt32, alpha: Double = 1.0) {
+    #if canImport(UIKit)
+      self.init(
+        UIColor { traits in
+          let hex = traits.userInterfaceStyle == .dark ? darkHex : lightHex
+          let r = CGFloat((hex >> 16) & 0xFF) / 255.0
+          let g = CGFloat((hex >> 8) & 0xFF) / 255.0
+          let b = CGFloat(hex & 0xFF) / 255.0
+          return UIColor(red: r, green: g, blue: b, alpha: CGFloat(alpha))
+        })
+    #else
+      self.init(hex: lightHex, alpha: alpha)
+    #endif
   }
 }
 

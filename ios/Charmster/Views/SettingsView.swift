@@ -2,6 +2,10 @@ import SwiftUI
 
 /// Step 10 — full parity with the Account Settings spec. All pricing /
 /// purchase / restore actions live in Superwall, never in this view.
+///
+/// Rebuilt off the native `Form` onto the app's own design system
+/// (GlassCard + SectionHeader over `Theme.bg`) so it re-skins exactly like the
+/// other tabs in both Light and Dark instead of rendering as a white sheet.
 struct SettingsView: View {
   @Environment(AppState.self) private var app
   @State private var showDeleteConfirm = false
@@ -10,22 +14,25 @@ struct SettingsView: View {
   @State private var showRedoOnboarding = false
 
   var body: some View {
-    Group {
-      Form {
-        profileSection
-        personalizationSection
-        coachingSection
-        learningGoalsSection
-        notificationsSection
-        privacySection
-        membershipSection
-        appearanceSection
-        supportSection
-        dangerZoneSection
+    NavigationStack {
+      ScrollView {
+        VStack(spacing: 18) {
+          profileSection
+          personalizationSection
+          coachingSection
+          learningGoalsSection
+          notificationsSection
+          privacySection
+          membershipSection
+          appearanceSection
+          supportSection
+          dangerZoneSection
+        }
+        .padding(18)
       }
-      .scrollContentBackground(.hidden)
       .background(Theme.bg.ignoresSafeArea())
       .navigationTitle("Settings")
+      .tint(Theme.accent)
       .fullScreenCover(isPresented: $showRedoOnboarding) {
         NavigationStack { OnboardingFlowView().environment(app) }
       }
@@ -40,97 +47,90 @@ struct SettingsView: View {
   // MARK: - Profile
 
   private var profileSection: some View {
-    Section("Profile & account") {
-      HStack {
-        Text("Name")
+    SettingsCard(title: "Profile & account", icon: "person.crop.circle.fill") {
+      SettingsRow {
+        Text("Name").foregroundStyle(Theme.text)
         Spacer()
         TextField("Your name", text: bindingFor(\.profile.name))
           .multilineTextAlignment(.trailing)
+          .foregroundStyle(Theme.text)
       }
-      HStack {
-        Text("Profile picture")
+      SettingsDivider()
+      SettingsRow {
+        Text("Profile picture").foregroundStyle(Theme.text)
         Spacer()
         Image(systemName: "person.crop.circle.fill")
           .font(.system(size: 22)).foregroundStyle(Theme.textMuted)
       }
-      HStack {
-        Text("Sign-in method")
-        Spacer()
-        Text("Apple").foregroundStyle(Theme.textMuted)
-      }
-      HStack {
-        Text("Email")
-        Spacer()
-        Text("alex@example.com").foregroundStyle(Theme.textMuted)
-      }
-      HStack {
-        Text("Age")
-        Spacer()
-        Text("17+").foregroundStyle(Theme.textMuted)
-      }
-      Button("Manage devices / Sign out") { /* TODO real auth */  }
+      SettingsDivider()
+      infoRow("Sign-in method", "Apple")
+      SettingsDivider()
+      infoRow("Email", "alex@example.com")
+      SettingsDivider()
+      infoRow("Age", "17+")
+      SettingsDivider()
+      SettingsButtonRow("Manage devices / Sign out") { /* TODO real auth */  }
     }
   }
 
   // MARK: - Personalization
 
   private var personalizationSection: some View {
-    Section("Personalization") {
-      Picker(
-        "Goal", selection: bindingFor(\.profile.goal, then: { app.recomputePersonalization() })
-      ) {
-        ForEach(
-          ["Date with intention", "Date casually", "Get unstuck", "Confidence in general"],
-          id: \.self
-        ) {
-          Text($0).tag($0)
-        }
-      }
-      Picker(
+    SettingsCard(title: "Personalization", icon: "slider.horizontal.below.rectangle") {
+      pickerRow(
+        "Goal", selection: bindingFor(\.profile.goal, then: { app.recomputePersonalization() }),
+        options: [
+          "Date with intention", "Date casually", "Get unstuck", "Confidence in general",
+        ])
+      SettingsDivider()
+      pickerRow(
         "Experience",
-        selection: bindingFor(\.profile.experience, then: { app.recomputePersonalization() })
-      ) {
-        ForEach(["Brand new", "Some experience", "Plenty, but mixed", "Veteran"], id: \.self) {
-          Text($0).tag($0)
-        }
-      }
-      Picker(
+        selection: bindingFor(\.profile.experience, then: { app.recomputePersonalization() }),
+        options: ["Brand new", "Some experience", "Plenty, but mixed", "Veteran"])
+      SettingsDivider()
+      pickerRow(
         "Flirting style",
-        selection: bindingFor(\.profile.flirtingStyle, then: { app.recomputePersonalization() })
-      ) {
-        ForEach(["Warm", "Playful", "Dry", "Direct"], id: \.self) { Text($0).tag($0) }
-      }
-      Stepper(
-        value: bindingFor(\.profile.confidence, then: { app.recomputePersonalization() }),
-        in: 1...10
-      ) {
-        HStack {
-          Text("Confidence")
-          Spacer()
-          Text("\(app.profile.confidence)/10").foregroundStyle(Theme.textMuted)
+        selection: bindingFor(\.profile.flirtingStyle, then: { app.recomputePersonalization() }),
+        options: ["Warm", "Playful", "Dry", "Direct"])
+      SettingsDivider()
+      SettingsRow {
+        Stepper(
+          value: bindingFor(\.profile.confidence, then: { app.recomputePersonalization() }),
+          in: 1...10
+        ) {
+          HStack {
+            Text("Confidence").foregroundStyle(Theme.text)
+            Spacer()
+            Text("\(app.profile.confidence)/10").foregroundStyle(Theme.textMuted)
+          }
         }
       }
-      NavigationLink("Focus areas") { FocusAreasView() }
-      NavigationLink("Attachment check-in") { AttachmentCheckInView() }
-      NavigationLink("Practice partner & name") { AvatarLookView() }
-      Button("Redo personalization") { showRedoOnboarding = true }
-        .foregroundStyle(Theme.accent)
+      SettingsDivider()
+      navRow("Focus areas") { FocusAreasView() }
+      SettingsDivider()
+      navRow("Attachment check-in") { AttachmentCheckInView() }
+      SettingsDivider()
+      navRow("Practice partner & name") { AvatarLookView() }
+      SettingsDivider()
+      SettingsButtonRow("Redo personalization", tint: Theme.accent) {
+        showRedoOnboarding = true
+      }
     }
   }
 
   // MARK: - Coaching
 
   private var coachingSection: some View {
-    Section("Coaching & difficulty") {
+    SettingsCard(title: "Coaching & difficulty", icon: "person.2.fill") {
       NavigationLink {
         CoachGalleryView().environment(app)
       } label: {
-        HStack(spacing: 12) {
+        SettingsRow {
           CoachAvatarView(coach: app.selectedCoach)
             .frame(width: 38, height: 38)
             .clipShape(Circle())
           VStack(alignment: .leading, spacing: 2) {
-            Text("Coach")
+            Text("Coach").foregroundStyle(Theme.text)
             Text("\(app.selectedCoach.humanName) · \(app.selectedCoach.roleTag)")
               .font(.caption).foregroundStyle(Theme.textMuted)
           }
@@ -138,12 +138,21 @@ struct SettingsView: View {
           Text("Switch").font(.caption).foregroundStyle(Theme.accent)
         }
       }
-      Picker("Difficulty", selection: bindingFor(\.difficultyTier)) {
-        ForEach(DifficultyTier.allCases) { Text($0.title).tag($0) }
+      .buttonStyle(.plain)
+      SettingsDivider()
+      SettingsRow {
+        Text("Difficulty").foregroundStyle(Theme.text)
+        Spacer()
+        Picker("Difficulty", selection: bindingFor(\.difficultyTier)) {
+          ForEach(DifficultyTier.allCases) { Text($0.title).tag($0) }
+        }
+        .labelsHidden().pickerStyle(.menu).tint(Theme.accent)
       }
-      HStack {
-        Text("Feedback gentleness")
+      SettingsDivider()
+      SettingsRow {
+        Text("Feedback gentleness").foregroundStyle(Theme.text)
         Slider(value: bindingFor(\.profile.feedbackGentleness), in: 0...1)
+          .tint(Theme.accent)
         Text(
           app.profile.feedbackGentleness > 0.6
             ? "Gentle" : (app.profile.feedbackGentleness < 0.4 ? "Direct" : "Mid")
@@ -156,100 +165,136 @@ struct SettingsView: View {
   // MARK: - Learning goals
 
   private var learningGoalsSection: some View {
-    Section("Learning goals & reminders") {
-      Picker("Daily goal", selection: bindingFor(\.profile.dailyGoalMinutes)) {
-        Text("Casual (~5 min)").tag(5)
-        Text("Regular (~10 min)").tag(10)
-        Text("Serious (15+ min)").tag(15)
-      }
-      Toggle(
-        "Daily reminder",
-        isOn: Binding(
-          get: { app.profile.dailyReminderTime != nil },
-          set: { app.profile.dailyReminderTime = $0 ? .now : nil }
-        ))
-      if app.profile.dailyReminderTime != nil {
-        DatePicker(
-          "Reminder time",
-          selection: Binding(
-            get: { app.profile.dailyReminderTime ?? .now },
-            set: { app.profile.dailyReminderTime = $0 }
-          ),
-          displayedComponents: .hourAndMinute)
-      }
-      Picker("Default practice mode", selection: bindingFor(\.profile.practiceModeDefault)) {
-        ForEach(PracticeMode.allCases) { Text($0.title).tag($0) }
-      }
-      HStack {
-        Text("Streak freeze / rest days")
+    SettingsCard(title: "Learning goals & reminders", icon: "target") {
+      SettingsRow {
+        Text("Daily goal").foregroundStyle(Theme.text)
         Spacer()
-        Text("2 left").foregroundStyle(Theme.textMuted)
+        Picker("Daily goal", selection: bindingFor(\.profile.dailyGoalMinutes)) {
+          Text("Casual (~5 min)").tag(5)
+          Text("Regular (~10 min)").tag(10)
+          Text("Serious (15+ min)").tag(15)
+        }
+        .labelsHidden().pickerStyle(.menu).tint(Theme.accent)
       }
+      SettingsDivider()
+      SettingsRow {
+        Toggle(
+          "Daily reminder",
+          isOn: Binding(
+            get: { app.profile.dailyReminderTime != nil },
+            set: { app.profile.dailyReminderTime = $0 ? .now : nil }
+          )
+        )
+        .foregroundStyle(Theme.text).tint(Theme.accent)
+      }
+      if app.profile.dailyReminderTime != nil {
+        SettingsDivider()
+        SettingsRow {
+          DatePicker(
+            "Reminder time",
+            selection: Binding(
+              get: { app.profile.dailyReminderTime ?? .now },
+              set: { app.profile.dailyReminderTime = $0 }
+            ),
+            displayedComponents: .hourAndMinute
+          )
+          .foregroundStyle(Theme.text).tint(Theme.accent)
+        }
+      }
+      SettingsDivider()
+      SettingsRow {
+        Text("Default practice mode").foregroundStyle(Theme.text)
+        Spacer()
+        Picker("Default practice mode", selection: bindingFor(\.profile.practiceModeDefault)) {
+          ForEach(PracticeMode.allCases) { Text($0.title).tag($0) }
+        }
+        .labelsHidden().pickerStyle(.menu).tint(Theme.accent)
+      }
+      SettingsDivider()
+      infoRow("Streak freeze / rest days", "2 left")
     }
   }
 
   // MARK: - Notifications
 
   private var notificationsSection: some View {
-    Section("Notifications") {
-      Toggle("Streak reminders", isOn: bindingFor(\.profile.notificationsStreak))
-      Toggle("Daily challenge", isOn: bindingFor(\.profile.notificationsDailyChallenge))
-      Toggle("New content", isOn: bindingFor(\.profile.notificationsNewContent))
-      Toggle("Re-engagement", isOn: bindingFor(\.profile.notificationsReengagement))
-      Toggle("Weekly email digest", isOn: bindingFor(\.profile.emailDigest))
-      Toggle("Product emails", isOn: bindingFor(\.profile.emailProduct))
-      Toggle("Marketing emails", isOn: bindingFor(\.profile.emailMarketing))
-      DatePicker(
-        "Quiet hours start",
-        selection: Binding(
-          get: { app.profile.quietHoursStart ?? .now },
-          set: { app.profile.quietHoursStart = $0 }),
-        displayedComponents: .hourAndMinute)
-      DatePicker(
-        "Quiet hours end",
-        selection: Binding(
-          get: { app.profile.quietHoursEnd ?? .now },
-          set: { app.profile.quietHoursEnd = $0 }),
-        displayedComponents: .hourAndMinute)
+    SettingsCard(title: "Notifications", icon: "bell.fill") {
+      toggleRow("Streak reminders", bindingFor(\.profile.notificationsStreak))
+      SettingsDivider()
+      toggleRow("Daily challenge", bindingFor(\.profile.notificationsDailyChallenge))
+      SettingsDivider()
+      toggleRow("New content", bindingFor(\.profile.notificationsNewContent))
+      SettingsDivider()
+      toggleRow("Re-engagement", bindingFor(\.profile.notificationsReengagement))
+      SettingsDivider()
+      toggleRow("Weekly email digest", bindingFor(\.profile.emailDigest))
+      SettingsDivider()
+      toggleRow("Product emails", bindingFor(\.profile.emailProduct))
+      SettingsDivider()
+      toggleRow("Marketing emails", bindingFor(\.profile.emailMarketing))
+      SettingsDivider()
+      SettingsRow {
+        DatePicker(
+          "Quiet hours start",
+          selection: Binding(
+            get: { app.profile.quietHoursStart ?? .now },
+            set: { app.profile.quietHoursStart = $0 }),
+          displayedComponents: .hourAndMinute
+        )
+        .foregroundStyle(Theme.text).tint(Theme.accent)
+      }
+      SettingsDivider()
+      SettingsRow {
+        DatePicker(
+          "Quiet hours end",
+          selection: Binding(
+            get: { app.profile.quietHoursEnd ?? .now },
+            set: { app.profile.quietHoursEnd = $0 }),
+          displayedComponents: .hourAndMinute
+        )
+        .foregroundStyle(Theme.text).tint(Theme.accent)
+      }
     }
   }
 
   // MARK: - Privacy
 
   private var privacySection: some View {
-    Section("Privacy & permissions") {
-      Toggle("Analytics opt-in", isOn: bindingFor(\.profile.analyticsOptIn))
-      Button("Manage camera permission") { openSystemSettings() }
-      Button("Manage microphone permission") { openSystemSettings() }
-      NavigationLink("Your data") {
+    SettingsCard(title: "Privacy & permissions", icon: "hand.raised.fill") {
+      toggleRow("Analytics opt-in", bindingFor(\.profile.analyticsOptIn))
+      SettingsDivider()
+      SettingsButtonRow("Manage camera permission") { openSystemSettings() }
+      SettingsDivider()
+      SettingsButtonRow("Manage microphone permission") { openSystemSettings() }
+      SettingsDivider()
+      navRow("Your data") {
         Text("Download a copy of your data + summary of what's stored.").padding()
       }
-      Text("Sessions are analyzed in real time. We never store raw video or audio.")
-        .font(.caption).foregroundStyle(Theme.textMuted)
+      SettingsDivider()
+      SettingsRow {
+        Text("Sessions are analyzed in real time. We never store raw video or audio.")
+          .font(.caption).foregroundStyle(Theme.textMuted)
+        Spacer(minLength: 0)
+      }
     }
   }
 
   // MARK: - Membership (routed entirely through Superwall placements)
 
   private var membershipSection: some View {
-    Section("Membership") {
-      HStack {
-        Text("Current plan")
-        Spacer()
-        Text(planLabel).foregroundStyle(Theme.textMuted)
-      }
-      HStack {
-        Text("Today's sessions")
-        Spacer()
-        Text("\(app.dailyLiveSessionsUsed) / \(app.dailyLiveSessionsCap)")
-          .foregroundStyle(Theme.textMuted)
-      }
-      Button("Open membership options") {
+    SettingsCard(title: "Membership", icon: "crown.fill") {
+      infoRow("Current plan", planLabel)
+      SettingsDivider()
+      infoRow("Today's sessions", "\(app.dailyLiveSessionsUsed) / \(app.dailyLiveSessionsCap)")
+      SettingsDivider()
+      SettingsButtonRow("Open membership options", tint: Theme.accent) {
         CharmsterSuperwall.register(.upgradePrompt)
       }
       if app.isPro {
-        Button("End membership") { showCancelSurvey = true }
-          .foregroundStyle(Theme.coral)
+        SettingsDivider()
+        SettingsButtonRow("End membership", tint: Theme.coral) {
+          showCancelSurvey = true
+        }
       }
     }
   }
@@ -271,50 +316,59 @@ struct SettingsView: View {
   // MARK: - Appearance
 
   private var appearanceSection: some View {
-    Section("Appearance & accessibility") {
-      Picker("Theme", selection: bindingFor(\.profile.themePreference)) {
-        Text("System").tag("system")
-        Text("Light").tag("light")
-        Text("Dark").tag("dark")
+    SettingsCard(title: "Appearance & accessibility", icon: "paintbrush.fill") {
+      SettingsRow {
+        Text("Theme").foregroundStyle(Theme.text)
+        Spacer()
+        Picker("Theme", selection: bindingFor(\.profile.themePreference)) {
+          Text("System").tag("system")
+          Text("Light").tag("light")
+          Text("Dark").tag("dark")
+        }
+        .labelsHidden().pickerStyle(.menu).tint(Theme.accent)
       }
-      Picker("Text size", selection: bindingFor(\.profile.textSize)) {
-        Text("Standard").tag("standard")
-        Text("Large").tag("large")
+      SettingsDivider()
+      SettingsRow {
+        Text("Text size").foregroundStyle(Theme.text)
+        Spacer()
+        Picker("Text size", selection: bindingFor(\.profile.textSize)) {
+          Text("Standard").tag("standard")
+          Text("Large").tag("large")
+        }
+        .labelsHidden().pickerStyle(.menu).tint(Theme.accent)
       }
-      Toggle("Captions during practice", isOn: bindingFor(\.profile.captionsEnabled))
-      Toggle("Sound & haptics", isOn: bindingFor(\.profile.soundAndHaptics))
+      SettingsDivider()
+      toggleRow("Captions during practice", bindingFor(\.profile.captionsEnabled))
+      SettingsDivider()
+      toggleRow("Sound & haptics", bindingFor(\.profile.soundAndHaptics))
     }
   }
 
   // MARK: - Support
 
   private var supportSection: some View {
-    Section("Support & legal") {
-      NavigationLink("Help center / FAQ") { Text("Help center").padding() }
-      Button("Contact support") { /* mailto */  }
-      NavigationLink("Terms of service") { Text("Terms").padding() }
-      NavigationLink("Privacy policy") { Text("Privacy").padding() }
-      HStack {
-        Text("Version")
-        Spacer()
-        Text("1.0.0").foregroundStyle(Theme.textMuted)
-      }
-      HStack {
-        Text("Age rating")
-        Spacer()
-        Text("17+").foregroundStyle(Theme.textMuted)
-      }
+    SettingsCard(title: "Support & legal", icon: "questionmark.circle.fill") {
+      navRow("Help center / FAQ") { Text("Help center").padding() }
+      SettingsDivider()
+      SettingsButtonRow("Contact support") { /* mailto */  }
+      SettingsDivider()
+      navRow("Terms of service") { Text("Terms").padding() }
+      SettingsDivider()
+      navRow("Privacy policy") { Text("Privacy").padding() }
+      SettingsDivider()
+      infoRow("Version", "1.0.0")
+      SettingsDivider()
+      infoRow("Age rating", "17+")
     }
   }
 
   // MARK: - Danger zone
 
   private var dangerZoneSection: some View {
-    Section("Danger zone") {
-      Button("Reset progress") { showResetConfirm = true }
-        .foregroundStyle(Theme.warn)
-      Button("Delete account") { showDeleteConfirm = true }
-        .foregroundStyle(Theme.coral)
+    SettingsCard(title: "Danger zone", icon: "exclamationmark.triangle.fill") {
+      SettingsButtonRow("Reset progress", tint: Theme.warn) { showResetConfirm = true }
+      SettingsDivider()
+      SettingsButtonRow("Delete account", tint: Theme.coral) { showDeleteConfirm = true }
     }
     .confirmationDialog(
       "Reset all progress?",
@@ -330,6 +384,53 @@ struct SettingsView: View {
       Button("Delete account", role: .destructive) { app.deleteAccount() }
       Button("Cancel", role: .cancel) {}
     }
+  }
+
+  // MARK: - Row helpers
+
+  private func infoRow(_ title: String, _ value: String) -> some View {
+    SettingsRow {
+      Text(title).foregroundStyle(Theme.text)
+      Spacer()
+      Text(value).foregroundStyle(Theme.textMuted)
+    }
+  }
+
+  private func toggleRow(_ title: String, _ binding: Binding<Bool>) -> some View {
+    SettingsRow {
+      Toggle(title, isOn: binding)
+        .foregroundStyle(Theme.text)
+        .tint(Theme.accent)
+    }
+  }
+
+  private func pickerRow(
+    _ title: String, selection: Binding<String>, options: [String]
+  ) -> some View {
+    SettingsRow {
+      Text(title).foregroundStyle(Theme.text)
+      Spacer()
+      Picker(title, selection: selection) {
+        ForEach(options, id: \.self) { Text($0).tag($0) }
+      }
+      .labelsHidden().pickerStyle(.menu).tint(Theme.accent)
+    }
+  }
+
+  private func navRow<Destination: View>(
+    _ title: String, @ViewBuilder destination: @escaping () -> Destination
+  ) -> some View {
+    NavigationLink {
+      destination()
+    } label: {
+      SettingsRow {
+        Text(title).foregroundStyle(Theme.text)
+        Spacer()
+        Image(systemName: "chevron.right").font(.system(size: 13, weight: .bold))
+          .foregroundStyle(Theme.textFaint)
+      }
+    }
+    .buttonStyle(.plain)
   }
 
   // MARK: - Helpers
@@ -353,6 +454,71 @@ struct SettingsView: View {
   }
 }
 
+// MARK: - Settings layout primitives (match the other tabs)
+
+/// A titled section: SectionHeader above a GlassCard that stacks its rows.
+private struct SettingsCard<Content: View>: View {
+  let title: String
+  var icon: String? = nil
+  @ViewBuilder var content: () -> Content
+
+  var body: some View {
+    VStack(alignment: .leading, spacing: 10) {
+      SectionHeader(title: title, systemImage: icon)
+      GlassCard(padding: 0) {
+        VStack(spacing: 0) {
+          content()
+        }
+      }
+    }
+  }
+}
+
+/// One row of content with consistent inset.
+private struct SettingsRow<Content: View>: View {
+  @ViewBuilder var content: () -> Content
+  var body: some View {
+    HStack(spacing: 12) {
+      content()
+    }
+    .font(.system(size: 15))
+    .padding(.horizontal, 16)
+    .padding(.vertical, 13)
+    .frame(maxWidth: .infinity, alignment: .leading)
+  }
+}
+
+/// A tappable button styled as a settings row.
+private struct SettingsButtonRow: View {
+  let title: String
+  var tint: Color = Theme.text
+  let action: () -> Void
+
+  init(_ title: String, tint: Color = Theme.text, action: @escaping () -> Void) {
+    self.title = title
+    self.tint = tint
+    self.action = action
+  }
+
+  var body: some View {
+    Button(action: action) {
+      SettingsRow {
+        Text(title).foregroundStyle(tint)
+        Spacer()
+      }
+    }
+    .buttonStyle(.plain)
+  }
+}
+
+private struct SettingsDivider: View {
+  var body: some View {
+    Rectangle().fill(Theme.divider)
+      .frame(height: 1)
+      .padding(.leading, 16)
+  }
+}
+
 // MARK: - Focus areas
 
 private struct FocusAreasView: View {
@@ -361,27 +527,38 @@ private struct FocusAreasView: View {
     "Opening", "Flow", "Calibration", "Frame", "Closing", "Repair", "Presence",
   ]
   var body: some View {
-    List {
-      ForEach(options, id: \.self) { f in
-        Button {
-          if app.profile.focusAreas.contains(f) {
-            app.profile.focusAreas.remove(f)
-          } else {
-            app.profile.focusAreas.insert(f)
-          }
-          app.recomputePersonalization()
-        } label: {
-          HStack {
-            Text(f).foregroundStyle(Theme.text)
-            Spacer()
-            if app.profile.focusAreas.contains(f) {
-              Image(systemName: "checkmark").foregroundStyle(Theme.accent)
+    ScrollView {
+      VStack(spacing: 10) {
+        GlassCard(padding: 0) {
+          VStack(spacing: 0) {
+            ForEach(Array(options.enumerated()), id: \.element) { idx, f in
+              Button {
+                if app.profile.focusAreas.contains(f) {
+                  app.profile.focusAreas.remove(f)
+                } else {
+                  app.profile.focusAreas.insert(f)
+                }
+                app.recomputePersonalization()
+              } label: {
+                HStack {
+                  Text(f).foregroundStyle(Theme.text)
+                  Spacer()
+                  if app.profile.focusAreas.contains(f) {
+                    Image(systemName: "checkmark").foregroundStyle(Theme.accent)
+                  }
+                }
+                .padding(.horizontal, 16).padding(.vertical, 14)
+              }
+              .buttonStyle(.plain)
+              if idx < options.count - 1 {
+                Rectangle().fill(Theme.divider).frame(height: 1).padding(.leading, 16)
+              }
             }
           }
         }
       }
+      .padding(18)
     }
-    .scrollContentBackground(.hidden)
     .background(Theme.bg.ignoresSafeArea())
     .navigationTitle("Focus areas")
   }
@@ -401,22 +578,25 @@ private struct AttachmentCheckInView: View {
     "I trust my instincts in social moments.",
   ]
   var body: some View {
-    Form {
-      ForEach(prompts.indices, id: \.self) { i in
-        VStack(alignment: .leading) {
-          Text(prompts[i])
-          Slider(value: $answers[i])
+    ScrollView {
+      VStack(spacing: 14) {
+        ForEach(prompts.indices, id: \.self) { i in
+          GlassCard {
+            VStack(alignment: .leading, spacing: 10) {
+              Text(prompts[i]).foregroundStyle(Theme.text)
+              Slider(value: $answers[i]).tint(Theme.accent)
+            }
+          }
+        }
+        AuraButton(title: "Save", systemImage: "checkmark") {
+          // Persist raw 1–5 answers so `recomputePersonalization` derives anxiety,
+          // avoidance, and the strength-framed label from one source of truth.
+          app.profile.attachmentAnswers = answers.map { Int(($0 * 4).rounded()) + 1 }
+          app.recomputePersonalization()
         }
       }
-      Button("Save") {
-        // Persist raw 1–5 answers so `recomputePersonalization` derives anxiety,
-        // avoidance, and the strength-framed label from one source of truth.
-        app.profile.attachmentAnswers = answers.map { Int(($0 * 4).rounded()) + 1 }
-        app.recomputePersonalization()
-      }
-      .foregroundStyle(Theme.accent)
+      .padding(18)
     }
-    .scrollContentBackground(.hidden)
     .background(Theme.bg.ignoresSafeArea())
     .navigationTitle("Attachment check-in")
   }
@@ -429,38 +609,54 @@ private struct AvatarLookView: View {
   @State private var name: String = ""
 
   var body: some View {
-    Form {
-      Section("Partner look") {
-        ForEach(AvatarPersona.library) { persona in
-          Button {
-            app.profile.avatarLookId = persona.id
-            if name.trimmingCharacters(in: .whitespaces).isEmpty
-              || AvatarPersona.library.contains(where: { $0.displayName == name })
-            {
-              name = persona.displayName
-              app.profile.avatarName = persona.displayName
-            }
-          } label: {
-            HStack {
-              Image(systemName: persona.gender == .masculine ? "person.fill" : "person.fill")
-                .foregroundStyle(Theme.accent)
-              Text(persona.displayName).foregroundStyle(Theme.text)
-              Spacer()
-              if app.profile.avatarLookId == persona.id {
-                Image(systemName: "checkmark.circle.fill").foregroundStyle(Theme.accent)
+    ScrollView {
+      VStack(spacing: 14) {
+        VStack(alignment: .leading, spacing: 10) {
+          SectionHeader(title: "Partner look", systemImage: "person.fill")
+          GlassCard(padding: 0) {
+            VStack(spacing: 0) {
+              ForEach(Array(AvatarPersona.library.enumerated()), id: \.element.id) {
+                idx, persona in
+                Button {
+                  app.profile.avatarLookId = persona.id
+                  if name.trimmingCharacters(in: .whitespaces).isEmpty
+                    || AvatarPersona.library.contains(where: { $0.displayName == name })
+                  {
+                    name = persona.displayName
+                    app.profile.avatarName = persona.displayName
+                  }
+                } label: {
+                  HStack {
+                    Image(systemName: "person.fill").foregroundStyle(Theme.accent)
+                    Text(persona.displayName).foregroundStyle(Theme.text)
+                    Spacer()
+                    if app.profile.avatarLookId == persona.id {
+                      Image(systemName: "checkmark.circle.fill").foregroundStyle(Theme.accent)
+                    }
+                  }
+                  .padding(.horizontal, 16).padding(.vertical, 14)
+                }
+                .buttonStyle(.plain)
+                if idx < AvatarPersona.library.count - 1 {
+                  Rectangle().fill(Theme.divider).frame(height: 1).padding(.leading, 16)
+                }
               }
             }
           }
         }
-      }
-      Section("Partner name") {
-        TextField("Mia", text: $name)
-          .onChange(of: name) { _, v in
-            app.profile.avatarName = v.trimmingCharacters(in: .whitespaces)
+        VStack(alignment: .leading, spacing: 10) {
+          SectionHeader(title: "Partner name", systemImage: "textformat")
+          GlassCard {
+            TextField("Mia", text: $name)
+              .foregroundStyle(Theme.text)
+              .onChange(of: name) { _, v in
+                app.profile.avatarName = v.trimmingCharacters(in: .whitespaces)
+              }
           }
+        }
       }
+      .padding(18)
     }
-    .scrollContentBackground(.hidden)
     .background(Theme.bg.ignoresSafeArea())
     .navigationTitle("Practice partner")
     .onAppear { name = app.profile.avatarName.isEmpty ? "Mia" : app.profile.avatarName }
@@ -509,11 +705,12 @@ private struct CancelSurveyView: View {
       }
     }
     .padding(18)
+    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
     .background(Theme.bg.ignoresSafeArea())
   }
 }
 
 #Preview {
-  NavigationStack { SettingsView() }
+  SettingsView()
     .environment(AppState.preview)
 }
