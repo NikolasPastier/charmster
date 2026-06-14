@@ -59,8 +59,7 @@ struct SettingsView: View {
       SettingsRow {
         Text("Profile picture").foregroundStyle(Theme.text)
         Spacer()
-        Image(systemName: "person.crop.circle.fill")
-          .font(.system(size: 22)).foregroundStyle(Theme.textMuted)
+        UserAvatarPicker(size: 44, showsRemove: false)
       }
       SettingsDivider()
       infoRow("Sign-in method", "Apple")

@@ -37,6 +37,11 @@ struct PersonalizationProfile: Codable {
   // Avatar look picked in onboarding (Step 4). Defaults to Mia.
   var avatarLookId: String = "mia"
   var avatarName: String = "Mia"
+  // The HUMAN's own profile photo. `profilePhotoPath` is the object path inside
+  // the public `user-avatars` Supabase bucket (synced best-effort). The local
+  // cached file is the display source of truth so the avatar shows instantly,
+  // offline, and before/without auth. Empty = use the generated fallback.
+  var profilePhotoPath: String = ""
   // Account + age gate (Step 6 / 11). 17+ confirmed once, timestamped.
   var username: String = ""
   var ageConfirmed17: Bool = false
@@ -702,6 +707,7 @@ final class AppState {
     streakFreezesRemaining = streakFreezeMonthlyAllowance
     lastStreakFreezeRefill = .distantPast
     SettingsStore.wipeAll()
+    UserAvatarStore.clearLocal()
     // TODO(backend): call Supabase /delete-account RPC to wipe server-side
     // profile, sessions, and progress once the auth/edge-function path lands.
   }

@@ -736,6 +736,14 @@ private struct AccountStep: View {
       onBack: onBack
     ) {
       VStack(alignment: .leading, spacing: 16) {
+        VStack(spacing: 8) {
+          UserAvatarPicker(size: 96, showsRemove: true)
+          Text("Add a profile photo (optional)")
+            .font(.system(size: 13, weight: .semibold))
+            .foregroundStyle(Theme.textMuted)
+        }
+        .frame(maxWidth: .infinity)
+
         VStack(alignment: .leading, spacing: 8) {
           Text("Username").font(.system(size: 14, weight: .heavy))
             .foregroundStyle(Theme.textMuted)
@@ -884,18 +892,27 @@ private struct PersonalizedPlanStep: View {
     let persona = AvatarPersona.resolve(from: app.profile.avatarLookId)
     let partnerName = app.profile.avatarName.isEmpty ? persona.displayName : app.profile.avatarName
     return VStack(spacing: 8) {
-      ZStack {
-        Circle().fill(Theme.surfaceRaised)
-        PartnerStillImage(displayName: persona.displayName, variant: .scene) {
-          Image(systemName: "person.fill")
-            .font(.system(size: 38)).foregroundStyle(Theme.text)
+      HStack(spacing: -16) {
+        UserAvatarView(
+          name: app.profile.name, photoPath: app.profile.profilePhotoPath, size: 84
+        )
+        .overlay(Circle().strokeBorder(Theme.bg, lineWidth: 3))
+        .auraGlow(color: Theme.accent, radius: 18, intensity: 0.35)
+        .zIndex(1)
+        ZStack {
+          Circle().fill(Theme.surfaceRaised)
+          PartnerStillImage(displayName: persona.displayName, variant: .scene) {
+            Image(systemName: "person.fill")
+              .font(.system(size: 34)).foregroundStyle(Theme.text)
+          }
         }
+        .frame(width: 84, height: 84)
+        .clipShape(Circle())
+        .overlay(Circle().strokeBorder(Theme.bg, lineWidth: 3))
+        .overlay(Circle().strokeBorder(Theme.accentGradient, lineWidth: 2))
+        .auraGlow(color: Theme.pink, radius: 18, intensity: 0.35)
       }
-      .frame(width: 96, height: 96)
-      .clipShape(Circle())
-      .overlay(Circle().strokeBorder(Theme.accentGradient, lineWidth: 3))
-      .auraGlow(color: Theme.pink, radius: 22, intensity: 0.4)
-      Text("Practicing with \(partnerName)")
+      Text("You + \(partnerName)")
         .font(.system(size: 13, weight: .semibold))
         .foregroundStyle(Theme.textMuted)
     }
