@@ -7,7 +7,7 @@ Charmster is a dark, content-forward iOS coaching app for practicing real conver
 People who want low-pressure, judgment-free reps at conversation/social confidence, with a personalized coach and measurable growth.
 
 ### Core Loop
-1. Onboarding personalization quiz → join a coach.
+1. Onboarding personalization quiz → pick a practice partner → join a coach.
 2. Today hero prescribes the next step on the path.
 3. Lecture/teaching beat → live practice session (video+voice) → scored debrief.
 4. Journal tracks Aura trends, personal bests, and the coach's memory line.
@@ -16,10 +16,24 @@ People who want low-pressure, judgment-free reps at conversation/social confiden
 ### Coaches (characters over 5 tone engines)
 Theo (Big Brother), Dr. Ray (Scientist), Cole (Alpha Mentor), Noah (Therapist), Leo (Wingman). `CoachPersona` is the single source of truth; in-game UI shows the human name only.
 
-### Coach Visuals (current state)
-- All coach avatar surfaces route through one path: `CoachAvatarView` → `CoachClipCatalog`.
-- Uploaded Supabase stills (`Avatars/Coaches/{id}/stills/{id} neutral cutout.png`) now resolve as each coach's photo everywhere (gallery, detail/join, Profile/Settings chips, Today hero, Journal, Results byline). `dr_ray` maps to storage folder `ray`.
-- Video clips are not uploaded yet; every state resolves to the still. Dropping in clip URLs later (`objectPath`) is a data-only change — the player crossfades over the still automatically.
+### Practice Partners (avatars)
+Two parallel partner models exist:
+- `AvatarPersona` (ids `mia`, `mateo`) — the ONBOARDING partner picker + plan-ready hero. Display names: Mia, **Matteo** (two t's, matching storage folder `Matteo photoreal`).
+- `PartnerPersona` (CoreTypes: mia/matteo/zoe) — the LIVE practice session model.
+
+### Coach Visuals
+- All coach avatar surfaces route through `CoachAvatarView` → `CoachClipCatalog`. Supabase stills resolve as each coach's photo everywhere; `dr_ray` maps to folder `ray`. Clips not uploaded yet → still fallback.
+
+### Partner Visuals (current state)
+- Onboarding partner cards + plan-ready hero now show REAL Supabase stills via `PartnerStillImageURL` + `PartnerStillImage` view.
+- Scheme: `{DisplayName} photoreal/stills/{DisplayName} neutral {cutout|scene}.jpeg` (percent-encoded). Cards use `cutout`; hero uses `scene`. Adding a partner is data-only.
+- On load failure → SF Symbol placeholder (never a black frame).
+- Matteo motion CLIPS not uploaded yet; live-practice avatar still falls back to Aura layer for Matteo.
+
+### Name Source of Truth (resolved)
+- USER name = `profile.name`, set authoritatively from the account-screen Username. Drives greeting, Profile, and Settings.
+- PARTNER name = `profile.avatarName`, set only on the partner screen ("Their name"). Drives "Practicing with …".
+- The partner screen's old "Your name (optional)" input (which wrote `profile.name`) was REMOVED to eliminate the path where the partner screen overwrote the user's name.
 
 ### Architecture / Data
 - SwiftUI (iOS 26), `@Observable` `AppState`, services for clips/avatars/scoring/curriculum.
@@ -28,4 +42,4 @@ Theo (Big Brother), Dr. Ray (Scientist), Cole (Alpha Mentor), Noah (Therapist), 
 - Offline SplitMix64 mock is fallback-only.
 
 ### v1 Scope Status
-Onboarding (13-step), coach gallery/join, live review pipeline, photoreal avatars, daily path, journal, and Superwall handoff are in place. Coach still images are now wired to real Supabase assets.
+Onboarding (13-step), coach gallery/join, live review pipeline, photoreal avatars, daily path, journal, and Superwall handoff are in place. Coach AND onboarding-partner still images are now wired to real Supabase assets, and the user-name handling is fixed end to end.

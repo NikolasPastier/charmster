@@ -2,7 +2,7 @@ import Foundation
 
 // MARK: - AvatarPersona
 
-/// Photoreal video-clip avatar persona. Two ship at launch: Mia + Mateo.
+/// Photoreal video-clip avatar persona. Two ship at launch: Mia + Matteo.
 /// Additional personas are a data-only change (extend `AvatarPersona.library`
 /// and add manifest rows in `AvatarClipCatalog`).
 struct AvatarPersona: Identifiable, Hashable, Codable {
@@ -16,7 +16,7 @@ struct AvatarPersona: Identifiable, Hashable, Codable {
 
   static let library: [AvatarPersona] = [
     .init(id: "mia", displayName: "Mia", gender: .feminine, bucketFolder: "mia"),
-    .init(id: "mateo", displayName: "Mateo", gender: .masculine, bucketFolder: "mateo"),
+    .init(id: "mateo", displayName: "Matteo", gender: .masculine, bucketFolder: "matteo"),
   ]
 
   static let `default` = AvatarPersona.library[0]

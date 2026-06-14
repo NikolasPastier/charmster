@@ -4,6 +4,8 @@
 - [x] Photoreal video-clip avatar system with Aura fallback
 - [x] Daily path, lectures, journal, and weekly drops
 - [x] Wire coach Supabase STILL images across all coach surfaces (data-only)
-- [ ] Upload + wire coach motion clips (idle/talking/thinking + reactions)
+- [x] Wire onboarding partner STILL images (Mia + Matteo) into selection cards + plan-ready hero
+- [x] Fix user-name source of truth (account username drives greeting/Profile/Settings)
+- [ ] Upload + wire coach + partner motion clips (idle/talking/thinking + reactions)
 - [ ] Deploy edge functions (realtime_session, vision_review) to production
 - [ ] Finalize Superwall products/campaign for launch

@@ -581,18 +581,8 @@ private struct NameAvatarStep: View {
             .padding(14)
             .background(RoundedRectangle(cornerRadius: 14).fill(Theme.surface))
             .overlay(RoundedRectangle(cornerRadius: 14).stroke(Theme.border, lineWidth: 1))
-        }
-
-        VStack(alignment: .leading, spacing: 8) {
-          Text("Your name (optional)").font(.system(size: 14, weight: .heavy))
-            .foregroundStyle(Theme.textMuted)
-          TextField("What should I call you?", text: bindingName())
-            .textFieldStyle(.plain)
-            .font(.system(size: 16, weight: .semibold))
-            .foregroundStyle(Theme.text)
-            .padding(14)
-            .background(RoundedRectangle(cornerRadius: 14).fill(Theme.surface))
-            .overlay(RoundedRectangle(cornerRadius: 14).stroke(Theme.border, lineWidth: 1))
+          Text("This is just your practice partner's name — you'll pick your own on the next step.")
+            .font(.system(size: 12)).foregroundStyle(Theme.textFaint)
         }
       }
     } footer: {
@@ -634,11 +624,14 @@ private struct NameAvatarStep: View {
         ZStack {
           RoundedRectangle(cornerRadius: 18, style: .continuous)
             .fill(Theme.surfaceRaised)
-          Image(systemName: persona.gender == .masculine ? "person.fill" : "person.fill")
-            .font(.system(size: 40))
-            .foregroundStyle(selected ? Theme.text : Theme.textMuted)
+          PartnerStillImage(displayName: persona.displayName, variant: .cutout) {
+            Image(systemName: "person.fill")
+              .font(.system(size: 40))
+              .foregroundStyle(selected ? Theme.text : Theme.textMuted)
+          }
         }
         .frame(width: 120, height: 150)
+        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
         .overlay(
           RoundedRectangle(cornerRadius: 18, style: .continuous)
             .strokeBorder(
@@ -654,10 +647,6 @@ private struct NameAvatarStep: View {
 
   private func defaultName() -> String {
     AvatarPersona.library.first { $0.id == app.profile.avatarLookId }?.displayName ?? "Mia"
-  }
-
-  private func bindingName() -> Binding<String> {
-    Binding(get: { app.profile.name }, set: { app.profile.name = $0 })
   }
 }
 
@@ -797,7 +786,13 @@ private struct AccountStep: View {
       }
     } footer: {
       AuraButton(title: "Create account", systemImage: "checkmark", enabled: canContinue) {
-        app.profile.username = username.trimmingCharacters(in: .whitespaces)
+        let cleaned = username.trimmingCharacters(in: .whitespaces)
+        app.profile.username = cleaned
+        // Single source of truth for the USER's display name: the account
+        // username drives the greeting, Profile, and Settings. The partner
+        // screen no longer writes `profile.name`, so there is no competing
+        // path that could overwrite it with the partner's name.
+        app.profile.name = cleaned
         app.profile.ageConfirmed17 = true
         app.profile.ageConfirmedAt = .now
         // TODO(backend): on real Supabase auth, check username uniqueness +
@@ -807,7 +802,8 @@ private struct AccountStep: View {
       }
     }
     .onAppear {
-      username = app.profile.username
+      // Prefer an existing username; otherwise carry forward any name already set.
+      username = app.profile.username.isEmpty ? app.profile.name : app.profile.username
       ageConfirmed = app.profile.ageConfirmed17
     }
   }
@@ -886,20 +882,22 @@ private struct PersonalizedPlanStep: View {
 
   private var avatarBadge: some View {
     let persona = AvatarPersona.resolve(from: app.profile.avatarLookId)
+    let partnerName = app.profile.avatarName.isEmpty ? persona.displayName : app.profile.avatarName
     return VStack(spacing: 8) {
       ZStack {
         Circle().fill(Theme.surfaceRaised)
-        Image(systemName: "person.fill")
-          .font(.system(size: 38)).foregroundStyle(Theme.text)
+        PartnerStillImage(displayName: persona.displayName, variant: .scene) {
+          Image(systemName: "person.fill")
+            .font(.system(size: 38)).foregroundStyle(Theme.text)
+        }
       }
       .frame(width: 96, height: 96)
+      .clipShape(Circle())
       .overlay(Circle().strokeBorder(Theme.accentGradient, lineWidth: 3))
       .auraGlow(color: Theme.pink, radius: 22, intensity: 0.4)
-      Text(
-        "Practicing with \(app.profile.avatarName.isEmpty ? persona.displayName : app.profile.avatarName)"
-      )
-      .font(.system(size: 13, weight: .semibold))
-      .foregroundStyle(Theme.textMuted)
+      Text("Practicing with \(partnerName)")
+        .font(.system(size: 13, weight: .semibold))
+        .foregroundStyle(Theme.textMuted)
     }
   }
 

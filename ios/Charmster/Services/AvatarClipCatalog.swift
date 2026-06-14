@@ -58,7 +58,7 @@ final class AvatarClipCatalog {
   /// bucket). Returns `nil` when no clip exists for that state (caller may then
   /// try `baseFallback`).
   ///
-  /// TODO(clips): only Mia's photoreal clip set is uploaded today. Mateo (and
+  /// TODO(clips): only Mia's photoreal clip set is uploaded today. Matteo (and
   /// any new persona) just needs a folder + filename rows added here once the
   /// .mp4 files land in the `Avatars` bucket.
   private func objectPath(for persona: AvatarPersona, state: AvatarState) -> String? {
