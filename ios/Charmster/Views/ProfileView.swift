@@ -36,7 +36,11 @@ struct ProfileView: View {
   private var headerCard: some View {
     GlassCard {
       HStack(spacing: 14) {
-        BrandLogo(size: .mark(54))
+        UserAvatarView(
+          name: app.profile.name,
+          photoPath: app.profile.profilePhotoPath,
+          size: 54
+        )
         VStack(alignment: .leading, spacing: 4) {
           Text(app.profile.name.isEmpty ? "Charmster" : app.profile.name)
             .font(.system(size: 20, weight: .heavy))

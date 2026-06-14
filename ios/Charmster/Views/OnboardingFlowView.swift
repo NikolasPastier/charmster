@@ -891,30 +891,33 @@ private struct PersonalizedPlanStep: View {
   private var avatarBadge: some View {
     let persona = AvatarPersona.resolve(from: app.profile.avatarLookId)
     let partnerName = app.profile.avatarName.isEmpty ? persona.displayName : app.profile.avatarName
-    return VStack(spacing: 8) {
-      HStack(spacing: -16) {
-        UserAvatarView(
-          name: app.profile.name, photoPath: app.profile.profilePhotoPath, size: 84
-        )
-        .overlay(Circle().strokeBorder(Theme.bg, lineWidth: 3))
-        .auraGlow(color: Theme.accent, radius: 18, intensity: 0.35)
-        .zIndex(1)
+    return VStack(spacing: 12) {
+      UserAvatarView(
+        name: app.profile.name, photoPath: app.profile.profilePhotoPath, size: 96
+      )
+      .auraGlow(color: Theme.accent, radius: 20, intensity: 0.38)
+
+      // The AI partner is shown separately — never as the user's own picture.
+      HStack(spacing: 8) {
         ZStack {
           Circle().fill(Theme.surfaceRaised)
           PartnerStillImage(displayName: persona.displayName, variant: .scene) {
             Image(systemName: "person.fill")
-              .font(.system(size: 34)).foregroundStyle(Theme.text)
+              .font(.system(size: 14)).foregroundStyle(Theme.text)
           }
         }
-        .frame(width: 84, height: 84)
+        .frame(width: 28, height: 28)
         .clipShape(Circle())
-        .overlay(Circle().strokeBorder(Theme.bg, lineWidth: 3))
-        .overlay(Circle().strokeBorder(Theme.accentGradient, lineWidth: 2))
-        .auraGlow(color: Theme.pink, radius: 18, intensity: 0.35)
+        .overlay(Circle().strokeBorder(Theme.accentGradient, lineWidth: 1.5))
+
+        Text("Practicing with \(partnerName)")
+          .font(.system(size: 13, weight: .semibold))
+          .foregroundStyle(Theme.textMuted)
       }
-      Text("You + \(partnerName)")
-        .font(.system(size: 13, weight: .semibold))
-        .foregroundStyle(Theme.textMuted)
+      .padding(.horizontal, 12)
+      .padding(.vertical, 6)
+      .background(Capsule().fill(Theme.surface))
+      .overlay(Capsule().strokeBorder(Theme.border, lineWidth: 1))
     }
   }
 
