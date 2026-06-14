@@ -1,0 +1,9 @@
+- [x] First-run onboarding (13-step conversion flow)
+- [x] Coach persona system + "Meet your coaches" gallery/join
+- [x] Live video+voice review pipeline (AVCapture + OpenAI Realtime + vision_review)
+- [x] Photoreal video-clip avatar system with Aura fallback
+- [x] Daily path, lectures, journal, and weekly drops
+- [x] Wire coach Supabase STILL images across all coach surfaces (data-only)
+- [ ] Upload + wire coach motion clips (idle/talking/thinking + reactions)
+- [ ] Deploy edge functions (realtime_session, vision_review) to production
+- [ ] Finalize Superwall products/campaign for launch

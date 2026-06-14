@@ -44,6 +44,40 @@ final class CoachClipCatalog {
   private static let bucket = "Avatars"
   private static let root = "coach-clips"
 
+  /// Subtree holding the uploaded coach STILL images (and, later, clips).
+  /// Layout: `Coaches/{storageId}/stills/{storageId} neutral cutout.png`.
+  private static let coachesRoot = "Coaches"
+
+  /// Maps a `CoachPersona.id` to its Storage folder name. Identical for most
+  /// coaches; `dr_ray` lives under `ray` in the bucket.
+  private func storageId(for persona: CoachPersona) -> String {
+    switch persona.id {
+    case "dr_ray": return "ray"
+    default: return persona.id
+    }
+  }
+
+  /// Object path (relative to the bucket) for the coach's neutral STILL image.
+  /// This is the active visual for every state until clips are uploaded. The
+  /// transparent "cutout" PNG suits the circular/full-bleed avatar surfaces.
+  ///
+  /// DATA-ONLY: to repoint a coach's still, change the filename here — no view
+  /// or director edits. To add motion, populate `objectPath(for:state:)`; the
+  /// player crossfades over this still automatically.
+  private func stillObjectPath(for persona: CoachPersona) -> String {
+    let id = storageId(for: persona)
+    return "\(Self.coachesRoot)/\(id)/stills/\(id) neutral cutout.png"
+  }
+
+  /// Public URL for the coach's neutral still image.
+  private func remoteStillURL(for persona: CoachPersona) -> URL? {
+    let full = "\(Self.bucket)/\(stillObjectPath(for: persona))"
+    guard let encoded = full.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) else {
+      return nil
+    }
+    return URL(string: "\(storageBase)/storage/v1/object/public/\(encoded)")
+  }
+
   private var storageBase: String {
     let env = ProcessInfo.processInfo.environment["SUPABASE_URL"]
     return (env?.isEmpty == false ? env! : "https://uvjtrhvhldeeslgnvhyd.supabase.co")
@@ -130,18 +164,46 @@ final class CoachClipCatalog {
     }
   }
 
-  /// First-frame still from the base looping clip, or `nil` so the view paints
-  /// the bundled fallback still.
+  /// Neutral STILL image for the coach. Until clips are uploaded this is the
+  /// active visual for EVERY state (idle/talking/thinking/reactions), so coaches
+  /// show their real photo instead of a gradient. Downloads + caches on first
+  /// use. Returns `nil` only on offline/load failure, in which case the view
+  /// paints the Aura-gradient fallback.
   func idleStill(for persona: CoachPersona) async -> UIImage? {
-    let state = baseFallbackState(for: persona) ?? .idle
-    guard let url = await localClipURL(for: persona, state: state) else { return nil }
-    let asset = AVURLAsset(url: url)
-    let gen = AVAssetImageGenerator(asset: asset)
-    gen.appliesPreferredTrackTransform = true
-    return await withCheckedContinuation { cont in
-      gen.generateCGImageAsynchronously(for: .zero) { cg, _, _ in
-        cont.resume(returning: cg.map(UIImage.init(cgImage:)))
+    // Prefer a real clip first frame if clips ever land.
+    if let state = baseFallbackState(for: persona),
+      let url = await localClipURL(for: persona, state: state)
+    {
+      let asset = AVURLAsset(url: url)
+      let gen = AVAssetImageGenerator(asset: asset)
+      gen.appliesPreferredTrackTransform = true
+      let frame: UIImage? = await withCheckedContinuation { cont in
+        gen.generateCGImageAsynchronously(for: .zero) { cg, _, _ in
+          cont.resume(returning: cg.map(UIImage.init(cgImage:)))
+        }
       }
+      if let frame { return frame }
+    }
+    // No clip → use the uploaded neutral still.
+    return await loadStillImage(for: persona)
+  }
+
+  private func loadStillImage(for persona: CoachPersona) async -> UIImage? {
+    guard let remote = remoteStillURL(for: persona) else { return nil }
+    let key = "still_\(storageId(for: persona)).png"
+    let local = cacheDir.appendingPathComponent(key)
+    if let data = try? Data(contentsOf: local), let img = UIImage(data: data) {
+      return img
+    }
+    do {
+      let (data, resp) = try await session.data(from: remote)
+      if let http = resp as? HTTPURLResponse, !(200..<300).contains(http.statusCode) {
+        return nil
+      }
+      try? data.write(to: local)
+      return UIImage(data: data)
+    } catch {
+      return nil
     }
   }
 
