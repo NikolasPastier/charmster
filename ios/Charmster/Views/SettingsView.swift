@@ -607,40 +607,27 @@ private struct AvatarLookView: View {
   @Environment(AppState.self) private var app
   @State private var name: String = ""
 
+  /// Trim, cap ~20 chars, fall back to the selected look's default name when
+  /// blank. Display-only — never affects clip lookup or scoring.
+  private static func resolvedName(_ raw: String, lookId: String) -> String {
+    let trimmed = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+    let fallback = AvatarPersona.resolve(from: lookId).defaultDisplayName
+    if trimmed.isEmpty { return fallback }
+    return String(trimmed.prefix(20))
+  }
+
   var body: some View {
     ScrollView {
       VStack(spacing: 14) {
         VStack(alignment: .leading, spacing: 10) {
           SectionHeader(title: "Partner look", systemImage: "person.fill")
-          GlassCard(padding: 0) {
-            VStack(spacing: 0) {
-              ForEach(Array(AvatarPersona.library.enumerated()), id: \.element.id) {
-                idx, persona in
-                Button {
-                  app.profile.avatarLookId = persona.id
-                  if name.trimmingCharacters(in: .whitespaces).isEmpty
-                    || AvatarPersona.library.contains(where: { $0.displayName == name })
-                  {
-                    name = persona.displayName
-                    app.profile.avatarName = persona.displayName
-                  }
-                } label: {
-                  HStack {
-                    Image(systemName: "person.fill").foregroundStyle(Theme.accent)
-                    Text(persona.displayName).foregroundStyle(Theme.text)
-                    Spacer()
-                    if app.profile.avatarLookId == persona.id {
-                      Image(systemName: "checkmark.circle.fill").foregroundStyle(Theme.accent)
-                    }
-                  }
-                  .padding(.horizontal, 16).padding(.vertical, 14)
-                }
-                .buttonStyle(.plain)
-                if idx < AvatarPersona.library.count - 1 {
-                  Rectangle().fill(Theme.divider).frame(height: 1).padding(.leading, 16)
-                }
+          ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 12) {
+              ForEach(AvatarPersona.library) { persona in
+                lookCard(persona)
               }
             }
+            .padding(.vertical, 4)
           }
         }
         VStack(alignment: .leading, spacing: 10) {
@@ -648,17 +635,89 @@ private struct AvatarLookView: View {
           GlassCard {
             TextField("Mia", text: $name)
               .foregroundStyle(Theme.text)
+              .submitLabel(.done)
               .onChange(of: name) { _, v in
-                app.profile.avatarName = v.trimmingCharacters(in: .whitespaces)
+                if v.count > 20 { name = String(v.prefix(20)) }
+              }
+              .onSubmit {
+                name = Self.resolvedName(name, lookId: app.profile.avatarLookId)
+                app.profile.avatarName = name
               }
           }
+          Text("Display-only — pick a custom name or leave blank to use the look's name.")
+            .font(.system(size: 12)).foregroundStyle(Theme.textFaint)
         }
       }
       .padding(18)
     }
     .background(Theme.bg.ignoresSafeArea())
     .navigationTitle("Practice partner")
-    .onAppear { name = app.profile.avatarName.isEmpty ? "Mia" : app.profile.avatarName }
+    .onAppear {
+      name =
+        app.profile.avatarName.isEmpty
+        ? AvatarPersona.resolve(from: app.profile.avatarLookId).defaultDisplayName
+        : app.profile.avatarName
+    }
+    .onDisappear {
+      // Commit a clean, capped, fallback-resolved name on the way out.
+      let resolved = Self.resolvedName(name, lookId: app.profile.avatarLookId)
+      name = resolved
+      app.profile.avatarName = resolved
+    }
+  }
+
+  private func lookCard(_ persona: AvatarPersona) -> some View {
+    let selected = app.profile.avatarLookId == persona.id
+    return Button {
+      #if canImport(UIKit)
+        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+      #endif
+      app.profile.avatarLookId = persona.id
+      // Prefill name with the look's default if the field is empty or still a
+      // catalog default the user hasn't customized.
+      let isDefaulted =
+        name.trimmingCharacters(in: .whitespaces).isEmpty
+        || AvatarPersona.library.contains { $0.defaultDisplayName == name }
+      if isDefaulted {
+        name = persona.defaultDisplayName
+        app.profile.avatarName = persona.defaultDisplayName
+      }
+    } label: {
+      VStack(spacing: 8) {
+        ZStack {
+          RoundedRectangle(cornerRadius: 18, style: .continuous)
+            .fill(Theme.surfaceRaised)
+          PartnerStillImage(persona: persona) {
+            ZStack {
+              Theme.auraGradient.opacity(0.5)
+              Image(systemName: "person.crop.circle.fill")
+                .font(.system(size: 36))
+                .foregroundStyle(selected ? Theme.text : Theme.textMuted)
+            }
+          }
+        }
+        .frame(width: 110, height: 138)
+        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .overlay(
+          RoundedRectangle(cornerRadius: 18, style: .continuous)
+            .strokeBorder(
+              selected ? AnyShapeStyle(Theme.accentGradient) : AnyShapeStyle(Theme.border),
+              lineWidth: selected ? 3 : 1)
+        )
+        .overlay(alignment: .topTrailing) {
+          if selected {
+            Image(systemName: "checkmark.circle.fill")
+              .font(.system(size: 22))
+              .foregroundStyle(Theme.accent)
+              .background(Circle().fill(Theme.bg).padding(2))
+              .padding(8)
+          }
+        }
+        Text(persona.displayName).font(.system(size: 14, weight: .heavy))
+          .foregroundStyle(Theme.text)
+      }
+    }
+    .buttonStyle(.plain)
   }
 }
 

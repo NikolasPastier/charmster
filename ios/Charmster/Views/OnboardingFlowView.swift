@@ -587,8 +587,7 @@ private struct NameAvatarStep: View {
       }
     } footer: {
       AuraButton(title: "Continue", systemImage: "arrow.right") {
-        let trimmed = name.trimmingCharacters(in: .whitespaces)
-        app.profile.avatarName = trimmed.isEmpty ? defaultName() : trimmed
+        app.profile.avatarName = Self.resolvedName(name, lookId: app.profile.avatarLookId)
         onNext()
       }
       Button("Skip — use Mia") {
@@ -624,10 +623,13 @@ private struct NameAvatarStep: View {
         ZStack {
           RoundedRectangle(cornerRadius: 18, style: .continuous)
             .fill(Theme.surfaceRaised)
-          PartnerStillImage(displayName: persona.displayName, variant: .cutout) {
-            Image(systemName: "person.fill")
-              .font(.system(size: 40))
-              .foregroundStyle(selected ? Theme.text : Theme.textMuted)
+          PartnerStillImage(persona: persona) {
+            ZStack {
+              Theme.auraGradient.opacity(0.5)
+              Image(systemName: "person.crop.circle.fill")
+                .font(.system(size: 40))
+                .foregroundStyle(selected ? Theme.text : Theme.textMuted)
+            }
           }
         }
         .frame(width: 120, height: 150)
@@ -646,7 +648,16 @@ private struct NameAvatarStep: View {
   }
 
   private func defaultName() -> String {
-    AvatarPersona.library.first { $0.id == app.profile.avatarLookId }?.displayName ?? "Mia"
+    AvatarPersona.resolve(from: app.profile.avatarLookId).defaultDisplayName
+  }
+
+  /// Trim, cap at ~20 chars, and fall back to the selected look's default name
+  /// (global default "Mia") when blank/whitespace. avatarName is display-only.
+  static func resolvedName(_ raw: String, lookId: String) -> String {
+    let trimmed = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+    let fallback = AvatarPersona.resolve(from: lookId).defaultDisplayName
+    if trimmed.isEmpty { return fallback }
+    return String(trimmed.prefix(20))
   }
 }
 
@@ -901,8 +912,8 @@ private struct PersonalizedPlanStep: View {
       HStack(spacing: 8) {
         ZStack {
           Circle().fill(Theme.surfaceRaised)
-          PartnerStillImage(displayName: persona.displayName, variant: .scene) {
-            Image(systemName: "person.fill")
+          PartnerStillImage(persona: persona) {
+            Image(systemName: "person.crop.circle.fill")
               .font(.system(size: 14)).foregroundStyle(Theme.text)
           }
         }

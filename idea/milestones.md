@@ -1,0 +1,8 @@
+- [x] Onboarding & personalization flow
+- [x] Coach gallery and switching
+- [x] Practice hub, configurator, and live practice
+- [x] Review, journal, and results
+- [x] Roadmap / learning path
+- [x] Profile and avatar persona
+- [x] Settings with personalization, coaching, goals, and notifications
+- [x] Practice partner & name picker wired into Settings

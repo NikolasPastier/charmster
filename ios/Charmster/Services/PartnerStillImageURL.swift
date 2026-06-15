@@ -4,22 +4,21 @@ import SwiftUI
 /// Resolves the uploaded practice-partner STILL images from the public Supabase
 /// `Avatars` bucket.
 ///
-/// Storage layout (one consistent scheme — adding a partner is data-only):
-///   `{DisplayName} photoreal/stills/{DisplayName} neutral cutout.jpeg`
-///   `{DisplayName} photoreal/stills/{DisplayName} neutral scene.jpeg`
+/// Storage layout (confirmed in audit — adding a look is data-only): each look
+/// has a CAPITALIZED top-level folder whose name matches the look, with a
+/// `stills/` subfolder:
+///   `{Look}/stills/{Look} neutral scene.jpeg`  ← the DISPLAYED photo (branded
+///       scene background baked in). This is what the picker thumbnail and any
+///       avatar display use.
+///   `{Look}/stills/{Look}.jpeg`                ← plain cutout backup only.
 ///
-/// Filenames contain spaces, so the full object path is percent-encoded.
-/// The display name MUST match the storage folder exactly (e.g. "Matteo"),
-/// which is why the in-app partner name was aligned to "Matteo" (two t's) —
-/// no name mapping is needed.
+/// Folders are capitalized and filenames contain spaces, so the EXACT path is
+/// stored per look (`AvatarPersona.thumbnailPath`) and percent-encoded here —
+/// it is never lowercased or guessed.
 enum PartnerStillImageURL {
 
-  enum Variant: String {
-    /// Transparent-ish bust cutout — used for the small selection cards.
-    case cutout
-    /// Framed gradient scene — used for the larger "Practicing with …" hero.
-    case scene
-  }
+  /// Public bucket holding all practice-avatar look stills.
+  static let bucket = "Avatars"
 
   private static var supabaseBase: String {
     let env = ProcessInfo.processInfo.environment["SUPABASE_URL"]
@@ -27,34 +26,49 @@ enum PartnerStillImageURL {
     return base.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
   }
 
-  /// Resolve the still URL for a partner display name (the folder key).
-  /// Returns `nil` if the name is empty so callers keep their placeholder.
-  static func url(displayName: String, variant: Variant = .cutout) -> URL? {
-    let name = displayName.trimmingCharacters(in: .whitespaces)
-    guard !name.isEmpty else { return nil }
-    let path = "\(name) photoreal/stills/\(name) neutral \(variant.rawValue).jpeg"
+  /// Build a public object URL from an EXACT stored object path (with its real
+  /// casing and spaces). Returns `nil` if the path is empty.
+  ///
+  /// NOTE: if the `Avatars` bucket is private, swap this for a signed URL
+  /// (`/storage/v1/object/sign/...`) — only this one function changes.
+  static func url(objectPath: String) -> URL? {
+    let path = objectPath.trimmingCharacters(in: .whitespaces)
+    guard !path.isEmpty else { return nil }
     guard let encoded = path.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) else {
       return nil
     }
-    return URL(string: "\(supabaseBase)/storage/v1/object/public/Avatars/\(encoded)")
+    return URL(string: "\(supabaseBase)/storage/v1/object/public/\(bucket)/\(encoded)")
   }
 
-  /// Convenience for an `AvatarPersona`.
-  static func url(for persona: AvatarPersona, variant: Variant = .cutout) -> URL? {
-    url(displayName: persona.displayName, variant: variant)
+  /// Resolve the displayed still URL for a look. Uses the look's explicit
+  /// `thumbnailPath` (the branded "{Look} neutral scene.jpeg" file).
+  static func url(for persona: AvatarPersona) -> URL? {
+    url(objectPath: persona.thumbnailPath)
   }
 }
 
-/// Loads a partner's uploaded Supabase still and shows `placeholder` while
-/// loading or on failure — never a black frame. Cutout for cards, scene for
-/// the hero. Adding a partner is data-only (folder + filename scheme).
+/// Loads a look's uploaded Supabase still and shows `placeholder` while loading
+/// or on failure — never a black frame. Driven by the look's explicit stored
+/// `thumbnailPath`, so adding a look is data-only.
 struct PartnerStillImage<Placeholder: View>: View {
-  let displayName: String
-  var variant: PartnerStillImageURL.Variant = .cutout
+  /// Exact object path inside the `Avatars` bucket (e.g.
+  /// "Mia/stills/Mia neutral scene.jpeg").
+  let objectPath: String
   @ViewBuilder var placeholder: () -> Placeholder
 
+  /// Convenience: resolve directly from a look.
+  init(persona: AvatarPersona, @ViewBuilder placeholder: @escaping () -> Placeholder) {
+    self.objectPath = persona.thumbnailPath
+    self.placeholder = placeholder
+  }
+
+  init(objectPath: String, @ViewBuilder placeholder: @escaping () -> Placeholder) {
+    self.objectPath = objectPath
+    self.placeholder = placeholder
+  }
+
   var body: some View {
-    if let url = PartnerStillImageURL.url(displayName: displayName, variant: variant) {
+    if let url = PartnerStillImageURL.url(objectPath: objectPath) {
       AsyncImage(url: url, transaction: .init(animation: .easeInOut(duration: 0.25))) { phase in
         switch phase {
         case .success(let image):

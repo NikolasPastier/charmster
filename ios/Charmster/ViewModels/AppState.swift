@@ -165,6 +165,7 @@ final class AppState {
   /// Pull saved Settings prefs from `SettingsStore` into the runtime model.
   private func loadPersistedPrefs() {
     if let saved = SettingsStore.loadProfile() { profile = saved }
+    migrateAvatarLookIfNeeded()
     if let coach = SettingsStore.loadCoach() { coachMode = coach }
     // Coach character: prefer the saved character id; otherwise migrate from
     // the legacy `coachMode` style so existing users land on the matching coach.
@@ -183,6 +184,26 @@ final class AppState {
 
   /// Persist everything Settings can edit. Called by the Settings screen's
   /// binding helper on every mutation so changes survive across launches.
+  /// One-time migration: any stored `avatarLookId` that no longer maps to a
+  /// female look in `AvatarPersona.library` (e.g. the removed "mateo"/"matteo"
+  /// male look) is migrated to the default look ("mia"). The avatar state
+  /// machine, scoring, and live practice are untouched — only the stored id
+  /// (and the display name if it still matched the removed look) change.
+  private func migrateAvatarLookIfNeeded() {
+    let id = profile.avatarLookId.lowercased()
+    let isKnownFemaleLook = AvatarPersona.library.contains { $0.id == id }
+    guard !isKnownFemaleLook else { return }
+    profile.avatarLookId = AvatarPersona.default.id
+    // If the saved name was just the removed look's default name, reset it to
+    // the new default. A user-customized name is preserved.
+    if profile.avatarName.trimmingCharacters(in: .whitespaces).isEmpty
+      || profile.avatarName == "Matteo" || profile.avatarName == "Zoe"
+    {
+      profile.avatarName = AvatarPersona.default.defaultDisplayName
+    }
+    SettingsStore.saveProfile(profile)
+  }
+
   func persistSettings() {
     SettingsStore.saveProfile(profile)
     SettingsStore.saveCoach(coachMode)

@@ -217,9 +217,12 @@ struct PartnerPersona: Identifiable, Hashable, Codable {
   let displayName: String
   let pronouns: String
   let blurb: String
-  let assetPrefix: String  // "Mia" | "Matteo" | "Zoe"
+  let assetPrefix: String  // capitalized look folder, e.g. "Mia"
   let palette: PersonaPalette
 
+  /// FEMALE-only practice looks. Mirrors `AvatarPersona.library` (one row per
+  /// look). This is the runtime persona that live practice / scoring consume —
+  /// the catalog stays in sync so selection by `avatarLookId` always resolves.
   static let library: [PartnerPersona] = [
     .init(
       id: "mia", displayName: "Mia",
@@ -228,17 +231,29 @@ struct PartnerPersona: Identifiable, Hashable, Codable {
       assetPrefix: "Mia",
       palette: .init(top: 0x2A1A2B, bottom: 0x16101A)),
     .init(
-      id: "matteo", displayName: "Matteo",
-      pronouns: "he/him",
-      blurb: "Confident, playful, reads the room fast.",
-      assetPrefix: "Matteo",
-      palette: .init(top: 0x1A2230, bottom: 0x10141A)),
+      id: "ava", displayName: "Ava",
+      pronouns: "she/her",
+      blurb: "Bright, easy-going, quick to laugh.",
+      assetPrefix: "Ava",
+      palette: .init(top: 0x2B2230, bottom: 0x161019)),
     .init(
-      id: "zoe", displayName: "Zoe",
-      pronouns: "they/them",
-      blurb: "Androgynous, dry humor, low-key intense.",
-      assetPrefix: "Zoe",
-      palette: .init(top: 0x1F2A22, bottom: 0x101410)),
+      id: "sofia", displayName: "Sofia",
+      pronouns: "she/her",
+      blurb: "Playful, expressive, leans into banter.",
+      assetPrefix: "Sofia",
+      palette: .init(top: 0x2C1F22, bottom: 0x171012)),
+    .init(
+      id: "mei", displayName: "Mei",
+      pronouns: "she/her",
+      blurb: "Calm, observant, dry sense of humor.",
+      assetPrefix: "Mei",
+      palette: .init(top: 0x1F2A2B, bottom: 0x101517)),
+    .init(
+      id: "nia", displayName: "Nia",
+      pronouns: "she/her",
+      blurb: "Confident, warm, magnetic energy.",
+      assetPrefix: "Nia",
+      palette: .init(top: 0x2A2418, bottom: 0x161310)),
   ]
 
   static let `default` = PartnerPersona.library[0]
