@@ -1,11 +1,1 @@
-- [x] Onboarding & personalization flow
-- [x] Coach gallery and switching
-- [x] Practice hub, configurator, and live practice
-- [x] Review, journal, and results
-- [x] Roadmap / learning path
-- [x] Profile and avatar persona
-- [x] Settings with personalization, coaching, goals, and notifications
-- [x] Practice partner & name picker wired into Settings
-- [x] Avatar voice picker (vibe-named, decoupled from look) in onboarding + Settings
-- [x] Coach stills display branded "neutral scene" JPEGs (background baked in)
-- [x] Onboarding hero shows remote Charmster logo from Supabase (placeholder + fallback + cache)
+- [x] Onboarding hero brand lockup (heart + Charmster wordmark) from Supabase Storage

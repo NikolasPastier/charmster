@@ -91,31 +91,45 @@ struct BrandLogo: View {
 /// placeholder and an error fallback so it is never blank. AsyncImage caches
 /// the download via the shared URLCache.
 struct OnboardingLogo: View {
-  /// Single source for the onboarding logo URL.
-  static let onboarding_logo_url = URL(
-    string:
-      "https://uvjtrhvhldeeslgnvhyd.supabase.co/storage/v1/object/public/App%20logo/new%20logo.png"
-  )
+  /// Lockup height — mirrors the website header proportions.
+  private let height: CGFloat = 40
 
   var body: some View {
-    AsyncImage(url: Self.onboarding_logo_url, transaction: Transaction(animation: .smooth)) {
-      phase in
+    HStack(spacing: 10) {
+      remote(url: BrandLogo.markURL, fallback: AnyView(heartFallback))
+        .frame(width: height, height: height)
+
+      remote(url: BrandLogo.wordmarkURL, fallback: AnyView(wordmarkFallback))
+        .frame(height: height)
+    }
+    .frame(maxWidth: .infinity)
+  }
+
+  @ViewBuilder
+  private func remote(url: URL?, fallback: AnyView) -> some View {
+    AsyncImage(url: url, transaction: Transaction(animation: .smooth)) { phase in
       switch phase {
       case .success(let image):
         image.resizable().scaledToFit()
       case .empty:
         ProgressView().tint(Theme.textMuted)
       case .failure:
-        Image(systemName: "heart.fill")
-          .resizable().scaledToFit()
-          .foregroundStyle(Theme.aura)
+        fallback
       @unknown default:
-        Image(systemName: "heart.fill")
-          .resizable().scaledToFit()
-          .foregroundStyle(Theme.aura)
+        fallback
       }
     }
-    .frame(height: 120)
-    .frame(maxWidth: .infinity)
+  }
+
+  private var heartFallback: some View {
+    Image(systemName: "heart.fill")
+      .resizable().scaledToFit()
+      .foregroundStyle(Theme.aura)
+  }
+
+  private var wordmarkFallback: some View {
+    Text("Charmster")
+      .font(.system(size: 28, weight: .heavy, design: .rounded))
+      .foregroundStyle(Theme.text)
   }
 }
