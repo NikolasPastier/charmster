@@ -293,6 +293,7 @@ struct LivePracticeView: View {
       prefersCamera: config.mode == .videoVoice,
       persona: config.persona,
       avatarPersona: avatarPersona,
+      voiceId: app.profile.avatarVoiceId,
       coach: config.coach,
       lecture: lecture,
       setting: config.setting,

@@ -30,6 +30,10 @@ struct RealtimeSessionService {
     let persona: PersonaPayload
     let coach_style: String
     let setting: String
+    /// Closest OpenAI Realtime voice for the partner (Route A). The edge
+    /// function uses this when minting the session so the partner speaks in the
+    /// user's chosen voice. Optional so older callers stay valid.
+    let realtime_voice: String?
 
     struct PersonaPayload: Encodable {
       let id: String

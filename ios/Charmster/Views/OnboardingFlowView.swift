@@ -584,6 +584,18 @@ private struct NameAvatarStep: View {
           Text("This is just your practice partner's name — you'll pick your own on the next step.")
             .font(.system(size: 12)).foregroundStyle(Theme.textFaint)
         }
+
+        VStack(alignment: .leading, spacing: 8) {
+          Text("Their voice").font(.system(size: 14, weight: .heavy))
+            .foregroundStyle(Theme.textMuted)
+          AvatarVoicePicker(
+            selectedId: Binding(
+              get: { app.profile.avatarVoiceId },
+              set: { app.profile.avatarVoiceId = $0 }
+            ),
+            onChange: { _ in app.persistSettings() }
+          )
+        }
       }
     } footer: {
       AuraButton(title: "Continue", systemImage: "arrow.right") {

@@ -68,6 +68,7 @@ final class LiveSessionPipeline: NSObject {
     prefersCamera: Bool,
     persona: PartnerPersona,
     avatarPersona: AvatarPersona,
+    voiceId: String,
     coach: CoachStyle,
     lecture: Lecture?,
     setting: PracticeSetting,
@@ -106,7 +107,8 @@ final class LiveSessionPipeline: NSObject {
         id: persona.id, displayName: persona.displayName,
         pronouns: persona.pronouns, blurb: persona.blurb),
       coach_style: coach.rawValue,
-      setting: setting.title
+      setting: setting.title,
+      realtime_voice: AvatarVoice.resolve(from: voiceId).realtimeVoice
     )
     if let token = await RealtimeSessionService.mint(req) {
       await realtime.connect(token: token)

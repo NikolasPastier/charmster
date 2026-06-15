@@ -37,6 +37,11 @@ struct PersonalizationProfile: Codable {
   // Avatar look picked in onboarding (Step 4). Defaults to Mia.
   var avatarLookId: String = "mia"
   var avatarName: String = "Mia"
+  // The AI practice partner's VOICE, chosen by vibe and DECOUPLED from the look
+  // (any voice pairs with any look). Defaults to "warm_girl_next_door"; existing
+  // users with no saved value migrate to this default automatically because
+  // PersonalizationProfile is Codable and supplies the default for a missing key.
+  var avatarVoiceId: String = "warm_girl_next_door"
   // The HUMAN's own profile photo. `profilePhotoPath` is the object path inside
   // the public `user-avatars` Supabase bucket (synced best-effort). The local
   // cached file is the display source of truth so the avatar shows instantly,

@@ -647,6 +647,16 @@ private struct AvatarLookView: View {
           Text("Display-only — pick a custom name or leave blank to use the look's name.")
             .font(.system(size: 12)).foregroundStyle(Theme.textFaint)
         }
+        VStack(alignment: .leading, spacing: 10) {
+          SectionHeader(title: "Partner voice", systemImage: "waveform")
+          AvatarVoicePicker(
+            selectedId: Binding(
+              get: { app.profile.avatarVoiceId },
+              set: { app.profile.avatarVoiceId = $0 }
+            ),
+            onChange: { _ in app.persistSettings() }
+          )
+        }
       }
       .padding(18)
     }

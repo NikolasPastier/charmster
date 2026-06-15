@@ -6,3 +6,4 @@
 - [x] Profile and avatar persona
 - [x] Settings with personalization, coaching, goals, and notifications
 - [x] Practice partner & name picker wired into Settings
+- [x] Avatar voice picker (vibe-named, decoupled from look) in onboarding + Settings
