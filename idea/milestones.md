@@ -7,3 +7,4 @@
 - [x] Settings with personalization, coaching, goals, and notifications
 - [x] Practice partner & name picker wired into Settings
 - [x] Avatar voice picker (vibe-named, decoupled from look) in onboarding + Settings
+- [x] Coach stills display branded "neutral scene" JPEGs (background baked in)

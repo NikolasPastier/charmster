@@ -58,15 +58,16 @@ final class CoachClipCatalog {
   }
 
   /// Object path (relative to the bucket) for the coach's neutral STILL image.
-  /// This is the active visual for every state until clips are uploaded. The
-  /// transparent "cutout" PNG suits the circular/full-bleed avatar surfaces.
+  /// This is the active visual for every state until clips are uploaded. We use
+  /// the branded "neutral scene" JPEG (background baked in) for display. The
+  /// "neutral cutout.png" is backup only and is NOT used for display.
   ///
   /// DATA-ONLY: to repoint a coach's still, change the filename here — no view
   /// or director edits. To add motion, populate `objectPath(for:state:)`; the
   /// player crossfades over this still automatically.
   private func stillObjectPath(for persona: CoachPersona) -> String {
     let id = storageId(for: persona)
-    return "\(Self.coachesRoot)/\(id)/stills/\(id) neutral cutout.png"
+    return "\(Self.coachesRoot)/\(id)/stills/\(id) neutral scene.jpeg"
   }
 
   /// Public URL for the coach's neutral still image.
@@ -190,7 +191,7 @@ final class CoachClipCatalog {
 
   private func loadStillImage(for persona: CoachPersona) async -> UIImage? {
     guard let remote = remoteStillURL(for: persona) else { return nil }
-    let key = "still_\(storageId(for: persona)).png"
+    let key = "still_\(storageId(for: persona)).jpeg"
     let local = cacheDir.appendingPathComponent(key)
     if let data = try? Data(contentsOf: local), let img = UIImage(data: data) {
       return img
