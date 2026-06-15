@@ -1,8 +1,0 @@
-- [x] Curriculum, lessons, live practice, scoring, journal
-- [x] Personalized onboarding quiz + plan reveal
-- [x] Settings parity (profile, personalization, coaching, notifications, membership)
-- [x] Theme (System/Light/Dark) re-skins all tabs
-- [x] User profile photo: onboarding + Settings, reusable UserAvatarView, Supabase bucket + column
-- [x] User photo shown on Profile header + plan-ready hero; AI avatar kept separate ("Practicing with...")
-- [ ] Real Supabase auth (Apple/Google/email) — replaces preview-user, enables avatar cross-device sync
-- [ ] Superwall paywall production wiring
