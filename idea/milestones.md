@@ -1,1 +1,4 @@
-- [x] Onboarding hero brand lockup (heart + Charmster wordmark) from Supabase Storage
+- [x] Onboarding hero brand lockup from Supabase Storage
+- [x] Unified single Charmster logo (one PNG) across splash, onboarding, and top header
+- [x] Launch/splash screen with centered logo fade-in
+- [x] App icon generated from heart emblem alone (all iOS sizes)
