@@ -23,7 +23,12 @@ struct RoadmapView: View {
         }
         .background(Theme.bg.ignoresSafeArea())
         .navigationTitle("Your path")
+        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
+          ToolbarItem(placement: .principal) {
+            CharmsterLogo(height: 26)
+              .frame(maxWidth: 150)
+          }
           ToolbarItem(placement: .topBarLeading) {
             HStack(spacing: 6) {
               Image(systemName: "flame.fill").foregroundStyle(Theme.coral)

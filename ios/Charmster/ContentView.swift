@@ -3,18 +3,31 @@ import SwiftUI
 /// Root container. Routes between Onboarding and the main TabView based on AppState.
 struct RootView: View {
   @Environment(AppState.self) private var app
+  @State private var showSplash = true
 
   var body: some View {
-    Group {
-      if !app.hasCompletedOnboarding {
-        OnboardingFlowView()
+    ZStack {
+      Group {
+        if !app.hasCompletedOnboarding {
+          OnboardingFlowView()
+            .transition(.opacity)
+        } else {
+          MainTabView()
+            .transition(.opacity)
+        }
+      }
+      .animation(.smooth(duration: 0.45), value: app.hasCompletedOnboarding)
+
+      if showSplash {
+        SplashView()
           .transition(.opacity)
-      } else {
-        MainTabView()
-          .transition(.opacity)
+          .zIndex(1)
       }
     }
-    .animation(.smooth(duration: 0.45), value: app.hasCompletedOnboarding)
+    .task {
+      try? await Task.sleep(for: .seconds(1.7))
+      withAnimation(.easeInOut(duration: 0.5)) { showSplash = false }
+    }
   }
 }
 
