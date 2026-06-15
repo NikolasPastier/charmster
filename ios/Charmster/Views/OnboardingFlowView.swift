@@ -129,7 +129,7 @@ private struct HeroStep: View {
       VStack(spacing: 0) {
         Spacer(minLength: 0)
 
-        BrandLogo(size: .mark(96))
+        OnboardingLogo()
           .padding(.bottom, 22)
 
         Text("Practice love.\nBuild real confidence.")

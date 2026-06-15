@@ -85,3 +85,37 @@ struct BrandLogo: View {
       .foregroundStyle(Theme.text)
   }
 }
+
+/// The Charmster logo shown at the top of onboarding. Loaded remotely from the
+/// public Supabase `App logo` bucket (never bundled locally), with a loading
+/// placeholder and an error fallback so it is never blank. AsyncImage caches
+/// the download via the shared URLCache.
+struct OnboardingLogo: View {
+  /// Single source for the onboarding logo URL.
+  static let onboarding_logo_url = URL(
+    string:
+      "https://uvjtrhvhldeeslgnvhyd.supabase.co/storage/v1/object/public/App%20logo/new%20logo.png"
+  )
+
+  var body: some View {
+    AsyncImage(url: Self.onboarding_logo_url, transaction: Transaction(animation: .smooth)) {
+      phase in
+      switch phase {
+      case .success(let image):
+        image.resizable().scaledToFit()
+      case .empty:
+        ProgressView().tint(Theme.textMuted)
+      case .failure:
+        Image(systemName: "heart.fill")
+          .resizable().scaledToFit()
+          .foregroundStyle(Theme.aura)
+      @unknown default:
+        Image(systemName: "heart.fill")
+          .resizable().scaledToFit()
+          .foregroundStyle(Theme.aura)
+      }
+    }
+    .frame(height: 120)
+    .frame(maxWidth: .infinity)
+  }
+}
