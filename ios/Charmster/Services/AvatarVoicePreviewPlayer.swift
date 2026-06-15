@@ -52,7 +52,7 @@ final class AvatarVoicePreviewPlayer {
 
     // Watch for a load failure -> mark failed + clear state (never crash).
     statusObservation = item.observe(\AVPlayerItem.status, options: [.new]) {
-      (observedItem: AVPlayerItem, _: NSKeyValueObservedChange<AVPlayerItem.Status>) in
+      [weak self] (observedItem: AVPlayerItem, _: NSKeyValueObservedChange<AVPlayerItem.Status>) in
       guard observedItem.status == .failed else { return }
       Task { @MainActor in
         guard let self else { return }
