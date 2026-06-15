@@ -1,11 +1,11 @@
-# Build a mobile app called **Charmster AI: Dating C
+# Charmster
 
 Built with [10x](https://10x.app). Edit this README freely — 10x
 will not overwrite it once you've made changes.
 
 ## Run it
 
-Open `ios/BuildAMobileAppCalledCharmsterAIDatingC.xcodeproj` in Xcode (16.0+, iOS 26 SDK) and
+Open `ios/Charmster.xcodeproj` in Xcode (16.0+, iOS 26 SDK) and
 press ⌘R to build and run.
 
 ## Project layout
@@ -20,7 +20,7 @@ press ⌘R to build and run.
 
 ## Bundle
 
-`app.10x.build-a-mobile-app-called-charmster-ai-dating-c`
+`app.10x.charmster`
 
 
 
