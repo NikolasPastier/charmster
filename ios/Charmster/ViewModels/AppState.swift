@@ -326,6 +326,14 @@ final class AppState {
     progress[lecture.id] = p
   }
 
+  /// Small Aura ping for an in-lecture active-recall correct answer. Reuses the
+  /// 0–100 Aura economy with a gentle nudge (no flat XP currency). A wrong
+  /// answer still earns a tiny effort ping so recall never feels punishing.
+  func awardRecallPing(correct: Bool) {
+    let delta = correct ? 2 : 1
+    aura = max(0, min(100, aura + delta))
+  }
+
   func recordQuiz(_ lecture: Lecture, correct: Int) {
     var p = progress[lecture.id] ?? LectureProgress()
     p.quizCorrect = max(p.quizCorrect, correct)
