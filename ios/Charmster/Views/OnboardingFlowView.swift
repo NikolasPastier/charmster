@@ -126,47 +126,51 @@ private struct HeroStep: View {
     ZStack {
       AuraGlowLayer(intensity: 0.55, partnerSpeaking: false)
         .opacity(0.9)
-      VStack(spacing: 0) {
-        Spacer(minLength: 0)
+      GeometryReader { geo in
+        VStack(spacing: 0) {
+          Spacer(minLength: geo.size.height * 0.08)
 
-        OnboardingLogo()
-          .padding(.bottom, 40)
+          CharmsterLogo(height: 240)
+            .frame(maxWidth: .infinity)
+            .padding(.bottom, 28)
 
-        Text("Practice love.\nBuild real confidence.")
-          .font(.system(size: 34, weight: .heavy))
-          .multilineTextAlignment(.center)
-          .foregroundStyle(Theme.text)
-          .padding(.horizontal, 16)
+          Text("Practice love.\nBuild real confidence.")
+            .font(.system(size: 34, weight: .heavy))
+            .multilineTextAlignment(.center)
+            .foregroundStyle(Theme.text)
+            .padding(.horizontal, 16)
 
-        Text("Your private coach for real conversations — judgment-free.")
-          .font(.system(size: 16))
-          .multilineTextAlignment(.center)
-          .foregroundStyle(Theme.textMuted)
-          .padding(.horizontal, 32)
-          .padding(.top, 10)
+          Text("Your private coach for real conversations — judgment-free.")
+            .font(.system(size: 16))
+            .multilineTextAlignment(.center)
+            .foregroundStyle(Theme.textMuted)
+            .padding(.horizontal, 32)
+            .padding(.top, 10)
 
-        VStack(spacing: 14) {
-          OnboardingBenefitRow(
-            systemImage: "waveform",
-            title: "Live AI practice",
-            subtitle: "Talk to a realistic partner and get real-time feedback.")
-          OnboardingBenefitRow(
-            systemImage: "map.fill",
-            title: "A science-based path",
-            subtitle: "Built around how attraction and connection actually work.")
-          OnboardingBenefitRow(
-            systemImage: "person.crop.circle.badge.checkmark",
-            title: "Your coach, your pace",
-            subtitle: "Pick a voice and difficulty that fit you.")
+          VStack(spacing: 14) {
+            OnboardingBenefitRow(
+              systemImage: "waveform",
+              title: "Live AI practice",
+              subtitle: "Talk to a realistic partner and get real-time feedback.")
+            OnboardingBenefitRow(
+              systemImage: "map.fill",
+              title: "A science-based path",
+              subtitle: "Built around how attraction and connection actually work.")
+            OnboardingBenefitRow(
+              systemImage: "person.crop.circle.badge.checkmark",
+              title: "Your coach, your pace",
+              subtitle: "Pick a voice and difficulty that fit you.")
+          }
+          .padding(.horizontal, 26)
+          .padding(.top, 30)
+
+          Spacer(minLength: 0)
+
+          AuraButton(title: "Get started", systemImage: "arrow.right", action: onContinue)
+            .padding(.horizontal, 22)
+            .padding(.bottom, 30)
         }
-        .padding(.horizontal, 26)
-        .padding(.top, 30)
-
-        Spacer(minLength: 0)
-
-        AuraButton(title: "Get started", systemImage: "arrow.right", action: onContinue)
-          .padding(.horizontal, 22)
-          .padding(.bottom, 30)
+        .frame(width: geo.size.width, height: geo.size.height)
       }
     }
   }

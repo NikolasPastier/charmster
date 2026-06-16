@@ -2,4 +2,4 @@
 - [x] Unified single Charmster logo (one PNG) across splash, onboarding, and top header
 - [x] Launch/splash screen with centered logo fade-in
 - [x] App icon generated from heart emblem alone (all iOS sizes)
-- [x] Enlarged onboarding hero logo (~132pt) with comfortable spacing
+- [x] Enlarged onboarding hero logo (~240pt) positioned ~8% from top with balanced spacing
