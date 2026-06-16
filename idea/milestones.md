@@ -8,5 +8,6 @@
 - [x] Aura lecture screen restyle (halo, feathered full-bleed coach, segmented bar + X exit)
 - [x] Dark Aura theme is the default; Light/System optional via Settings toggle (brand accents preserved in both)
 - [x] Friction-aware lecture setup: first play auto-configs from profile; replay opens lightweight coach/difficulty sheet
+- [x] Category-parallel unlock model (first lecture of every track open day one; within-track sequential; soft locked hint)
 - [ ] Pre-generated per-beat lecture narration MP3s (replace TTS)
 - [ ] Deploy Supabase edge functions (realtime_session, vision_review) + finalize launch readiness

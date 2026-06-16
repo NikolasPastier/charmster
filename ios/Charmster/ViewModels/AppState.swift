@@ -304,21 +304,43 @@ final class AppState {
       return allMastered ? .capstoneAvailable : .capstoneLocked
     }
     if let p, p.isMastered { return .mastered }
-    if p != nil { return .current }
-    // Sequential unlock: current if previous in track is mastered (or it's the first overall).
+    // Category-parallel unlock: a lecture is available the moment its unlock
+    // prerequisite (first-in-category, or previous-in-category completed) is
+    // met. No cross-category prerequisites. See `isUnlocked(_:)`.
+    return isUnlocked(lecture) ? .current : .locked
+  }
+
+  /// Single source of truth for unlock eligibility (category-parallel,
+  /// within-category sequential). Pure function of completion state:
+  ///   isUnlocked = (first lecture in its category) OR (previous lecture in the
+  ///   same category is completed).
+  /// "Completed" = at least one full play (`isCompleted` → `practiced`).
+  /// The first lecture of EVERY category is always unlocked, so users can work
+  /// any number of categories in parallel from day one. There are no global
+  /// linear locks across categories.
+  func isUnlocked(_ lecture: Lecture) -> Bool {
     let trackLectures = Curriculum.lectures(in: lecture.trackId).filter { !$0.isCapstone }
-    if let idx = trackLectures.firstIndex(of: lecture) {
-      if idx == 0 && lecture.trackId == 0 { return .current }
-      if idx > 0, progress[trackLectures[idx - 1].id]?.isMastered == true { return .current }
-      // Allow first lecture of a new track once the prior track's capstone is mastered.
-      if idx == 0, lecture.trackId > 0,
-        let prevCapstone = Curriculum.capstone(in: lecture.trackId - 1),
-        progress[prevCapstone.id]?.isMastered == true
-      {
-        return .current
-      }
+    if lecture.isCapstone {
+      // Within-category capstone: unlocks once every regular lecture in the
+      // same category is completed. Still category-scoped, never global.
+      return trackLectures.allSatisfy { isCompleted($0) }
     }
-    return .locked
+    guard let idx = trackLectures.firstIndex(of: lecture) else { return false }
+    if idx == 0 { return true }
+    return isCompleted(trackLectures[idx - 1])
+  }
+
+  /// The prerequisite lecture a user must finish to unlock `lecture`, or nil if
+  /// it is already unlocked / first-in-category. Drives the soft locked-state
+  /// hint in the library ("Finish X to unlock this").
+  func unlockPrerequisite(for lecture: Lecture) -> Lecture? {
+    if isUnlocked(lecture) { return nil }
+    let trackLectures = Curriculum.lectures(in: lecture.trackId).filter { !$0.isCapstone }
+    if lecture.isCapstone {
+      return trackLectures.first { !isCompleted($0) }
+    }
+    guard let idx = trackLectures.firstIndex(of: lecture), idx > 0 else { return nil }
+    return trackLectures[idx - 1]
   }
 
   /// True once the user has finished at least one full practice play of this

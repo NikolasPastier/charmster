@@ -6,6 +6,7 @@ import SwiftUI
 struct RoadmapView: View {
   @Environment(AppState.self) private var app
   @State private var presentedLecture: Lecture?
+  @State private var lockHint: LockHint?
 
   var body: some View {
     Group {
@@ -49,8 +50,42 @@ struct RoadmapView: View {
           .presentationDetents([.large])
           .presentationDragIndicator(.visible)
       }
+      .alert(item: $lockHint) { hint in
+        Alert(
+          title: Text(hint.title),
+          message: Text(hint.message),
+          dismissButton: .default(Text("Got it")))
+      }
     }
     .trackView("RoadmapView")
+  }
+
+  // MARK: - Tap routing
+
+  /// Locked lectures don't hard-fail: tapping one surfaces a brief, encouraging
+  /// hint about what to finish first. Pro-gated lectures route to Superwall.
+  /// Everything else opens the lecture sheet (completed lectures included — a
+  /// completed lecture is always replayable).
+  private func handleTap(_ lecture: Lecture) {
+    let state = effectiveState(for: lecture)
+    switch state {
+    case .locked, .capstoneLocked:
+      if !app.isPro, lecture.access == .pro, app.isUnlocked(lecture) {
+        CharmsterSuperwall.register(.upgradePrompt)
+        return
+      }
+      if let prereq = app.unlockPrerequisite(for: lecture) {
+        lockHint = LockHint(
+          title: "Keep going",
+          message: "Finish “\(prereq.title)” to unlock this lecture.")
+      } else {
+        lockHint = LockHint(
+          title: "Locked",
+          message: "This lecture isn't available just yet.")
+      }
+    default:
+      presentedLecture = lecture
+    }
   }
 
   // MARK: - Today hero
@@ -227,6 +262,15 @@ private struct WeeklyDropTile: View {
   }
 }
 
+// MARK: - Lock hint
+
+/// Lightweight, non-punishing message shown when a user taps a locked lecture.
+struct LockHint: Identifiable {
+  let id = UUID()
+  let title: String
+  let message: String
+}
+
 // MARK: - LectureNode
 
 private struct LectureNode: View {
@@ -258,7 +302,6 @@ private struct LectureNode: View {
       }
     }
     .buttonStyle(.plain)
-    .disabled(state == .locked || state == .capstoneLocked)
   }
 
   @ViewBuilder
