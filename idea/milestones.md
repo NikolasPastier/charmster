@@ -1,9 +1,0 @@
-- [x] Science-based curriculum + roadmap (tracks, lectures, capstones)
-- [x] 13-step first-run onboarding → free taster → Superwall paywall handoff
-- [x] Named coach characters with per-coach voice + photoreal avatar/still system
-- [x] Live video/voice practice pipeline with dimension scoring + debrief
-- [x] Aura economy + mastery + SM-2 spaced repetition (Review hub)
-- [x] Audio-first swipeable 5-beat lecture story player (recall tap, mode-driven visuals, handoff)
-- [ ] Wire pre-generated per-coach lecture beat audio (MP3) when assets land
-- [ ] Populate coach/avatar talking-loop clips in Storage manifest
-- [ ] Deploy backend edge functions (realtime_session, vision_review) to production
