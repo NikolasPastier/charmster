@@ -130,7 +130,7 @@ private struct HeroStep: View {
         Spacer(minLength: 0)
 
         OnboardingLogo()
-          .padding(.bottom, 22)
+          .padding(.bottom, 40)
 
         Text("Practice love.\nBuild real confidence.")
           .font(.system(size: 34, weight: .heavy))

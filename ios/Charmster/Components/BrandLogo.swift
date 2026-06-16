@@ -71,7 +71,7 @@ struct CharmsterLogo: View {
 /// Backward-compatible alias: the onboarding hero still calls `OnboardingLogo()`.
 struct OnboardingLogo: View {
   var body: some View {
-    CharmsterLogo(height: 44)
+    CharmsterLogo(height: 132)
   }
 }
 
