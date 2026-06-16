@@ -321,6 +321,23 @@ final class AppState {
     return .locked
   }
 
+  /// True once the user has finished at least one full practice play of this
+  /// lecture. Reuses the existing `LectureProgress.practiced` flag set in
+  /// `completePractice` — no separate completion counter is introduced.
+  func isCompleted(_ lecture: Lecture) -> Bool {
+    progress[lecture.id]?.practiced == true
+  }
+
+  /// Persist a coach + difficulty choice as the user's new default (used by the
+  /// replay setup sheet's "Save as my default" toggle). Mirrors `joinCoach` +
+  /// tier persistence so Settings and the configurator stay in sync.
+  func saveSessionDefaults(coach: CoachPersona, tier: DifficultyTier) {
+    selectedCoachId = coach.id
+    coachMode = coach.style
+    difficultyTier = tier
+    persistSettings()
+  }
+
   // MARK: - Progress mutations
 
   func recordWatched(_ lecture: Lecture) {

@@ -1,21 +1,39 @@
 import SwiftUI
 
-/// Pre-practice teaching screen — now an audio-first, swipeable 5-beat story
-/// player (LectureStoryPlayerView) that hands off into the existing live
-/// practice flow. The legacy stacked text-block UI was replaced; routing,
-/// configurator, practice, results, and quiz handoff are preserved.
+/// Pre-practice teaching screen — an audio-first, swipeable 5-beat story player
+/// (LectureStoryPlayerView) that hands off into the live practice flow.
+///
+/// Session setup is now friction-aware:
+/// • FIRST play (lecture not yet completed): NO settings screen. The session
+///   config is auto-resolved from the user's onboarding profile via
+///   `SessionConfig.recommended`, and the player shows a brief "playing with
+///   your profile settings" micro-label. The profile is read-only here.
+/// • REPLAY (lecture already completed): a lightweight `LectureReplaySetupView`
+///   sheet appears first so the user can tweak coach + difficulty for THIS
+///   session (optionally saving as their new default), then playback starts.
 struct LectureDetailSheet: View {
   @Environment(AppState.self) private var app
   @Environment(\.dismiss) private var dismiss
   let lecture: Lecture
 
-  enum Route {
-    case lecture, handoff, configurator
+  enum Route: Hashable {
+    case replaySetup
+    case lecture
+    case handoff
     case practice(SessionConfig)
     case results(SessionResult)
     case quiz
   }
-  @State private var route: Route = .lecture
+  @State private var route: Route?
+
+  /// Per-session overrides chosen on the replay setup sheet. Nil on a first
+  /// play, where everything resolves from the onboarding profile.
+  @State private var sessionCoach: CoachPersona?
+  @State private var sessionTier: DifficultyTier?
+
+  /// True when the session config was auto-resolved from the profile (first
+  /// play) — drives the brief micro-label in the player.
+  @State private var autoConfigured = false
 
   var body: some View {
     Group {
@@ -23,26 +41,40 @@ struct LectureDetailSheet: View {
         ZStack {
           Theme.bg.ignoresSafeArea()
           switch route {
+          case .replaySetup: replaySetupScreen
           case .lecture: lecturePlayer
           case .handoff: handoffScreen
-          case .configurator: configuratorScreen
           case .practice(let cfg): practiceScreen(cfg: cfg)
           case .results(let r): resultsScreen(result: r)
           case .quiz: quizScreen
+          case nil: Color.clear
           }
         }
         .toolbar { toolbarContent }
         .toolbarVisibility(showsChrome ? .automatic : .hidden, for: .navigationBar)
       }
+      .onAppear { decideInitialRouteIfNeeded() }
     }
     .trackView("LectureDetailSheet")
   }
 
-  /// The immersive story player + handoff hide the sheet's nav chrome; the
-  /// configurator/practice/results/quiz screens keep the close button.
+  /// On first appearance, branch on completion: replay → setup sheet, first
+  /// play → straight into the auto-configured player.
+  private func decideInitialRouteIfNeeded() {
+    guard route == nil else { return }
+    if app.isCompleted(lecture) {
+      route = .replaySetup
+    } else {
+      autoConfigured = true
+      route = .lecture
+    }
+  }
+
+  /// The immersive story player + handoff + replay setup hide the sheet's nav
+  /// chrome; practice/results/quiz keep the close button.
   private var showsChrome: Bool {
     switch route {
-    case .lecture, .handoff: return false
+    case .lecture, .handoff, .replaySetup, nil: return false
     default: return true
     }
   }
@@ -61,13 +93,32 @@ struct LectureDetailSheet: View {
     }
   }
 
+  // MARK: - Replay setup (lightweight, completed lectures only)
+
+  private var replaySetupScreen: some View {
+    LectureReplaySetupView(
+      lecture: lecture,
+      initialCoach: app.selectedCoach,
+      initialTier: app.difficultyTier,
+      onPlay: { coach, tier in
+        sessionCoach = coach
+        sessionTier = tier
+        autoConfigured = false
+        withAnimation { route = .lecture }
+      },
+      onCancel: { dismiss() }
+    )
+  }
+
   // MARK: - Lecture (story player)
 
   private var lecturePlayer: some View {
     LectureStoryPlayerView(
       lecture: lecture,
+      coachOverride: sessionCoach,
+      showAutoConfigLabel: autoConfigured,
       onPractice: { withAnimation { route = .handoff } },
-      onSkipToPractice: { route = .configurator },
+      onSkipToPractice: { route = .practice(resolvedConfig()) },
       onExit: { dismiss() }
     )
   }
@@ -77,22 +128,22 @@ struct LectureDetailSheet: View {
   private var handoffScreen: some View {
     LectureHandoffView(
       lecture: lecture,
-      coach: app.selectedCoach,
+      coach: sessionCoach ?? app.selectedCoach,
       partner: app.selectedPersona,
       setting: app.selectedSetting,
-      onBegin: { route = .configurator },
+      onBegin: { route = .practice(resolvedConfig()) },
       onClose: { dismiss() }
     )
   }
 
-  // MARK: - Configurator
-
-  private var configuratorScreen: some View {
-    PracticeConfiguratorView(lecture: lecture) { cfg in
-      route = .practice(cfg)
-    } onCancel: {
-      route = .lecture
-    }
+  /// Build the session config from the onboarding profile, then apply any
+  /// per-session replay overrides. The profile itself is never mutated here
+  /// (only the explicit "Save as my default" toggle persists, in the sheet).
+  private func resolvedConfig() -> SessionConfig {
+    var cfg = SessionConfig.recommended(from: app, lecture: lecture)
+    if let coach = sessionCoach { cfg.coach = coach.style }
+    if let tier = sessionTier { cfg.tier = tier }
+    return cfg
   }
 
   // MARK: - Practice
@@ -114,6 +165,11 @@ struct LectureDetailSheet: View {
   private func resultsScreen(result: SessionResult) -> some View {
     ResultsView(
       result: result, lecture: lecture,
+      onReplay: {
+        sessionCoach = nil
+        sessionTier = nil
+        route = .replaySetup
+      },
       onQuiz: { route = .quiz },
       onDone: { dismiss() })
   }

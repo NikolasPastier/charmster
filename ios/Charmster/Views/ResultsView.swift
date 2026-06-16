@@ -5,6 +5,9 @@ struct ResultsView: View {
   @Environment(AppState.self) private var app
   let result: SessionResult
   let lecture: Lecture?
+  /// Replay the lecture with different settings (opens the replay setup sheet).
+  /// Optional so sandbox results can omit it.
+  var onReplay: (() -> Void)? = nil
   let onQuiz: () -> Void
   let onDone: () -> Void
 
@@ -170,6 +173,11 @@ struct ResultsView: View {
     VStack(spacing: 10) {
       if lecture != nil {
         AuraButton(title: "Take the quiz", systemImage: "questionmark.circle", action: onQuiz)
+      }
+      if let onReplay {
+        GlassButton(
+          title: "Replay with different settings",
+          systemImage: "arrow.counterclockwise", action: onReplay)
       }
       GlassButton(title: "Done", systemImage: "checkmark", action: onDone)
     }

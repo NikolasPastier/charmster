@@ -20,6 +20,12 @@ struct LectureStoryPlayerView: View {
   @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
   let lecture: Lecture
+  /// Per-session coach override (from the replay setup sheet). When nil the
+  /// player uses the user's default `app.selectedCoach`.
+  var coachOverride: CoachPersona? = nil
+  /// Show a brief "playing with your profile settings" micro-label on first
+  /// play, when the session was auto-configured from the onboarding profile.
+  var showAutoConfigLabel: Bool = false
   let onPractice: () -> Void
   let onSkipToPractice: () -> Void
   /// Exit the lecture (wired to the X). Defaults to no-op for previews.
@@ -30,6 +36,7 @@ struct LectureStoryPlayerView: View {
   @State private var narrator = LectureBeatNarrator()
   @State private var captionsOn: Bool = false
   @State private var isPaused: Bool = false
+  @State private var showProfileLabel: Bool = false
 
   /// Talking take chosen ONCE per lecture, held for the whole session.
   @State private var talkingTake: Int = 1
@@ -37,7 +44,7 @@ struct LectureStoryPlayerView: View {
   // Recall beat state
   @State private var recallChoice: Int?
 
-  private var coach: CoachPersona { app.selectedCoach }
+  private var coach: CoachPersona { coachOverride ?? app.selectedCoach }
 
   var body: some View {
     Group {
@@ -48,6 +55,9 @@ struct LectureStoryPlayerView: View {
         } else {
           ProgressView().tint(Theme.accent)
         }
+        if showProfileLabel {
+          profileMicroLabel
+        }
       }
       .onAppear {
         talkingTake = CoachClipCatalog.shared.randomTalkingTake()
@@ -55,6 +65,7 @@ struct LectureStoryPlayerView: View {
         buildStoryIfNeeded()
         captionsOn = false  // default OFF (redundancy principle)
         startBeat()
+        showProfileMicroLabelIfNeeded()
       }
       .onDisappear { narrator.stop() }
     }
@@ -95,6 +106,38 @@ struct LectureStoryPlayerView: View {
       )
       .ignoresSafeArea()
       .allowsHitTesting(false)
+    }
+  }
+
+  // MARK: - Profile micro-label (first-play personalization cue)
+
+  private var profileMicroLabel: some View {
+    VStack {
+      HStack(spacing: 7) {
+        Image(systemName: "person.crop.circle.badge.checkmark")
+          .font(.system(size: 12, weight: .heavy))
+          .foregroundStyle(Theme.accent)
+        Text("Playing with your profile settings")
+          .font(.system(size: 12, weight: .bold))
+          .foregroundStyle(Theme.text)
+      }
+      .padding(.horizontal, 14).padding(.vertical, 9)
+      .background(Capsule().fill(Theme.surfaceRaised.opacity(0.92)))
+      .overlay(Capsule().stroke(Theme.border, lineWidth: 1))
+      .shadow(color: .black.opacity(0.3), radius: 10, y: 3)
+      .padding(.top, 86)
+      Spacer()
+    }
+    .transition(.move(edge: .top).combined(with: .opacity))
+    .allowsHitTesting(false)
+  }
+
+  /// Briefly surface the personalization cue on a first play, then fade it.
+  private func showProfileMicroLabelIfNeeded() {
+    guard showAutoConfigLabel else { return }
+    withAnimation(.easeOut(duration: 0.35)) { showProfileLabel = true }
+    DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+      withAnimation(.easeIn(duration: 0.4)) { showProfileLabel = false }
     }
   }
 

@@ -240,6 +240,9 @@ private struct LectureNode: View {
         ZStack {
           nodeShape
           iconLayer
+          if state == .mastered || state == .capstoneMastered {
+            replayBadge
+          }
         }
         Text(lecture.title)
           .font(.system(size: 13, weight: .semibold))
@@ -300,6 +303,23 @@ private struct LectureNode: View {
             .stroke(Theme.gold, lineWidth: 2)
         )
     }
+  }
+
+  /// Small replay glyph on completed (mastered) nodes so the path makes it
+  /// clear a finished lecture can be replayed with different settings.
+  private var replayBadge: some View {
+    VStack {
+      HStack {
+        Spacer()
+        Image(systemName: "arrow.counterclockwise.circle.fill")
+          .font(.system(size: 20, weight: .bold))
+          .foregroundStyle(Theme.accent)
+          .background(Circle().fill(Theme.bg))
+          .offset(x: 6, y: -4)
+      }
+      Spacer()
+    }
+    .frame(width: lecture.isCapstone ? 108 : 76, height: lecture.isCapstone ? 108 : 76)
   }
 
   private var iconLayer: some View {

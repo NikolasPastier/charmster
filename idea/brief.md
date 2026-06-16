@@ -15,6 +15,7 @@ Pick coach + partner + setting → watch a 5-beat Aura lecture → live practice
 - Photoreal coach visuals via Supabase Storage: stills across all surfaces; coach VIDEO clips (idle + 2 talking takes) wired into the lecture player, cached, force-muted.
 - Audio-first 5-beat lecture story player with per-beat coach-voice narration (TTS; pre-gen MP3 wireable later).
 - Aura lecture screen matching approved mockups: deep #0B0910 base, pink→gold radial glow halo, edge vignette, segmented progress bar with X exit + beat timer, coach clip feathered full-bleed.
+- Friction-aware lecture setup: a lecture's FIRST play (LectureProgress.practiced == false) skips the configurator entirely and auto-resolves the session config from the onboarding profile via SessionConfig.recommended, with a brief "Playing with your profile settings" micro-label (profile is read-only here). REPLAY of a completed lecture opens a lightweight LectureReplaySetupView sheet (coach avatars + difficulty, pre-filled) whose choices apply to that session only unless "Save as my default" is on. Results card and mastered path nodes surface a replay affordance. PracticeConfiguratorView is retained for the sandbox flow.
 - Live AI practice pipeline (AVCapture + OpenAI Realtime WebSocket + sampled-frame vision review), SessionScorer on real signals.
 - Aura economy / streaks, journal, results, roadmap/path, profile + settings.
 
@@ -28,6 +29,7 @@ Pick coach + partner + setting → watch a 5-beat Aura lecture → live practice
 - `CoachAvatarView` — coach clip player with crossfade, looping, still fallback, force-mute.
 - `AuraCoachStage` / `AuraGlowLayer` — glow halo + feathered mask + vignette over `Theme.bg`.
 - `LectureBeatNarrator` — the ONLY audio source in the lecture (coach TTS).
+- `SessionConfig.recommended(from:lecture:)` — single derivation of a session config from the onboarding profile; reused by both first-play auto-config and replay overrides.
 - `Theme` — design tokens (Aura gradient, palette, radii, adaptive Light/Dark base).
 - Supabase — auth + DB + Storage. Configured.
 
@@ -35,4 +37,4 @@ Pick coach + partner + setting → watch a 5-beat Aura lecture → live practice
 Coach video clips are ALWAYS silent (force-muted, audio tracks zeroed). The pre-generated per-beat lecture narration is the only audio.
 
 ### v1 status
-Local-first/mock-safe where assets are missing (offline → coach still, never black). Superwall paywall handoff present. Pre-generated lecture MP3 narration remains a future upgrade (currently TTS).
+Local-first/mock-safe where assets are missing (offline → coach still, never black). Superwall paywall handoff present. Pre-generated lecture MP3 narration remains a future upgrade (currently TTS). A per-lecture tone/style axis beyond coach persona is a future TODO.
