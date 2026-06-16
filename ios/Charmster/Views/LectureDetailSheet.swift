@@ -67,21 +67,9 @@ struct LectureDetailSheet: View {
     LectureStoryPlayerView(
       lecture: lecture,
       onPractice: { withAnimation { route = .handoff } },
-      onSkipToPractice: { route = .configurator }
+      onSkipToPractice: { route = .configurator },
+      onExit: { dismiss() }
     )
-    .overlay(alignment: .topLeading) {
-      Button {
-        dismiss()
-      } label: {
-        Image(systemName: "xmark.circle.fill")
-          .font(.system(size: 26))
-          .foregroundStyle(Theme.textFaint)
-          .padding(.leading, 14)
-          .padding(.top, 6)
-      }
-      .buttonStyle(.plain)
-      .accessibilityLabel("Close lecture")
-    }
   }
 
   // MARK: - Handoff (energizing, sets the scene → live practice)

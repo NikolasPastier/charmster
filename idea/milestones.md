@@ -1,0 +1,10 @@
+- [x] 13-step conversion onboarding flow
+- [x] 5 coach characters + tone engines + selection surfaces
+- [x] Coach still images wired across all avatar surfaces (Supabase)
+- [x] Partner stills + user profile photo wired
+- [x] Audio-first 5-beat lecture story player
+- [x] Live AI practice pipeline (AV capture + Realtime + vision review) + scoring
+- [x] Coach VIDEO clips wired into lecture player (idle + 2 talking takes, cached, force-muted)
+- [x] Aura lecture screen restyle (halo, feathered full-bleed coach, segmented bar + X exit)
+- [ ] Pre-generated per-beat lecture narration MP3s (replace TTS)
+- [ ] Deploy Supabase edge functions (realtime_session, vision_review) + finalize launch readiness

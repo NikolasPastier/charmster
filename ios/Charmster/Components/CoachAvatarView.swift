@@ -13,6 +13,8 @@ struct CoachAvatarView: View {
   let coach: CoachPersona
   var baseState: CoachAvatarState = .idle
   var reaction: CoachAvatarState? = nil
+  /// 1-based talking take, chosen once per lecture and held for its duration.
+  var talkingTake: Int = 1
   var onReactionFinished: () -> Void = {}
 
   @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -26,6 +28,7 @@ struct CoachAvatarView: View {
           coach: coach,
           baseState: baseState,
           reaction: reaction,
+          talkingTake: talkingTake,
           onReactionFinished: onReactionFinished
         )
         .transition(.opacity.animation(.easeInOut(duration: 0.3)))
@@ -71,6 +74,7 @@ private struct CoachPlayerLayer: UIViewRepresentable {
   let coach: CoachPersona
   let baseState: CoachAvatarState
   let reaction: CoachAvatarState?
+  let talkingTake: Int
   let onReactionFinished: () -> Void
 
   func makeCoordinator() -> Coordinator { Coordinator(onReactionFinished: onReactionFinished) }
@@ -84,6 +88,7 @@ private struct CoachPlayerLayer: UIViewRepresentable {
 
   func updateUIView(_ uiView: ContainerView, context: Context) {
     context.coordinator.coach = coach
+    context.coordinator.talkingTake = talkingTake
     context.coordinator.apply(baseState: baseState, reaction: reaction)
   }
 
@@ -93,6 +98,7 @@ private struct CoachPlayerLayer: UIViewRepresentable {
 
   final class Coordinator: NSObject {
     var coach: CoachPersona = .default
+    var talkingTake: Int = 1
     private weak var container: ContainerView?
     private var primaryLayer: AVPlayerLayer?
     private var primaryPlayer: AVPlayer?
@@ -106,6 +112,32 @@ private struct CoachPlayerLayer: UIViewRepresentable {
 
     init(onReactionFinished: @escaping () -> Void) {
       self.onReactionFinished = onReactionFinished
+    }
+
+    /// Builds an AVPlayer that can NEVER produce sound. Belt-and-suspenders:
+    /// `isMuted = true` AND an `AVMutableAudioMix` that zeroes the volume of
+    /// every audio track on the item. Some coach clips (e.g. Leo talking) carry
+    /// an audio track; the avatar is purely visual, so all clip audio is killed
+    /// regardless of device mute switch or speaker route. The ONLY audio in the
+    /// lecture is the per-beat narration played by `LectureBeatNarrator`.
+    static func makeMutedPlayer(url: URL) -> (AVPlayerItem, AVPlayer) {
+      let asset = AVURLAsset(url: url)
+      let item = AVPlayerItem(asset: asset)
+
+      let mix = AVMutableAudioMix()
+      var params: [AVMutableAudioMixInputParameters] = []
+      for track in asset.tracks(withMediaType: .audio) {
+        let p = AVMutableAudioMixInputParameters(track: track)
+        p.setVolume(0, at: .zero)
+        params.append(p)
+      }
+      mix.inputParameters = params
+      item.audioMix = mix
+
+      let player = AVPlayer(playerItem: item)
+      player.isMuted = true
+      player.volume = 0
+      return (item, player)
     }
 
     func attach(to container: ContainerView, coach: CoachPersona) {
@@ -131,12 +163,13 @@ private struct CoachPlayerLayer: UIViewRepresentable {
 
     @MainActor
     private func swapPrimary(to state: CoachAvatarState) async {
-      guard let url = await CoachClipCatalog.shared.localClipURL(for: coach, state: state) else {
+      let take = (state == .talking) ? talkingTake : 1
+      guard
+        let url = await CoachClipCatalog.shared.localClipURL(for: coach, state: state, take: take)
+      else {
         return  // Keep current frame; fallback still is behind.
       }
-      let item = AVPlayerItem(url: url)
-      let player = AVPlayer(playerItem: item)
-      player.isMuted = true
+      let (item, player) = Self.makeMutedPlayer(url: url)
       player.actionAtItemEnd = .none
 
       if let prev = loopObserver { NotificationCenter.default.removeObserver(prev) }
@@ -172,13 +205,14 @@ private struct CoachPlayerLayer: UIViewRepresentable {
 
     @MainActor
     private func playReaction(_ state: CoachAvatarState) async {
-      guard let url = await CoachClipCatalog.shared.localClipURL(for: coach, state: state) else {
+      let take = talkingTake
+      guard
+        let url = await CoachClipCatalog.shared.localClipURL(for: coach, state: state, take: take)
+      else {
         onReactionFinished()
         return
       }
-      let item = AVPlayerItem(url: url)
-      let player = AVPlayer(playerItem: item)
-      player.isMuted = true
+      let (item, player) = Self.makeMutedPlayer(url: url)
       player.actionAtItemEnd = .pause
 
       let layer = AVPlayerLayer(player: player)

@@ -1,17 +1,20 @@
 import SwiftUI
 
-/// Audio-first, swipeable story-card lecture player.
+/// Audio-first, swipeable story-card lecture player — restyled to the approved
+/// **Aura** mockups: a deep Charmster base with a soft pink→gold radial glow
+/// halo behind the coach, a slim segmented progress bar with an X exit + beat
+/// timer up top, and the coach clip feathered full-bleed into the scene.
 ///
-/// One beat per full-screen card. The narration plays as AUDIO in the selected
-/// coach's voice; on screen we show only the beat's visual + a single signal
-/// phrase (never the full script). Tap/swipe to advance, hold to pause, slim
-/// segmented Aura progress bar. Captions OFF by default (redundancy principle),
-/// toggleable for accessibility. Skippable for returning users.
+/// One beat per card. Narration plays as AUDIO in the selected coach's voice
+/// (the ONLY audio); the coach VIDEO clips are purely visual and force-muted.
+/// On screen we show only the beat's single signal phrase (never the full
+/// script). Tap/swipe to advance, hold to pause. Captions OFF by default.
 ///
-/// Avatar beats (hook + takeaway) reuse `CoachAvatarView` — talking loop under
-/// the per-beat audio, with the clip-optional still fallback already built in.
-/// Insight/GoodVsBad beats show the teaching visual with coach voiceover and a
-/// small picture-in-picture avatar.
+/// Avatar beats (hook + takeaway) show the coach TALKING loop full-bleed +
+/// feathered + glow. Insight/GoodVsBad/Recall beats show the teaching visual /
+/// question UI with coach voiceover and a small feathered IDLE picture-in-
+/// picture. One talking take is chosen when the lecture opens and held for the
+/// whole lecture. Reduced-motion / load / offline shows the coach still.
 struct LectureStoryPlayerView: View {
   @Environment(AppState.self) private var app
   @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -19,6 +22,8 @@ struct LectureStoryPlayerView: View {
   let lecture: Lecture
   let onPractice: () -> Void
   let onSkipToPractice: () -> Void
+  /// Exit the lecture (wired to the X). Defaults to no-op for previews.
+  var onExit: () -> Void = {}
 
   @State private var story: LectureStory?
   @State private var index: Int = 0
@@ -26,29 +31,71 @@ struct LectureStoryPlayerView: View {
   @State private var captionsOn: Bool = false
   @State private var isPaused: Bool = false
 
+  /// Talking take chosen ONCE per lecture, held for the whole session.
+  @State private var talkingTake: Int = 1
+
   // Recall beat state
   @State private var recallChoice: Int?
 
   private var coach: CoachPersona { app.selectedCoach }
 
   var body: some View {
-      Group {
-              ZStack {
-          Theme.bg.ignoresSafeArea()
-          if let story {
-            content(story: story)
-          } else {
-            ProgressView().tint(Theme.accent)
-          }
-              }
-              .onAppear {
-          buildStoryIfNeeded()
-          captionsOn = app.profile.captionsEnabled ? false : false  // default OFF regardless
-          startBeat()
-              }
-              .onDisappear { narrator.stop() }
+    Group {
+      ZStack {
+        auraBackground
+        if let story {
+          content(story: story)
+        } else {
+          ProgressView().tint(Theme.accent)
+        }
       }
-      .trackView("LectureStoryPlayerView")
+      .onAppear {
+        talkingTake = CoachClipCatalog.shared.randomTalkingTake()
+        Task { await CoachClipCatalog.shared.preload(persona: coach, talkingTake: talkingTake) }
+        buildStoryIfNeeded()
+        captionsOn = false  // default OFF (redundancy principle)
+        startBeat()
+      }
+      .onDisappear { narrator.stop() }
+    }
+    .trackView("LectureStoryPlayerView")
+  }
+
+  // MARK: - Aura background (deep base + soft pink→gold halo, vignette edges)
+
+  private var auraBackground: some View {
+    let avatarBeat = currentBeat?.visual == .avatar
+    let warm: Double = (narrator.isSpeaking && !isPaused) ? 0.55 : 0.32
+    return ZStack {
+      Color(hex: 0x0B0910).ignoresSafeArea()  // deep Charmster base
+
+      // Soft Aura glow halo — pink blending to gold, heavily blurred, low
+      // opacity, biased toward the upper third where the coach sits.
+      RadialGradient(
+        colors: [
+          Theme.pink.opacity(avatarBeat ? warm : warm * 0.6),
+          Theme.gold.opacity((avatarBeat ? warm : warm * 0.6) * 0.55),
+          .clear,
+        ],
+        center: UnitPoint(x: 0.5, y: avatarBeat ? 0.34 : 0.3),
+        startRadius: 30,
+        endRadius: 460
+      )
+      .blur(radius: 90)
+      .ignoresSafeArea()
+      .animation(.easeInOut(duration: 0.6), value: warm)
+      .animation(.easeInOut(duration: 0.4), value: avatarBeat)
+
+      // Edge vignette darkening to near-black.
+      RadialGradient(
+        colors: [.clear, .clear, Color(hex: 0x0B0910).opacity(0.9)],
+        center: .center,
+        startRadius: 120,
+        endRadius: 560
+      )
+      .ignoresSafeArea()
+      .allowsHitTesting(false)
+    }
   }
 
   // MARK: - Build
@@ -69,7 +116,6 @@ struct LectureStoryPlayerView: View {
   private func content(story: LectureStory) -> some View {
     VStack(spacing: 0) {
       topBar
-      progressBar
       ZStack {
         ForEach(Array(beats.enumerated()), id: \.element.id) { i, beat in
           if i == index {
@@ -100,40 +146,68 @@ struct LectureStoryPlayerView: View {
     }
   }
 
-  // MARK: - Top bar (skip + captions)
+  // MARK: - Top bar (X exit + segmented progress + timer + captions)
 
   private var topBar: some View {
-    HStack(spacing: 14) {
-      Button {
-        captionsOn.toggle()
-      } label: {
-        Image(systemName: captionsOn ? "captions.bubble.fill" : "captions.bubble")
-          .font(.system(size: 16, weight: .bold))
-          .foregroundStyle(captionsOn ? Theme.accent : Theme.textMuted)
-      }
-      .buttonStyle(.plain)
-      .accessibilityLabel("Toggle captions")
-
-      Spacer()
-
-      Button {
-        narrator.stop()
-        onSkipToPractice()
-      } label: {
-        HStack(spacing: 5) {
-          Text("Skip to practice").font(.system(size: 13, weight: .bold))
-          Image(systemName: "forward.fill").font(.system(size: 11, weight: .bold))
+    VStack(spacing: 10) {
+      HStack(spacing: 12) {
+        Button {
+          narrator.stop()
+          onExit()
+        } label: {
+          Image(systemName: "xmark")
+            .font(.system(size: 15, weight: .bold))
+            .foregroundStyle(Theme.textMuted)
+            .frame(width: 30, height: 30)
+            .background(Circle().fill(Theme.surfaceRaised.opacity(0.7)))
         }
-        .foregroundStyle(Theme.textMuted)
-        .padding(.horizontal, 12).padding(.vertical, 7)
-        .background(Capsule().fill(Theme.surfaceRaised))
-        .overlay(Capsule().stroke(Theme.border, lineWidth: 1))
+        .buttonStyle(.plain)
+        .accessibilityLabel("Close lecture")
+
+        progressBar
+
+        Text(beatTimerLabel)
+          .font(.system(size: 12, weight: .bold).monospacedDigit())
+          .foregroundStyle(Theme.textMuted)
+          .frame(minWidth: 34, alignment: .trailing)
+
+        Button {
+          captionsOn.toggle()
+        } label: {
+          Image(systemName: captionsOn ? "captions.bubble.fill" : "captions.bubble")
+            .font(.system(size: 15, weight: .bold))
+            .foregroundStyle(captionsOn ? Theme.accent : Theme.textMuted)
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Toggle captions")
       }
-      .buttonStyle(.plain)
+
+      HStack {
+        Spacer()
+        Button {
+          narrator.stop()
+          onSkipToPractice()
+        } label: {
+          HStack(spacing: 5) {
+            Text("Skip to practice").font(.system(size: 12, weight: .bold))
+            Image(systemName: "forward.fill").font(.system(size: 10, weight: .bold))
+          }
+          .foregroundStyle(Theme.textFaint)
+        }
+        .buttonStyle(.plain)
+      }
     }
     .padding(.horizontal, 18)
     .padding(.top, 8)
-    .padding(.bottom, 10)
+    .padding(.bottom, 8)
+  }
+
+  /// Approximate per-beat time remaining derived from narration progress.
+  private var beatTimerLabel: String {
+    let remaining = max(0, 1 - narrator.progress)
+    let est = 18.0  // nominal beat seconds for a readable countdown
+    let secs = Int((remaining * est).rounded())
+    return String(format: "0:%02d", secs)
   }
 
   // MARK: - Progress bar (one segment per beat, Aura gradient)
@@ -152,8 +226,6 @@ struct LectureStoryPlayerView: View {
         .frame(height: 4)
       }
     }
-    .padding(.horizontal, 18)
-    .padding(.bottom, 6)
     .animation(.easeInOut(duration: 0.25), value: index)
     .animation(.linear(duration: 0.2), value: narrator.progress)
   }
@@ -168,16 +240,17 @@ struct LectureStoryPlayerView: View {
 
   @ViewBuilder
   private func beatCard(beat: LectureBeat, mode: ConversationMode) -> some View {
-    VStack(spacing: 20) {
+    VStack(spacing: 18) {
       beatVisual(beat: beat, mode: mode)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
 
       // Signal phrase — the ONLY narration-derived text shown by default.
       if beat.visual != .recallQuestion {
         Text(beat.signalPhrase)
-          .font(.system(size: 22, weight: .heavy))
+          .font(.system(size: 26, weight: .heavy))
           .multilineTextAlignment(.center)
           .foregroundStyle(Theme.text)
+          .shadow(color: Color(hex: 0x0B0910).opacity(0.7), radius: 8, y: 2)
           .padding(.horizontal, 24)
       }
 
@@ -197,10 +270,11 @@ struct LectureStoryPlayerView: View {
   private func beatVisual(beat: LectureBeat, mode: ConversationMode) -> some View {
     switch beat.visual {
     case .avatar:
-      avatarStage(big: true)
+      // Beats 1 (hook) + 5 (takeaway): coach TALKING, full face-on, feathered.
+      auraStage(big: true)
     case .contrastCards:
-      VStack(spacing: 18) {
-        avatarStage(big: false)
+      VStack(spacing: 16) {
+        auraStage(big: false)
         InsightSignalCard(
           signalPhrase: beat.signalPhrase,
           supporting: insightChips(mode: mode)
@@ -208,8 +282,8 @@ struct LectureStoryPlayerView: View {
         .padding(.horizontal, 18)
       }
     case .spokenLineCards, .chatMockup:
-      VStack(spacing: 14) {
-        avatarStage(big: false)
+      VStack(spacing: 12) {
+        auraStage(big: false)
         if let good = beat.goodExample, let bad = beat.badExample {
           GoodBadContrastFrame(mode: mode, good: good, bad: bad)
             .padding(.horizontal, 18)
@@ -232,24 +306,20 @@ struct LectureStoryPlayerView: View {
     }
   }
 
-  // MARK: - Avatar stage (reuses CoachAvatarView; PiP for non-avatar beats)
+  // MARK: - Aura coach stage (feathered full-bleed for avatar beats, PiP else)
 
   @ViewBuilder
-  private func avatarStage(big: Bool) -> some View {
+  private func auraStage(big: Bool) -> some View {
     let speaking = narrator.isSpeaking && !isPaused
-    let size: CGFloat = big ? 260 : 120
-    CoachAvatarView(
-      coach: coach,
-      baseState: speaking ? .talking : .idle
-    )
-    .frame(width: size, height: size)
-    .clipShape(RoundedRectangle(cornerRadius: big ? 28 : 20, style: .continuous))
-    .overlay(
-      RoundedRectangle(cornerRadius: big ? 28 : 20, style: .continuous)
-        .stroke(Theme.border, lineWidth: 1)
-    )
-    .auraGlow(radius: big ? 26 : 14, intensity: speaking ? 0.5 : 0.25)
-    .animation(.easeInOut(duration: 0.3), value: speaking)
+    if big {
+      AuraCoachStage(coach: coach, speaking: speaking, talkingTake: talkingTake)
+        .frame(maxWidth: .infinity)
+        .frame(height: 380)
+    } else {
+      // Small feathered IDLE picture-in-picture.
+      AuraCoachStage(coach: coach, speaking: false, talkingTake: talkingTake, compact: true)
+        .frame(width: 132, height: 132)
+    }
   }
 
   // MARK: - Recall view (active-recall tap)
@@ -257,7 +327,7 @@ struct LectureStoryPlayerView: View {
   @ViewBuilder
   private func recallView(_ recall: RecallCheck) -> some View {
     VStack(spacing: 16) {
-      avatarStage(big: false)
+      auraStage(big: false)
       Text(recall.question)
         .font(.system(size: 22, weight: .heavy))
         .multilineTextAlignment(.center)
@@ -334,7 +404,8 @@ struct LectureStoryPlayerView: View {
       .frame(maxWidth: .infinity, alignment: .leading)
       .background(
         RoundedRectangle(cornerRadius: 14, style: .continuous)
-          .fill(answered && (isCorrect || isChosen) ? tone.opacity(0.10) : Theme.surface)
+          .fill(
+            answered && (isCorrect || isChosen) ? tone.opacity(0.10) : Theme.surface.opacity(0.7))
       )
       .overlay(
         RoundedRectangle(cornerRadius: 14, style: .continuous)

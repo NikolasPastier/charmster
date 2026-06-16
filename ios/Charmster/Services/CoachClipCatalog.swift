@@ -44,9 +44,18 @@ final class CoachClipCatalog {
   private static let bucket = "Avatars"
   private static let root = "coach-clips"
 
-  /// Subtree holding the uploaded coach STILL images (and, later, clips).
-  /// Layout: `Coaches/{storageId}/stills/{storageId} neutral cutout.png`.
+  /// Subtree holding the uploaded coach STILL images and clips.
+  /// Layout: `Coaches/{storageId}/stills/{storageId} neutral scene.jpeg`
+  ///         `Coaches/{storageId}/clips/{storageId} idle.mp4`
+  ///         `Coaches/{storageId}/clips/{storageId} talking 1.mp4` …
   private static let coachesRoot = "Coaches"
+
+  /// The five shipped coach IDs that have uploaded clip sets in Supabase.
+  private static let clippedCoachIds: Set<String> = ["theo", "ray", "cole", "noah", "leo"]
+
+  /// Number of `talking` takes available per coach. The player picks ONE take
+  /// when a lecture opens and holds it for the whole lecture.
+  private static let talkingTakeCount = 2
 
   /// Maps a `CoachPersona.id` to its Storage folder name. Identical for most
   /// coaches; `dr_ray` lives under `ray` in the bucket.
@@ -87,50 +96,95 @@ final class CoachClipCatalog {
 
   // MARK: - Manifest
 
-  /// Maps a coach + state to the exact Storage object path (relative to the
-  /// bucket). Returns `nil` when no clip exists yet for that pair.
-  ///
-  /// TODO(clips): no coach clip set is uploaded today. When clips land, return
-  /// `"\(Self.root)/\(persona.id)/\(state.rawValue).mp4"` (and uncomment the
-  /// production path below). Keep the fallback behaviour intact.
-  private func objectPath(for persona: CoachPersona, state: CoachAvatarState) -> String? {
-    // Production (enable when clips exist):
-    // return "\(Self.root)/\(persona.id)/\(state.rawValue).mp4"
-    return nil
+  /// SINGLE SOURCE OF TRUTH for coach clip object paths. Builds the path inside
+  /// the bucket for `(coachId, state, take)`:
+  ///   `Coaches/{id}/clips/{id} idle.mp4`
+  ///   `Coaches/{id}/clips/{id} talking 1.mp4`  (talking takes are 1-based)
+  /// Only the looping base states (idle/talking) have uploaded clips. One-shot
+  /// reactions are not used in the lecture player and resolve to `nil`.
+  private func clipObjectPath(coachStorageId id: String, state: CoachAvatarState, take: Int)
+    -> String?
+  {
+    let base = "\(Self.coachesRoot)/\(id)/clips/\(id)"
+    switch state {
+    case .idle, .thinking:
+      return "\(base) idle.mp4"
+    case .talking:
+      let n = max(1, min(Self.talkingTakeCount, take))
+      return "\(base) talking \(n).mp4"
+    case .emphasize, .affirm, .laugh:
+      // Reactions reuse the talking loop visual in the lecture context.
+      let n = max(1, min(Self.talkingTakeCount, take))
+      return "\(base) talking \(n).mp4"
+    }
   }
 
-  /// A guaranteed looping base state, used so a looping request still resolves
-  /// when only some clips exist for a coach.
-  private func baseFallbackState(for persona: CoachPersona) -> CoachAvatarState? {
-    // No coach clips uploaded yet → no guaranteed base.
-    objectPath(for: persona, state: .idle) != nil ? .idle : nil
-  }
-
-  // MARK: - Public surface
-
-  func remoteClipURL(for persona: CoachPersona, state: CoachAvatarState) -> URL? {
-    guard let path = objectPath(for: persona, state: state) else { return nil }
+  /// SINGLE place where the full public URL (path + percent-encoding) is built.
+  /// `take` is the 1-based talking take; ignored for idle.
+  /// Returns `nil` when this coach has no uploaded clip set.
+  func coachClipURL(id storageId: String, state: CoachAvatarState, index take: Int = 1) -> URL? {
+    guard Self.clippedCoachIds.contains(storageId) else { return nil }
+    guard let path = clipObjectPath(coachStorageId: storageId, state: state, take: take) else {
+      return nil
+    }
     let full = "\(Self.bucket)/\(path)"
+    // URL-encode every segment (spaces -> %20) via a single allowed-char pass.
     guard let encoded = full.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) else {
       return nil
     }
     return URL(string: "\(storageBase)/storage/v1/object/public/\(encoded)")
   }
 
+  /// Number of talking takes available; callers pick one randomly per lecture.
+  var talkingTakeCount: Int { Self.talkingTakeCount }
+
+  // MARK: - Legacy still path
+
+  /// Maps a coach + state to the exact Storage object path (relative to the
+  /// bucket). Returns `nil` when no clip exists yet for that pair.
+  private func objectPath(for persona: CoachPersona, state: CoachAvatarState) -> String? {
+    guard Self.clippedCoachIds.contains(storageId(for: persona)) else { return nil }
+    return clipObjectPath(coachStorageId: storageId(for: persona), state: state, take: 1)
+  }
+
+  /// A guaranteed looping base state, used so a looping request still resolves
+  /// when only some clips exist for a coach.
+  private func baseFallbackState(for persona: CoachPersona) -> CoachAvatarState? {
+    objectPath(for: persona, state: .idle) != nil ? .idle : nil
+  }
+
+  // MARK: - Public surface
+
+  func remoteClipURL(for persona: CoachPersona, state: CoachAvatarState) -> URL? {
+    coachClipURL(id: storageId(for: persona), state: state, index: 1)
+  }
+
+  /// Remote URL for a specific talking take of this coach.
+  func remoteClipURL(for persona: CoachPersona, state: CoachAvatarState, take: Int) -> URL? {
+    coachClipURL(id: storageId(for: persona), state: state, index: take)
+  }
+
   /// Local file URL ready for `AVPlayer`, downloading + caching on first use.
   /// Falls back to the coach's guaranteed base clip for looping states. Returns
   /// `nil` only when nothing is available, so the view keeps the fallback still.
   func localClipURL(for persona: CoachPersona, state: CoachAvatarState) async -> URL? {
-    if let url = await resolveLocal(persona: persona, state: state) { return url }
+    await localClipURL(for: persona, state: state, take: 1)
+  }
+
+  /// Take-aware variant: resolves a specific talking take (1-based). Idle
+  /// ignores `take`. Falls back to the coach's idle clip for looping states.
+  func localClipURL(for persona: CoachPersona, state: CoachAvatarState, take: Int) async -> URL? {
+    if let url = await resolveLocal(persona: persona, state: state, take: take) { return url }
     if state.isLooping, let fb = baseFallbackState(for: persona), fb != state {
-      return await resolveLocal(persona: persona, state: fb)
+      return await resolveLocal(persona: persona, state: fb, take: 1)
     }
     return nil
   }
 
-  private func resolveLocal(persona: CoachPersona, state: CoachAvatarState) async -> URL? {
-    guard let remote = remoteClipURL(for: persona, state: state) else { return nil }
-    let key = "\(persona.id)_\(state.rawValue)"
+  private func resolveLocal(persona: CoachPersona, state: CoachAvatarState, take: Int) async -> URL?
+  {
+    guard let remote = remoteClipURL(for: persona, state: state, take: take) else { return nil }
+    let key = "\(storageId(for: persona))_\(state.rawValue)_\(take)"
     let local = cacheDir.appendingPathComponent(key)
     if FileManager.default.fileExists(atPath: local.path) { return local }
 
@@ -154,15 +208,21 @@ final class CoachClipCatalog {
     return await task.value
   }
 
-  /// Warm the on-device cache for idle + talking before a coached moment.
-  /// Best-effort; failures are silent.
-  func preload(persona: CoachPersona) async {
-    let warm: [CoachAvatarState] = [.idle, .talking]
+  /// Warm the on-device cache for idle + a SPECIFIC talking take + the still
+  /// fallback BEFORE the lecture starts. Best-effort; failures are silent.
+  func preload(persona: CoachPersona, talkingTake: Int = 1) async {
     await withTaskGroup(of: Void.self) { group in
-      for s in warm {
-        group.addTask { [weak self] in _ = await self?.localClipURL(for: persona, state: s) }
+      group.addTask { [weak self] in _ = await self?.localClipURL(for: persona, state: .idle) }
+      group.addTask { [weak self] in
+        _ = await self?.localClipURL(for: persona, state: .talking, take: talkingTake)
       }
+      group.addTask { [weak self] in _ = await self?.idleStill(for: persona) }
     }
+  }
+
+  /// Pick a stable talking take for a lecture session (1-based).
+  func randomTalkingTake() -> Int {
+    Int.random(in: 1...Self.talkingTakeCount)
   }
 
   /// Neutral STILL image for the coach. Until clips are uploaded this is the
