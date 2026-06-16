@@ -1,5 +1,5 @@
-- [x] Onboarding hero brand lockup from Supabase Storage
-- [x] Unified single Charmster logo (one PNG) across splash, onboarding, and top header
-- [x] Launch/splash screen with centered logo fade-in
-- [x] App icon generated from heart emblem alone (all iOS sizes)
-- [x] Enlarged onboarding hero logo (~240pt) positioned ~8% from top with balanced spacing
+- [x] Coach personas + gallery/join flow
+- [x] Coach avatar visuals (clips/stills with gradient fallback)
+- [x] Coach voice preview-line auto-play on selection
+- [ ] Live practice + debrief pipeline polish
+- [ ] Monetization / paywall wiring (Superwall)

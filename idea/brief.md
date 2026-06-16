@@ -1,11 +1,12 @@
-## Charmster
+## Charmster — App Plan
 
-AI-powered private coaching app to practice love and build conversational confidence, with avatar-based practice partners (looks + voice previews loaded from Supabase Storage).
+Charmster is a dating/social-skills coaching app where users "join a coach's team" — named coach characters (Theo, Dr. Ray, Cole, Noah, Leo) that drive practice, debriefs, and nudges in their own voice. Supabase (auth + DB + Storage) is connected; coach/avatar media streams from the public `Avatars` bucket. Superwall handles monetization.
 
-### Current state
-- Unified brand identity: a single reusable `CharmsterLogo` component streams the one transparent `Charmster Logo.png` (flaming heart + CHARMSTER wordmark) from the public Supabase `App logo` bucket. It renders at a fixed point height with `.scaledToFit()` so the aspect ratio is always preserved and never stretched, sits cleanly on light and dark backgrounds, caches via URLCache, and has a loading placeholder + heart/text fallback.
-- The logo appears on the launch/splash screen (centered, fade-in), the onboarding/welcome hero, and the Path tab top header.
-- App icon is generated from the heart emblem alone (no wordmark) at 1024×1024 with all required iOS sizes.
+### Recently shipped
+- **Coach preview-line auto-play**: Selecting a coach in onboarding (or the gallery) now auto-plays that coach's three voice preview lines in strict order 1 → 2 → 3, then stops. Implemented via a reusable `CoachPreviewPlayer` (AVQueuePlayer-based, `.playback` session, interruption/route/background handling, debounced re-taps, per-line failure skip) and a single `CoachPreviewLineURL` helper that URL-encodes the spaced Supabase Storage paths. The previewing coach card shows an animated sound-wave badge.
 
-### Integrations
-- Supabase configured (auth + DB + Storage). Brand logo, avatar stills, and voice previews stream from public buckets with mock-safe fallbacks.
+### Architecture notes
+- Coach personas: `Models/CoachPersona.swift` (now exposes `previewLines: [URL]`).
+- Coach media URLs: `Services/CoachClipCatalog.swift` (clips/stills), `Services/CoachPreviewLineURL.swift` (voice preview lines).
+- Audio players: `Services/AvatarVoicePreviewPlayer.swift` (partner voice, ambient) and `Services/CoachPreviewPlayer.swift` (coach intro voice, playback).
+- Onboarding/gallery surface: `Views/CoachGalleryView.swift`, embedded in `Views/OnboardingFlowView.swift`.

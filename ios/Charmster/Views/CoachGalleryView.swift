@@ -19,6 +19,7 @@ struct CoachGalleryView: View {
 
   @State private var expanded: CoachPersona?
   @State private var justJoined: CoachPersona?
+  @State private var previewPlayer = CoachPreviewPlayer()
 
   var body: some View {
     content
@@ -72,13 +73,17 @@ struct CoachGalleryView: View {
         CoachCard(
           coach: coach,
           isCurrent: app.selectedCoachId == coach.id,
+          isPreviewing: previewPlayer.isPlaying(coachId: coach.id),
           onJoin: { join(coach) }
         )
       }
     }
+    .onDisappear { previewPlayer.stop() }
   }
 
   private func join(_ coach: CoachPersona) {
+    // Auto-play the coach's three voice preview lines in order 1 -> 2 -> 3.
+    previewPlayer.play(coach)
     app.joinCoach(coach)
     #if canImport(UIKit)
       UINotificationFeedbackGenerator().notificationOccurred(.success)
@@ -97,6 +102,7 @@ struct CoachGalleryView: View {
 private struct CoachCard: View {
   let coach: CoachPersona
   let isCurrent: Bool
+  let isPreviewing: Bool
   let onJoin: () -> Void
 
   var body: some View {
@@ -106,7 +112,18 @@ private struct CoachCard: View {
           CoachAvatarView(coach: coach)
             .frame(width: 72, height: 72)
             .clipShape(Circle())
-            .overlay(Circle().stroke(Theme.border, lineWidth: 1))
+            .overlay(
+              Circle().stroke(
+                isPreviewing ? Theme.accent : Theme.border,
+                lineWidth: isPreviewing ? 2 : 1)
+            )
+            .overlay(alignment: .bottomTrailing) {
+              if isPreviewing {
+                PreviewWaveBadge()
+                  .transition(.scale.combined(with: .opacity))
+              }
+            }
+            .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isPreviewing)
           VStack(alignment: .leading, spacing: 3) {
             Text(coach.humanName)
               .font(.system(size: 20, weight: .heavy))
@@ -187,6 +204,42 @@ private struct JoinConfirmation: View {
         .stroke(Theme.accent.opacity(0.4), lineWidth: 1)
     )
     .padding(40)
+  }
+}
+
+// MARK: - Playing affordance
+
+/// Animated sound-bar badge shown on a coach while their preview lines play.
+private struct PreviewWaveBadge: View {
+  @State private var animating = false
+  @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+  var body: some View {
+    HStack(spacing: 2) {
+      ForEach(0..<3, id: \.self) { i in
+        Capsule()
+          .fill(Color.white)
+          .frame(width: 2.5, height: barHeight(i))
+          .animation(
+            reduceMotion
+              ? nil
+              : .easeInOut(duration: 0.4 + Double(i) * 0.08).repeatForever(autoreverses: true),
+            value: animating)
+      }
+    }
+    .padding(.horizontal, 7)
+    .padding(.vertical, 6)
+    .background(Circle().fill(Theme.accent))
+    .overlay(Circle().stroke(Theme.bg, lineWidth: 2))
+    .onAppear { animating = true }
+    .accessibilityLabel(Text("Playing preview"))
+  }
+
+  private func barHeight(_ i: Int) -> CGFloat {
+    guard !reduceMotion else { return [10, 14, 10][i] }
+    let bases: [CGFloat] = [8, 14, 10]
+    let peaks: [CGFloat] = [16, 8, 18]
+    return animating ? peaks[i] : bases[i]
   }
 }
 
