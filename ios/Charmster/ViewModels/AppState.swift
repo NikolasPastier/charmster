@@ -67,7 +67,10 @@ struct PersonalizationProfile: Codable {
   var emailDigest: Bool = false
   var emailProduct: Bool = false
   var emailMarketing: Bool = false
-  var themePreference: String = "system"  // system | light | dark
+  // DARK is the default Charmster look on a fresh install. Existing users keep
+  // their saved choice (Codable decodes the persisted value); only a missing
+  // key falls back to this default.
+  var themePreference: String = "dark"  // dark (default) | light | system
   var textSize: String = "standard"  // standard | large
 }
 

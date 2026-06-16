@@ -12,20 +12,24 @@ Pick coach + partner + setting → watch a 5-beat Aura lecture → live practice
 ### Key features (current state)
 - 13-step conversion onboarding (goal → coach style → attachment/flirting → daily goal + reminder → name + avatar → privacy primer → account + 17+ gate → personalized plan → free taster session → paywall handoff).
 - 5 coach characters (Theo, Dr. Ray, Cole, Noah, Leo) mapped onto 5 tone engines; human name shown in-game, role/desc on selection surfaces.
-- Photoreal coach visuals via Supabase Storage: stills wired across all surfaces; **coach VIDEO clips (idle + 2 talking takes) now wired into the lecture player**, cached on device, force-muted.
-- Audio-first 5-beat lecture story player (hook / core insight / good-vs-bad / recall / takeaway) with per-beat coach-voice narration (TTS; pre-gen MP3 wireable later).
-- **Aura lecture screen** matching approved mockups: deep #0B0910 base, soft pink→gold radial glow halo behind the coach, edge vignette, slim segmented progress bar with X exit + beat timer, and the coach clip feathered full-bleed (alpha mask + vignette) into the scene — never a hard video edge.
+- Photoreal coach visuals via Supabase Storage: stills across all surfaces; coach VIDEO clips (idle + 2 talking takes) wired into the lecture player, cached, force-muted.
+- Audio-first 5-beat lecture story player with per-beat coach-voice narration (TTS; pre-gen MP3 wireable later).
+- Aura lecture screen matching approved mockups: deep #0B0910 base, pink→gold radial glow halo, edge vignette, segmented progress bar with X exit + beat timer, coach clip feathered full-bleed.
 - Live AI practice pipeline (AVCapture + OpenAI Realtime WebSocket + sampled-frame vision review), SessionScorer on real signals.
 - Aura economy / streaks, journal, results, roadmap/path, profile + settings.
 
+### Theming (single source of truth)
+- `Theme.swift` is the single source of truth for semantic tokens (bg, surface, surfaceRaised, border, text/textMuted/textFaint) plus scheme-independent brand accents and gradients (pink #FF4D94 → gold #FFC23D, plum-violet).
+- Base tokens use adaptive `Color(lightHex:darkHex:)`; one root `.preferredColorScheme` in `App.swift` re-skins the whole app live. Only bg/surface/text differ between Light and Dark — brand accents/gradients/Aura glow are preserved in both.
+- DARK is the default Charmster look on a fresh install (`PersonalizationProfile.themePreference` defaults to "dark"); persisted Light/System choices still decode and apply unchanged. Dark / Light / System toggle lives in Settings; the Aura background (`AuraGlowLayer` / `AuraCoachStage` / `Theme.bg`) is the standard app surface app-wide.
+
 ### Architecture / single sources of truth
-- `CoachClipCatalog` — coach clip/still URL resolution + on-disk cache; one `coachClipURL(id:state:index:)` helper owns path + percent-encoding.
-- `CoachAvatarView` — coach clip player with crossfade, looping, still fallback, and force-mute (isMuted + volume 0 + AVMutableAudioMix zeroing every audio track).
-- `AuraCoachStage` — reuses CoachAvatarView and adds the glow halo + feathered alpha mask + vignette.
-- `LectureBeatNarrator` — the ONLY audio source in the lecture (coach TTS, .playback/.spokenAudio session); clip players never contribute audio.
-- `LectureStoryBuilder` / `LectureContentStore` — lecture copy/quiz + derived beats.
-- `Theme` — design tokens (Aura gradient, palette, radii).
-- Supabase — auth + DB + Storage (Avatars/Coaches/<id>/clips + stills, user-avatars, app logo). Configured.
+- `CoachClipCatalog` — coach clip/still URL resolution + on-disk cache.
+- `CoachAvatarView` — coach clip player with crossfade, looping, still fallback, force-mute.
+- `AuraCoachStage` / `AuraGlowLayer` — glow halo + feathered mask + vignette over `Theme.bg`.
+- `LectureBeatNarrator` — the ONLY audio source in the lecture (coach TTS).
+- `Theme` — design tokens (Aura gradient, palette, radii, adaptive Light/Dark base).
+- Supabase — auth + DB + Storage. Configured.
 
 ### Audio rule (hard constraint)
 Coach video clips are ALWAYS silent (force-muted, audio tracks zeroed). The pre-generated per-beat lecture narration is the only audio.

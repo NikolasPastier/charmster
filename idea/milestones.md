@@ -6,5 +6,6 @@
 - [x] Live AI practice pipeline (AV capture + Realtime + vision review) + scoring
 - [x] Coach VIDEO clips wired into lecture player (idle + 2 talking takes, cached, force-muted)
 - [x] Aura lecture screen restyle (halo, feathered full-bleed coach, segmented bar + X exit)
+- [x] Dark Aura theme is the default; Light/System optional via Settings toggle (brand accents preserved in both)
 - [ ] Pre-generated per-beat lecture narration MP3s (replace TTS)
 - [ ] Deploy Supabase edge functions (realtime_session, vision_review) + finalize launch readiness

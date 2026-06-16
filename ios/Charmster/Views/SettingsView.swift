@@ -320,9 +320,9 @@ struct SettingsView: View {
         Text("Theme").foregroundStyle(Theme.text)
         Spacer()
         Picker("Theme", selection: bindingFor(\.profile.themePreference)) {
-          Text("System").tag("system")
-          Text("Light").tag("light")
           Text("Dark").tag("dark")
+          Text("Light").tag("light")
+          Text("System").tag("system")
         }
         .labelsHidden().pickerStyle(.menu).tint(Theme.accent)
       }
