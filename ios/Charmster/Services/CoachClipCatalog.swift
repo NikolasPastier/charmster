@@ -193,6 +193,9 @@ final class CoachClipCatalog {
       defer { Task { @MainActor in self.inflight[remote] = nil } }
       do {
         let (tmp, resp) = try await session.download(from: remote)
+        let code = (resp as? HTTPURLResponse)?.statusCode ?? -1
+        TenXPreviewSupport.log(
+          "[FX10] download \(remote.lastPathComponent) HTTP=\(code) url=\(remote.absoluteString)")
         if let http = resp as? HTTPURLResponse, !(200..<300).contains(http.statusCode) {
           try? FileManager.default.removeItem(at: tmp)
           return nil
@@ -201,6 +204,7 @@ final class CoachClipCatalog {
         try FileManager.default.moveItem(at: tmp, to: local)
         return local
       } catch {
+        TenXPreviewSupport.log("[FX10] download FAILED \(remote.lastPathComponent) error=\(error)")
         return nil
       }
     }

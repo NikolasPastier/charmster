@@ -4,37 +4,82 @@ import SwiftUI
 import UIKit
 
 /// Photoreal coach avatar surface. Plays the coach's looping base clip
-/// (idle/talking/thinking) full-bleed and crossfades to one-shot reactions
-/// (emphasize/affirm/laugh) before returning to the base. When no clip
+/// (idle/talking/thinking) full-bleed through the SHARED `LoopingVideoPlayer`
+/// (the same proven stack the female practice avatar uses). When no clip
 /// resolves (none uploaded yet, offline, or load failure) it paints a calm
-/// Aura-gradient fallback with the coach's role symbol — never a black frame.
-/// Respects Reduce Motion.
+/// Aura-gradient / neutral-still fallback BEHIND the video — never a black
+/// frame — and the still is faded away the instant the first video frame is
+/// ready. Respects Reduce Motion.
+///
+/// FX10: the previous bespoke `CoachPlayerLayer` built its item via
+/// `AVPlayerItem(asset:)` + a synchronous `asset.tracks` audio mix, which
+/// stalled item readiness and left a frozen still. That entire stack is gone;
+/// muting is now just `player.isMuted` inside `LoopingVideoPlayer`.
 struct CoachAvatarView: View {
   let coach: CoachPersona
   var baseState: CoachAvatarState = .idle
-  var reaction: CoachAvatarState? = nil
   /// 1-based talking take, chosen once per lecture and held for its duration.
   var talkingTake: Int = 1
+  /// Retained for source-compat with older callers; reactions reuse the
+  /// talking/idle loops in the lecture context, so this is no longer a
+  /// separate playback path.
+  var reaction: CoachAvatarState? = nil
   var onReactionFinished: () -> Void = {}
 
   @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
+  /// Resolved local clip URL for the current (coach, state, take).
+  @State private var clipURL: URL?
+  /// Whether the first video frame is ready — drives the still crossfade.
+  @State private var videoReady = false
+
+  /// The looping base to actually play. A non-nil reaction collapses to the
+  /// talking loop (visual emphasis) so we keep a single playback path.
+  private var effectiveState: CoachAvatarState {
+    if let reaction, !reaction.isLooping { return .talking }
+    return baseState
+  }
+
+  /// Stable identity for the current clip request (coach + state + take).
+  private var clipID: String {
+    "\(coach.id)|\(effectiveState.rawValue)|\(effectiveState == .talking ? talkingTake : 1)"
+  }
+
   var body: some View {
     ZStack {
+      // Placeholder still lives BEHIND the video and fades out on first frame.
       CoachFallbackStill(coach: coach)
-        .transition(.opacity)
+        .opacity(videoReady ? 0 : 1)
+        .animation(.easeInOut(duration: 0.2), value: videoReady)
+
       if !reduceMotion {
-        CoachPlayerLayer(
-          coach: coach,
-          baseState: baseState,
-          reaction: reaction,
-          talkingTake: talkingTake,
-          onReactionFinished: onReactionFinished
+        LoopingVideoPlayer(
+          url: clipURL,
+          muted: true,
+          clipID: clipID,
+          onFirstFrame: { ready in
+            videoReady = ready
+            // Reactions reuse the talking loop; signal completion once the
+            // frame is up so callers that await it don't stall.
+            if reaction != nil { onReactionFinished() }
+          }
         )
-        .transition(.opacity.animation(.easeInOut(duration: 0.3)))
+        .transition(.opacity)
       }
     }
     .clipped()
+    .task(id: clipID) {
+      // Resolve (and cache-download) the clip for the current state/take.
+      videoReady = false
+      let state = effectiveState
+      let take = (state == .talking) ? talkingTake : 1
+      let url = await CoachClipCatalog.shared.localClipURL(for: coach, state: state, take: take)
+      TenXPreviewSupport.log(
+        "[FX10] CoachAvatarView resolve coach=\(coach.id) state=\(state.rawValue) take=\(take) reduceMotion=\(reduceMotion) → \(url?.lastPathComponent ?? "nil (still kept)")"
+      )
+      clipURL = url
+      if url == nil { onReactionFinished() }
+    }
     .accessibilityLabel(Text("\(coach.humanName), your coach"))
     .accessibilityAddTraits(.isImage)
   }
@@ -64,203 +109,6 @@ private struct CoachFallbackStill: View {
     }
     .task(id: coach.id) {
       loadedStill = await CoachClipCatalog.shared.idleStill(for: coach)
-    }
-  }
-}
-
-// MARK: - Player layer
-
-private struct CoachPlayerLayer: UIViewRepresentable {
-  let coach: CoachPersona
-  let baseState: CoachAvatarState
-  let reaction: CoachAvatarState?
-  let talkingTake: Int
-  let onReactionFinished: () -> Void
-
-  func makeCoordinator() -> Coordinator { Coordinator(onReactionFinished: onReactionFinished) }
-
-  func makeUIView(context: Context) -> ContainerView {
-    let v = ContainerView()
-    v.backgroundColor = .clear
-    context.coordinator.attach(to: v, coach: coach)
-    return v
-  }
-
-  func updateUIView(_ uiView: ContainerView, context: Context) {
-    context.coordinator.coach = coach
-    context.coordinator.talkingTake = talkingTake
-    context.coordinator.apply(baseState: baseState, reaction: reaction)
-  }
-
-  static func dismantleUIView(_ uiView: ContainerView, coordinator: Coordinator) {
-    coordinator.teardown()
-  }
-
-  final class Coordinator: NSObject {
-    var coach: CoachPersona = .default
-    var talkingTake: Int = 1
-    private weak var container: ContainerView?
-    private var primaryLayer: AVPlayerLayer?
-    private var primaryPlayer: AVPlayer?
-    private var crossfadeLayer: AVPlayerLayer?
-    private var crossfadePlayer: AVPlayer?
-    private var currentBase: CoachAvatarState = .idle
-    private var currentReaction: CoachAvatarState?
-    private var reactionObserver: NSObjectProtocol?
-    private var loopObserver: NSObjectProtocol?
-    private let onReactionFinished: () -> Void
-
-    init(onReactionFinished: @escaping () -> Void) {
-      self.onReactionFinished = onReactionFinished
-    }
-
-    /// Builds an AVPlayer that can NEVER produce sound. Belt-and-suspenders:
-    /// `isMuted = true` AND an `AVMutableAudioMix` that zeroes the volume of
-    /// every audio track on the item. Some coach clips (e.g. Leo talking) carry
-    /// an audio track; the avatar is purely visual, so all clip audio is killed
-    /// regardless of device mute switch or speaker route. The ONLY audio in the
-    /// lecture is the per-beat narration played by `LectureBeatNarrator`.
-    static func makeMutedPlayer(url: URL) -> (AVPlayerItem, AVPlayer) {
-      let asset = AVURLAsset(url: url)
-      let item = AVPlayerItem(asset: asset)
-
-      let mix = AVMutableAudioMix()
-      var params: [AVMutableAudioMixInputParameters] = []
-      for track in asset.tracks(withMediaType: .audio) {
-        let p = AVMutableAudioMixInputParameters(track: track)
-        p.setVolume(0, at: .zero)
-        params.append(p)
-      }
-      mix.inputParameters = params
-      item.audioMix = mix
-
-      let player = AVPlayer(playerItem: item)
-      player.isMuted = true
-      player.volume = 0
-      return (item, player)
-    }
-
-    func attach(to container: ContainerView, coach: CoachPersona) {
-      self.container = container
-      self.coach = coach
-    }
-
-    func apply(baseState: CoachAvatarState, reaction: CoachAvatarState?) {
-      if reaction == nil, baseState != currentBase {
-        currentBase = baseState
-        Task { @MainActor in await self.swapPrimary(to: baseState) }
-      } else if primaryPlayer == nil {
-        currentBase = baseState
-        Task { @MainActor in await self.swapPrimary(to: baseState) }
-      }
-      if let r = reaction, r != currentReaction {
-        currentReaction = r
-        Task { @MainActor in await self.playReaction(r) }
-      } else if reaction == nil {
-        currentReaction = nil
-      }
-    }
-
-    @MainActor
-    private func swapPrimary(to state: CoachAvatarState) async {
-      let take = (state == .talking) ? talkingTake : 1
-      guard
-        let url = await CoachClipCatalog.shared.localClipURL(for: coach, state: state, take: take)
-      else {
-        return  // Keep current frame; fallback still is behind.
-      }
-      let (item, player) = Self.makeMutedPlayer(url: url)
-      player.actionAtItemEnd = .none
-
-      if let prev = loopObserver { NotificationCenter.default.removeObserver(prev) }
-      loopObserver = NotificationCenter.default.addObserver(
-        forName: .AVPlayerItemDidPlayToEndTime, object: item, queue: .main
-      ) { [weak player] _ in
-        player?.seek(to: .zero)
-        player?.play()
-      }
-
-      let newLayer = AVPlayerLayer(player: player)
-      newLayer.videoGravity = .resizeAspectFill
-      newLayer.frame = container?.bounds ?? .zero
-      newLayer.opacity = 0
-      container?.layer.insertSublayer(newLayer, at: 0)
-
-      CATransaction.begin()
-      CATransaction.setAnimationDuration(0.3)
-      newLayer.opacity = 1
-      primaryLayer?.opacity = 0
-      CATransaction.commit()
-      player.play()
-
-      let oldLayer = primaryLayer
-      let oldPlayer = primaryPlayer
-      DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
-        oldPlayer?.pause()
-        oldLayer?.removeFromSuperlayer()
-      }
-      primaryLayer = newLayer
-      primaryPlayer = player
-    }
-
-    @MainActor
-    private func playReaction(_ state: CoachAvatarState) async {
-      let take = talkingTake
-      guard
-        let url = await CoachClipCatalog.shared.localClipURL(for: coach, state: state, take: take)
-      else {
-        onReactionFinished()
-        return
-      }
-      let (item, player) = Self.makeMutedPlayer(url: url)
-      player.actionAtItemEnd = .pause
-
-      let layer = AVPlayerLayer(player: player)
-      layer.videoGravity = .resizeAspectFill
-      layer.frame = container?.bounds ?? .zero
-      layer.opacity = 0
-      container?.layer.addSublayer(layer)
-
-      CATransaction.begin()
-      CATransaction.setAnimationDuration(0.3)
-      layer.opacity = 1
-      CATransaction.commit()
-
-      if let prev = reactionObserver { NotificationCenter.default.removeObserver(prev) }
-      reactionObserver = NotificationCenter.default.addObserver(
-        forName: .AVPlayerItemDidPlayToEndTime, object: item, queue: .main
-      ) { [weak self] _ in
-        CATransaction.begin()
-        CATransaction.setAnimationDuration(0.3)
-        layer.opacity = 0
-        CATransaction.commit()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
-          player.pause()
-          layer.removeFromSuperlayer()
-          self?.onReactionFinished()
-        }
-      }
-      crossfadeLayer = layer
-      crossfadePlayer = player
-      player.play()
-    }
-
-    func teardown() {
-      if let o = reactionObserver { NotificationCenter.default.removeObserver(o) }
-      if let o = loopObserver { NotificationCenter.default.removeObserver(o) }
-      primaryPlayer?.pause()
-      crossfadePlayer?.pause()
-      primaryLayer?.removeFromSuperlayer()
-      crossfadeLayer?.removeFromSuperlayer()
-    }
-  }
-
-  final class ContainerView: UIView {
-    override func layoutSubviews() {
-      super.layoutSubviews()
-      for sub in layer.sublayers ?? [] {
-        if let pl = sub as? AVPlayerLayer { pl.frame = bounds }
-      }
     }
   }
 }

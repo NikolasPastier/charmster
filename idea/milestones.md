@@ -7,7 +7,8 @@
 - [x] Lock app to dark-only; remove Appearance control + light palette fallback
 - [x] Path header cleanup (no mini logo) + symmetrical Aura/Streak pills
 - [x] Single-line Settings rows
-- [x] Lecture UI v2 — Aura glow on every beat, no duplicate titles, per-beat coach treatment, side-by-side Good vs Bad, cached Core Insight teaching visuals
+- [x] Lecture UI v2 — Aura glow on every beat, no duplicate titles, per-beat coach, side-by-side Good vs Bad, cached Core Insight teaching visuals
+- [x] Coach lecture clip playback fixed — one shared LoopingVideoPlayer for coach + female avatar; coach visibly loops idle↔talking in sync with audio
 - [ ] Upload the 3 teaching-visual images to the `lecture-visuals` bucket
 - [ ] Deploy edge functions + populate remaining media buckets
 - [ ] Superwall production paywall finalization
