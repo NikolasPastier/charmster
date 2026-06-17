@@ -32,7 +32,7 @@ struct PracticeHubView: View {
           }
           .padding(18)
         }
-        .background(Theme.bg.ignoresSafeArea())
+        .background(AuraBackground())
         .navigationTitle("Sandbox")
       }
       .fullScreenCover(item: $presentedConfig) { cfg in
@@ -40,6 +40,7 @@ struct PracticeHubView: View {
           presentedConfig = nil
         }
         .environment(app)
+        .appThemedPresentation()
       }
     }
     .trackView("PracticeHubView")

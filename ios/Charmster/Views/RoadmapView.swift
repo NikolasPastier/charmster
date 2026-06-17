@@ -22,7 +22,7 @@ struct RoadmapView: View {
           .padding(.horizontal, 18)
           .padding(.vertical, 18)
         }
-        .background(Theme.bg.ignoresSafeArea())
+        .background(AuraBackground())
         .navigationTitle("Your path")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -49,6 +49,7 @@ struct RoadmapView: View {
           .environment(app)
           .presentationDetents([.large])
           .presentationDragIndicator(.visible)
+          .appThemedPresentation()
       }
       .alert(item: $lockHint) { hint in
         Alert(

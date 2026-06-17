@@ -49,7 +49,7 @@ struct LectureReplaySetupView: View {
         }
         playBar
       }
-      .background(Theme.bg.ignoresSafeArea())
+      .background(AuraBackground())
     }
     .trackView("LectureReplaySetupView")
   }

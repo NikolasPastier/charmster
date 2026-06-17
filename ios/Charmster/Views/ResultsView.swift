@@ -23,7 +23,7 @@ struct ResultsView: View {
         }
         .padding(18)
       }
-      .background(Theme.bg.ignoresSafeArea())
+      .background(AuraBackground())
     }
     .trackView("ResultsView")
   }

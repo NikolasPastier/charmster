@@ -20,7 +20,7 @@ struct ProfileView: View {
           }
           .padding(18)
         }
-        .background(Theme.bg.ignoresSafeArea())
+        .background(AuraBackground())
         .navigationTitle("Profile")
         .navigationDestination(isPresented: $goToSettings) {
           SettingsView()
@@ -180,6 +180,7 @@ struct ProfileView: View {
     }
     .sheet(isPresented: $showCoachGallery) {
       CoachGalleryView().environment(app)
+        .appThemedPresentation()
     }
   }
 

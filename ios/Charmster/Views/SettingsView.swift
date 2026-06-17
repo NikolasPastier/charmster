@@ -30,15 +30,17 @@ struct SettingsView: View {
         }
         .padding(18)
       }
-      .background(Theme.bg.ignoresSafeArea())
+      .background(AuraBackground())
       .navigationTitle("Settings")
       .tint(Theme.accent)
       .fullScreenCover(isPresented: $showRedoOnboarding) {
         NavigationStack { OnboardingFlowView().environment(app) }
+          .appThemedPresentation()
       }
       .sheet(isPresented: $showCancelSurvey) {
         CancelSurveyView().environment(app)
           .presentationDetents([.medium])
+          .appThemedPresentation()
       }
     }
     .trackView("SettingsView")

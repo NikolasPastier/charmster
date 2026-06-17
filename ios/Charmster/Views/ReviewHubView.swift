@@ -22,11 +22,12 @@ struct ReviewHubView: View {
           }
           .padding(18)
         }
-        .background(Theme.bg.ignoresSafeArea())
+        .background(AuraBackground())
         .navigationTitle("Review")
       }
       .sheet(item: $presentedLecture) { lec in
         LectureDetailSheet(lecture: lec).environment(app)
+          .appThemedPresentation()
       }
     }
     .trackView("ReviewHubView")

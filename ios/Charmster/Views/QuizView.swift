@@ -65,7 +65,7 @@ struct QuizView: View {
         }
       }
       .padding(18)
-      .background(Theme.bg.ignoresSafeArea())
+      .background(AuraBackground())
       .onAppear {
         questions = LectureContentStore.shared.quiz(for: lecture, coach: app.coachMode)
       }

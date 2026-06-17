@@ -39,7 +39,7 @@ struct LectureDetailSheet: View {
     Group {
       NavigationStack {
         ZStack {
-          Theme.bg.ignoresSafeArea()
+          AuraBackground()
           switch route {
           case .replaySetup: replaySetupScreen
           case .lecture: lecturePlayer
@@ -55,20 +55,8 @@ struct LectureDetailSheet: View {
       }
       .onAppear { decideInitialRouteIfNeeded() }
     }
-    .preferredColorScheme(sheetColorScheme)
+    .preferredColorScheme(appThemedScheme(app.profile.themePreference))
     .trackView("LectureDetailSheet")
-  }
-
-  /// Force the sheet into the user's chosen color scheme. Without this,
-  /// `.sheet()` modals don't inherit the root window's `preferredColorScheme`
-  /// on all iOS versions, so adaptive `Theme.*` tokens resolve to the system
-  /// (light) appearance instead of the app's forced dark default.
-  private var sheetColorScheme: ColorScheme? {
-    switch app.profile.themePreference {
-    case "light": return .light
-    case "dark": return .dark
-    default: return nil
-    }
   }
 
   /// On first appearance, branch on completion: replay → setup sheet, first

@@ -32,7 +32,7 @@ struct OnboardingFlowView: View {
 
   var body: some View {
     ZStack {
-      Theme.bg.ignoresSafeArea()
+      AuraBackground()
       content
         .transition(
           .asymmetric(
@@ -1003,7 +1003,7 @@ private struct TasterStep: View {
 
   var body: some View {
     ZStack {
-      Theme.bg.ignoresSafeArea()
+      AuraBackground()
       switch phase {
       case .intro:
         intro
