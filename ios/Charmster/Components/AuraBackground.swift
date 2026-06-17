@@ -48,28 +48,18 @@ struct AuraBackground: View {
 
 // MARK: - App-themed color scheme (fixes white sheets/covers)
 
-/// Resolve the user's Appearance preference into a `ColorScheme?`.
-/// "dark" -> .dark, "light" -> .light, anything else ("system") -> nil.
-///
-/// `.sheet` and `.fullScreenCover` spawn their own presentation context and
-/// fall back to the DEVICE appearance, so the root `.preferredColorScheme`
-/// does NOT propagate into them. Apply `appThemedScheme(...)` to each presented
-/// root so adaptive `Theme.*` tokens resolve to the app's chosen appearance.
-func appThemedScheme(_ pref: String) -> ColorScheme? {
-  switch pref {
-  case "dark": return .dark
-  case "light": return .light
-  default: return nil  // "system"
-  }
+/// Charmster is dark-only. The presented (sheet/cover) helper always resolves
+/// to `.dark` so presentation contexts never fall back to the device appearance.
+func appThemedScheme(_ pref: String = "dark") -> ColorScheme? {
+  .dark
 }
 
 /// Attaches the app's chosen color scheme to a presented (sheet/cover) root so
 /// it never falls back to the device appearance. Reads the preference from the
 /// shared `AppState` in the environment.
 private struct AppThemedSchemeModifier: ViewModifier {
-  @Environment(AppState.self) private var app
   func body(content: Content) -> some View {
-    content.preferredColorScheme(appThemedScheme(app.profile.themePreference))
+    content.preferredColorScheme(.dark)
   }
 }
 

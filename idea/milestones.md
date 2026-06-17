@@ -1,0 +1,11 @@
+- [x] Dark Aura design system + tokens
+- [x] 13-step onboarding conversion flow
+- [x] Category-parallel lecture path + unlock model
+- [x] Audio-first lecture story player with coach clips
+- [x] Live practice review pipeline + scoring
+- [x] Coach/partner/user imagery wired from Supabase
+- [x] Lock app to dark-only; remove Appearance control + light palette fallback
+- [x] Path header cleanup (no mini logo) + symmetrical Aura/Streak pills
+- [x] Single-line Settings rows
+- [ ] Deploy edge functions + populate remaining media buckets
+- [ ] Superwall production paywall finalization

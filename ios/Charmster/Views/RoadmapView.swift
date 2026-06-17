@@ -26,21 +26,11 @@ struct RoadmapView: View {
         .navigationTitle("Your path")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-          ToolbarItem(placement: .principal) {
-            CharmsterLogo(height: 26)
-              .frame(maxWidth: 150)
-          }
           ToolbarItem(placement: .topBarLeading) {
-            HStack(spacing: 6) {
-              Image(systemName: "flame.fill").foregroundStyle(Theme.coral)
-              Text("\(app.streakDays)").font(.system(size: 14, weight: .heavy))
-            }
+            StatPill(systemImage: "flame.fill", value: app.streakDays, tint: Theme.coral)
           }
           ToolbarItem(placement: .topBarTrailing) {
-            HStack(spacing: 6) {
-              Image(systemName: "sparkles").foregroundStyle(Theme.aura)
-              Text("\(app.aura)").font(.system(size: 14, weight: .heavy))
-            }
+            StatPill(systemImage: "sparkles", value: app.aura, tint: Theme.aura)
           }
         }
       }
@@ -148,6 +138,40 @@ struct RoadmapView: View {
     case .capstoneLocked, .capstoneAvailable: return .capstoneLocked
     default: return .locked
     }
+  }
+}
+
+// MARK: - Toolbar stat pill
+
+/// A compact, symmetrical header pill: a circular tinted icon plus a count,
+/// laid out as one HStack so the icon and number stay vertically centered and
+/// never clip. The number shrinks-to-fit so 2-3 digit counts still fit cleanly.
+private struct StatPill: View {
+  let systemImage: String
+  let value: Int
+  let tint: Color
+
+  var body: some View {
+    HStack(spacing: 5) {
+      Image(systemName: systemImage)
+        .font(.system(size: 13, weight: .bold))
+        .foregroundStyle(tint)
+        .frame(width: 18, height: 18)
+      Text("\(value)")
+        .font(.system(size: 14, weight: .heavy))
+        .foregroundStyle(Theme.text)
+        .lineLimit(1)
+        .minimumScaleFactor(0.7)
+        .fixedSize()
+    }
+    .padding(.horizontal, 11)
+    .frame(height: 30)
+    .background(
+      Capsule(style: .continuous).fill(Theme.surfaceRaised)
+    )
+    .overlay(
+      Capsule(style: .continuous).stroke(Theme.border, lineWidth: 1)
+    )
   }
 }
 

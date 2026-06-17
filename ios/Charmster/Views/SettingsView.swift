@@ -319,17 +319,6 @@ struct SettingsView: View {
   private var appearanceSection: some View {
     SettingsCard(title: "Appearance & accessibility", icon: "paintbrush.fill") {
       SettingsRow {
-        Text("Theme").foregroundStyle(Theme.text)
-        Spacer()
-        Picker("Theme", selection: bindingFor(\.profile.themePreference)) {
-          Text("Dark").tag("dark")
-          Text("Light").tag("light")
-          Text("System").tag("system")
-        }
-        .labelsHidden().pickerStyle(.menu).tint(Theme.accent)
-      }
-      SettingsDivider()
-      SettingsRow {
         Text("Text size").foregroundStyle(Theme.text)
         Spacer()
         Picker("Text size", selection: bindingFor(\.profile.textSize)) {
@@ -392,8 +381,12 @@ struct SettingsView: View {
   private func infoRow(_ title: String, _ value: String) -> some View {
     SettingsRow {
       Text(title).foregroundStyle(Theme.text)
-      Spacer()
+        .layoutPriority(1)
+      Spacer(minLength: 8)
       Text(value).foregroundStyle(Theme.textMuted)
+        .lineLimit(1)
+        .minimumScaleFactor(0.8)
+        .multilineTextAlignment(.trailing)
     }
   }
 
@@ -410,11 +403,15 @@ struct SettingsView: View {
   ) -> some View {
     SettingsRow {
       Text(title).foregroundStyle(Theme.text)
-      Spacer()
+        .layoutPriority(1)
+      Spacer(minLength: 8)
       Picker(title, selection: selection) {
         ForEach(options, id: \.self) { Text($0).tag($0) }
       }
       .labelsHidden().pickerStyle(.menu).tint(Theme.accent)
+      .lineLimit(1)
+      .minimumScaleFactor(0.8)
+      .fixedSize()
     }
   }
 

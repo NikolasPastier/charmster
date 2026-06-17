@@ -118,21 +118,11 @@ extension Color {
     self.init(.sRGB, red: r, green: g, blue: b, opacity: alpha)
   }
 
-  /// Adaptive color that resolves per trait collection. Drives Light/Dark
-  /// re-skin across every Theme token from the single root color scheme.
+  /// Charmster is dark-only. This initializer intentionally ignores `lightHex`
+  /// and always resolves to the dark value so no token can fall back to a light
+  /// color, even on a Light-Mode device or for legacy "light"/"system" profiles.
   init(lightHex: UInt32, darkHex: UInt32, alpha: Double = 1.0) {
-    #if canImport(UIKit)
-      self.init(
-        UIColor { traits in
-          let hex = traits.userInterfaceStyle == .dark ? darkHex : lightHex
-          let r = CGFloat((hex >> 16) & 0xFF) / 255.0
-          let g = CGFloat((hex >> 8) & 0xFF) / 255.0
-          let b = CGFloat(hex & 0xFF) / 255.0
-          return UIColor(red: r, green: g, blue: b, alpha: CGFloat(alpha))
-        })
-    #else
-      self.init(hex: lightHex, alpha: alpha)
-    #endif
+    self.init(hex: darkHex, alpha: alpha)
   }
 }
 

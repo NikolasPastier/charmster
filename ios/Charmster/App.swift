@@ -13,7 +13,7 @@ struct CharmsterApp: App {
     WindowGroup {
       RootView()
         .environment(appState)
-        .preferredColorScheme(appliedColorScheme)
+        .preferredColorScheme(.dark)
         .dynamicTypeSize(appliedTypeSize)
         .tint(Theme.accent)
         .task {
@@ -22,16 +22,6 @@ struct CharmsterApp: App {
           NotificationManager.applyDailyReminder(
             profile: appState.profile, coachName: appState.selectedCoach.humanName)
         }
-    }
-  }
-
-  /// System / Light / Dark from `profile.themePreference`. Drives the app-root
-  /// color scheme so the Theme picker in Settings actually re-skins the app.
-  private var appliedColorScheme: ColorScheme? {
-    switch appState.profile.themePreference {
-    case "light": return .light
-    case "dark": return .dark
-    default: return nil  // "system"
     }
   }
 
