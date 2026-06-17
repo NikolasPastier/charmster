@@ -76,7 +76,6 @@ struct LivePracticeView: View {
         if dailyCapHit { dailyCapOverlay } else { mainOverlay }
         if winddown && !dailyCapHit { winddownOverlay }
       }
-      .ignoresSafeArea(edges: .top)
       .task { await openSession() }
       .onReceive(timer) { _ in tickFrame() }
       .onChange(of: pipeline.lastMoodTag) { _, tag in
@@ -147,7 +146,7 @@ struct LivePracticeView: View {
       .buttonStyle(.plain)
     }
     .padding(.horizontal, 18)
-    .padding(.top, 14)
+    .padding(.top, 8)
     .overlay(alignment: .bottomTrailing) {
       if showSelfView {
         SelfViewPlaceholder(active: pipeline.cameraAvailable)
@@ -182,11 +181,12 @@ struct LivePracticeView: View {
         }
         .frame(height: 5)
       }
-      .padding(.horizontal, 22)
+      .padding(.horizontal, 18)
 
       HStack(spacing: 10) {
         listeningIndicator
-        Spacer()
+          .layoutPriority(0)
+        Spacer(minLength: 8)
         Button {
           app.profile.captionsEnabled.toggle()
         } label: {
@@ -197,6 +197,7 @@ struct LivePracticeView: View {
             .background(Circle().fill(.ultraThinMaterial))
         }
         .buttonStyle(.plain)
+        .layoutPriority(1)
         Button(action: endNow) {
           Text("Done")
             .font(.system(size: 14, weight: .heavy))
@@ -205,9 +206,12 @@ struct LivePracticeView: View {
             .background(Capsule().fill(Theme.gold))
         }
         .buttonStyle(.plain)
+        .layoutPriority(1)
       }
-      .padding(.horizontal, 22).padding(.bottom, 26)
+      .padding(.horizontal, 18)
     }
+    .padding(.top, 8)
+    .padding(.bottom, 12)
   }
 
   private var atmosphereLabel: String {
@@ -231,6 +235,8 @@ struct LivePracticeView: View {
       )
       .font(.system(size: 12, weight: .bold))
       .foregroundStyle(Theme.textMuted)
+      .lineLimit(1)
+      .truncationMode(.tail)
     }
     .padding(.horizontal, 10).padding(.vertical, 6)
     .background(Capsule().fill(.ultraThinMaterial))

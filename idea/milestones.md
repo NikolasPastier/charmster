@@ -10,6 +10,7 @@
 - [x] Lecture UI v2 — Aura glow on every beat, no duplicate titles, per-beat coach, side-by-side Good vs Bad, cached Core Insight teaching visuals
 - [x] Coach lecture clip playback fixed — one shared LoopingVideoPlayer for coach + female avatar
 - [x] Home Today card — single "TODAY" (eyebrow only); title binds to lecture name alone
+- [x] Live practice overlay safe-area fix — top/bottom controls + atmosphere bar respect insets, no clipping
 - [ ] Upload the 3 teaching-visual images to the `lecture-visuals` bucket
 - [ ] Deploy edge functions + populate remaining media buckets
 - [ ] Superwall production paywall finalization
