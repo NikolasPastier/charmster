@@ -45,7 +45,7 @@ targets:
           ONLY_ACTIVE_ARCH: YES
     scheme:
       environmentVariables:
-        'SUPABASE_ANON_KEY': 'sb_publishable_PugmXyqfYNd9-owgqH9s5w_hVbXBIcY'
+        'SUPABASE_ANON_KEY': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV2anRyaHZobGRlZXNsZ252aHlkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1NTI1ODUsImV4cCI6MjA5NjEyODU4NX0.Ksl5paraVRPWwZOvad8IqLgl2i5i-tuZS0pe-uTCTnA'
         'SUPABASE_PUBLISHABLE_KEY': 'sb_publishable_PugmXyqfYNd9-owgqH9s5w_hVbXBIcY'
         'SUPABASE_URL': 'https://uvjtrhvhldeeslgnvhyd.supabase.co'
         'SUPERWALL_PUBLIC_API_KEY': 'pk_UG-RlIJhXloS9444PJtJJ'

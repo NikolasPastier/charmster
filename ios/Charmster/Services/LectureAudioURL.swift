@@ -2,17 +2,17 @@ import Foundation
 
 /// SINGLE SOURCE OF TRUTH for pre-generated lecture-beat narration audio URLs.
 ///
-/// Files live in the public Supabase Storage bucket `Avatars` under:
-///   `Lectures/{coachStorageId}/{audioLectureId}/{beatFile}.mp3`
+/// Files live in the public Supabase Storage bucket `lecture-audio` under:
+///   `{lectureId}/{coachId}/{beatId}.mp3`     e.g.  `t1-l1/leo/hook.mp3`
 ///
 /// where:
-///   - `coachStorageId` matches the coach folder used elsewhere (e.g. `dr_ray`
-///     lives under `ray`), kept consistent with `CoachClipCatalog` /
-///     `CoachPreviewLineURL`.
-///   - `audioLectureId` is the per-lecture slug `t{track}-l{number}`, derived
-///     from `Lecture.trackId` + `Lecture.number` (capstones use the same
-///     number convention the curriculum assigns).
-///   - `beatFile` is the per-beat filename, below.
+///   - `lectureId` is the per-lecture slug `t{track}-l{number}`, derived from
+///     `Lecture.trackId` + `Lecture.number` (e.g. `t1-l1`, `t10-l10`).
+///   - `coachId` is `CoachPersona.id` AS-IS: `theo`, `dr_ray`, `cole`, `noah`,
+///     `leo`. Do NOT remap `dr_ray -> ray` here — that remap is only for the
+///     VIDEO clip resolvers, not audio.
+///   - `beatId` is the per-beat filename: `hook`, `coreInsight`, `goodVsBad`,
+///     `recallQuestion`, `recallWhy`, `takeawayHandoff`.
 ///
 /// The recall beat needs TWO clips played in order: the question, then the
 /// reason ("why") revealed after answering. Every other beat is a single clip.
@@ -27,18 +27,6 @@ enum LectureAudioURL {
       .trimmingCharacters(in: CharacterSet(charactersIn: "/"))
   }
 
-  private static let bucket = "Avatars"
-  private static let root = "Lectures"
-
-  /// Maps a `CoachPersona.id` to its Storage folder name (matches the other
-  /// coach asset resolvers).
-  static func storageId(forCoachId coachId: String) -> String {
-    switch coachId {
-    case "dr_ray": return "ray"
-    default: return coachId
-    }
-  }
-
   /// Per-lecture audio slug, e.g. track 3 / number 4 -> `t3-l4`.
   static func audioLectureId(trackId: Int, number: Int) -> String {
     "t\(trackId)-l\(number)"
@@ -51,32 +39,37 @@ enum LectureAudioURL {
     case recallWhy
 
     /// Filename (without extension) inside the lecture's audio folder.
-    var fileStem: String {
+    var beatId: String {
       switch self {
       case .beat(let kind):
         switch kind {
         case .hook: return "hook"
-        case .coreInsight: return "core-insight"
-        case .goodVsBad: return "good-vs-bad"
-        case .recallCheck: return "recall-question"  // default single-clip mapping
-        case .takeawayHandoff: return "takeaway"
+        case .coreInsight: return "coreInsight"
+        case .goodVsBad: return "goodVsBad"
+        case .recallCheck: return "recallQuestion"  // default single-clip mapping
+        case .takeawayHandoff: return "takeawayHandoff"
         }
-      case .recallQuestion: return "recall-question"
-      case .recallWhy: return "recall-why"
+      case .recallQuestion: return "recallQuestion"
+      case .recallWhy: return "recallWhy"
       }
     }
   }
 
-  /// Build the public URL for one lecture-beat audio segment. Returns `nil`
-  /// only if URL encoding fails.
+  /// CONFIRMED CANONICAL BUILDER.
+  /// `lecture-audio/{lectureId}/{coachId}/{beatId}.mp3`
+  static func lectureAudioURL(lectureId: String, coachId: String, beatId: String) -> URL? {
+    let base = storageBase
+    let path = "lecture-audio/\(lectureId)/\(coachId)/\(beatId).mp3"
+    guard let enc = path.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) else {
+      return nil
+    }
+    return URL(string: "\(base)/storage/v1/object/public/\(enc)")
+  }
+
+  /// Convenience overload used by the narrator: passes `CoachPersona.id`
+  /// directly (no clip-storage remap) and derives the lecture slug.
   static func url(coachId: String, trackId: Int, number: Int, segment: Segment) -> URL? {
-    let coach = storageId(forCoachId: coachId)
-    let lectureSlug = audioLectureId(trackId: trackId, number: number)
-    let objectPath =
-      "\(bucket)/\(root)/\(coach)/\(lectureSlug)/\(segment.fileStem).mp3"
-    guard
-      let encoded = objectPath.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)
-    else { return nil }
-    return URL(string: "\(storageBase)/storage/v1/object/public/\(encoded)")
+    let lectureId = audioLectureId(trackId: trackId, number: number)
+    return lectureAudioURL(lectureId: lectureId, coachId: coachId, beatId: segment.beatId)
   }
 }
