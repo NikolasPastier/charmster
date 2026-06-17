@@ -49,7 +49,7 @@ struct LectureStoryPlayerView: View {
   var body: some View {
     Group {
       ZStack {
-        auraBackground
+        AuraBackground()
         if let story {
           content(story: story)
         } else {
@@ -70,43 +70,6 @@ struct LectureStoryPlayerView: View {
       .onDisappear { narrator.stop() }
     }
     .trackView("LectureStoryPlayerView")
-  }
-
-  // MARK: - Aura background (deep base + soft pink→gold halo, vignette edges)
-
-  private var auraBackground: some View {
-    let avatarBeat = currentBeat?.visual == .avatar
-    let warm: Double = (narrator.isSpeaking && !isPaused) ? 0.55 : 0.32
-    return ZStack {
-      Color(hex: 0x0B0910).ignoresSafeArea()  // deep Charmster base
-
-      // Soft Aura glow halo — pink blending to gold, heavily blurred, low
-      // opacity, biased toward the upper third where the coach sits.
-      RadialGradient(
-        colors: [
-          Theme.pink.opacity(avatarBeat ? warm : warm * 0.6),
-          Theme.gold.opacity((avatarBeat ? warm : warm * 0.6) * 0.55),
-          .clear,
-        ],
-        center: UnitPoint(x: 0.5, y: avatarBeat ? 0.34 : 0.3),
-        startRadius: 30,
-        endRadius: 460
-      )
-      .blur(radius: 90)
-      .ignoresSafeArea()
-      .animation(.easeInOut(duration: 0.6), value: warm)
-      .animation(.easeInOut(duration: 0.4), value: avatarBeat)
-
-      // Edge vignette darkening to near-black.
-      RadialGradient(
-        colors: [.clear, .clear, Color(hex: 0x0B0910).opacity(0.9)],
-        center: .center,
-        startRadius: 120,
-        endRadius: 560
-      )
-      .ignoresSafeArea()
-      .allowsHitTesting(false)
-    }
   }
 
   // MARK: - Profile micro-label (first-play personalization cue)
@@ -287,8 +250,10 @@ struct LectureStoryPlayerView: View {
       beatVisual(beat: beat, mode: mode)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
 
-      // Signal phrase — the ONLY narration-derived text shown by default.
-      if beat.visual != .recallQuestion {
+      // Signal phrase — shown ONLY for beats whose visual doesn't already own a
+      // primary headline. Core Insight (visual carries its own headline) and
+      // Recall (question is the headline) suppress it to avoid a duplicate title.
+      if showsBottomSignal(beat) {
         Text(beat.signalPhrase)
           .font(.system(size: 26, weight: .heavy))
           .multilineTextAlignment(.center)
@@ -309,6 +274,16 @@ struct LectureStoryPlayerView: View {
     .padding(.vertical, 10)
   }
 
+  /// The bottom signal title is shown for emotional/contrast beats that don't
+  /// already render their own headline. Core Insight's visual card owns its
+  /// headline, and the recall beat uses the question itself — both suppress it.
+  private func showsBottomSignal(_ beat: LectureBeat) -> Bool {
+    switch beat.kind {
+    case .coreInsight, .recallCheck: return false
+    default: return true
+    }
+  }
+
   @ViewBuilder
   private func beatVisual(beat: LectureBeat, mode: ConversationMode) -> some View {
     switch beat.visual {
@@ -316,27 +291,37 @@ struct LectureStoryPlayerView: View {
       // Beats 1 (hook) + 5 (takeaway): coach TALKING, full face-on, feathered.
       auraStage(big: true)
     case .contrastCards:
-      VStack(spacing: 16) {
-        auraStage(big: false)
-        InsightSignalCard(
-          signalPhrase: beat.signalPhrase,
-          supporting: insightChips(mode: mode)
-        )
-        .padding(.horizontal, 18)
-      }
+      // CORE INSIGHT: the teaching visual fills the card as its background and
+      // owns the headline. NO full/framed coach — at most a tiny corner PiP.
+      CoreInsightVisualCard(
+        lecture: lecture,
+        headline: beat.signalPhrase,
+        caption: insightChips(mode: mode).joined(separator: " · ")
+      )
+      .overlay(alignment: .bottomTrailing) { coachPiP }
+      .padding(.horizontal, 18)
     case .spokenLineCards, .chatMockup:
-      VStack(spacing: 12) {
-        auraStage(big: false)
-        if let good = beat.goodExample, let bad = beat.badExample {
-          GoodBadContrastFrame(mode: mode, good: good, bad: bad)
-            .padding(.horizontal, 18)
-        }
+      // GOOD vs BAD: two side-by-side cards. Voiceover narrates — NO coach.
+      if let good = beat.goodExample, let bad = beat.badExample {
+        GoodBadContrastFrame(mode: mode, good: good, bad: bad)
+          .padding(.horizontal, 18)
       }
     case .recallQuestion:
+      // RECALL: question + tappable options. Voice only — NO coach.
       if let recall = beat.recall {
         recallView(recall)
       }
     }
+  }
+
+  /// A small circular coach picture-in-picture for the Core Insight beat — the
+  /// only place a face appears outside the Hook/Takeaway avatar beats.
+  private var coachPiP: some View {
+    AuraCoachStage(coach: coach, speaking: false, talkingTake: talkingTake, compact: true)
+      .frame(width: 64, height: 64)
+      .clipShape(Circle())
+      .overlay(Circle().stroke(Theme.border, lineWidth: 1))
+      .padding(12)
   }
 
   private func insightChips(mode: ConversationMode) -> [String] {
@@ -370,7 +355,6 @@ struct LectureStoryPlayerView: View {
   @ViewBuilder
   private func recallView(_ recall: RecallCheck) -> some View {
     VStack(spacing: 16) {
-      auraStage(big: false)
       Text(recall.question)
         .font(.system(size: 22, weight: .heavy))
         .multilineTextAlignment(.center)
