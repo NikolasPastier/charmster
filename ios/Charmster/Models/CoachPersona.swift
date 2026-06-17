@@ -58,7 +58,7 @@ struct CoachPersona: Identifiable, Hashable, Codable {
       philosophyLine:
         "Attraction isn't magic — it's signal, timing, and calibration you can learn.",
       sampleLine: "Your turn-taking ratio was 70/30. Cut your talk-time and watch her lean in.",
-      voiceId: "fable",
+      elevenVoiceId: nil,
       style: .scientist),
     .init(
       id: "cole",
@@ -68,7 +68,7 @@ struct CoachPersona: Identifiable, Hashable, Codable {
       philosophyLine: "Set the standard for yourself first. The right people calibrate to it.",
       sampleLine:
         "Stop auditioning. You held strong eye contact once — that's the whole move. Own it.",
-      voiceId: "onyx",
+      elevenVoiceId: nil,
       style: .alphaMentor),
     .init(
       id: "noah",
