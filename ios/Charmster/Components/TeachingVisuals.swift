@@ -245,9 +245,9 @@ struct CoreInsightVisualCard: View {
     }
     .frame(maxWidth: .infinity)
     .frame(height: 300)
-    .clipShape(RoundedRectangle(cornerRadius: Theme.r24, style: .continuous))
+    .clipShape(RoundedRectangle(cornerRadius: Theme.r22, style: .continuous))
     .overlay(
-      RoundedRectangle(cornerRadius: Theme.r24, style: .continuous)
+      RoundedRectangle(cornerRadius: Theme.r22, style: .continuous)
         .stroke(Theme.border, lineWidth: 1)
     )
   }
