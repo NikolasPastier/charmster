@@ -26,9 +26,12 @@ struct CoachPersona: Identifiable, Hashable, Codable {
   let philosophyLine: String
   /// A representative line in the coach's voice — used on the gallery card.
   let sampleLine: String
-  /// TTS voice id. Maps to OpenAI TTS voices in production; locally it tunes
-  /// `AVSpeechSynthesizer` via the resolved `CoachStyle`.
-  let voiceId: String
+  /// Optional ElevenLabs voice id reserved for FUTURE on-demand spoken lines
+  /// only. It is DATA-ONLY and must never drive live lecture TTS — lecture
+  /// narration always comes from the pre-generated `lecture-audio` MP3s via
+  /// `LectureAudioURL`, with on-device `AVSpeechSynthesizer` used solely as a
+  /// genuine-404 fallback. Nil until real ElevenLabs ids are wired.
+  let elevenVoiceId: String?
   /// The existing tone engine this persona drives. Single source of truth for
   /// system-prompt tone/voice — persona is a character skin over this.
   let style: CoachStyle
@@ -45,7 +48,7 @@ struct CoachPersona: Identifiable, Hashable, Codable {
       philosophyLine: "You don't need fixing — you need reps and someone honest in your corner.",
       sampleLine:
         "That opener was fine. The problem was you bailed before she could bite. Run it again.",
-      voiceId: "echo",
+      elevenVoiceId: nil,
       style: .bigBrother),
     .init(
       id: "dr_ray",
@@ -76,7 +79,7 @@ struct CoachPersona: Identifiable, Hashable, Codable {
         "Regulate the body, and the words follow. We go at the pace your system allows.",
       sampleLine:
         "You froze — that's your alarm system, not a flaw. Let's breathe, then try one line.",
-      voiceId: "shimmer",
+      elevenVoiceId: nil,
       style: .therapist),
     .init(
       id: "leo",
@@ -85,7 +88,7 @@ struct CoachPersona: Identifiable, Hashable, Codable {
       shortDescription: "Mission framing. Show up, run the play, debrief, repeat.",
       philosophyLine: "Every conversation is a rep. Win or learn — there's no losing.",
       sampleLine: "Tonight's mission: one genuine compliment, then shut up and listen. Go.",
-      voiceId: "alloy",
+      elevenVoiceId: nil,
       style: .wingman),
   ]
 
