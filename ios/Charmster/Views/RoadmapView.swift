@@ -23,7 +23,7 @@ struct RoadmapView: View {
           .padding(.vertical, 18)
         }
         .background(AuraBackground())
-        .navigationTitle("Your path")
+        .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
           ToolbarItem(placement: .topBarLeading) {

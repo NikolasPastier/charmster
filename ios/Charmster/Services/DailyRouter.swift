@@ -51,7 +51,7 @@ enum DailyRouter {
         kind: .pathStep,
         lecture: lec,
         tier: app.difficultyTier,
-        headline: "Today: \(lec.title)",
+        headline: lec.title,
         subline: "\(coachName) queued your next step on the path.",
         ctaTitle: "Start today's session")
     }
@@ -96,7 +96,7 @@ enum DailyRouter {
         kind: .pathStep,
         lecture: lec,
         tier: app.difficultyTier,
-        headline: "Today: \(lec.title)",
+        headline: lec.title,
         subline: "\(coachName) is ready when you are.",
         ctaTitle: "Start today's session")
     }

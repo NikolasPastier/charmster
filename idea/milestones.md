@@ -5,10 +5,11 @@
 - [x] Live practice review pipeline + scoring
 - [x] Coach/partner/user imagery wired from Supabase
 - [x] Lock app to dark-only; remove Appearance control + light palette fallback
-- [x] Path header cleanup (no mini logo) + symmetrical Aura/Streak pills
+- [x] Path header cleanup — no mini logo, no "Your path" title; symmetrical edge-pinned Aura/Streak pills
 - [x] Single-line Settings rows
 - [x] Lecture UI v2 — Aura glow on every beat, no duplicate titles, per-beat coach, side-by-side Good vs Bad, cached Core Insight teaching visuals
-- [x] Coach lecture clip playback fixed — one shared LoopingVideoPlayer for coach + female avatar; coach visibly loops idle↔talking in sync with audio
+- [x] Coach lecture clip playback fixed — one shared LoopingVideoPlayer for coach + female avatar
+- [x] Home Today card — single "TODAY" (eyebrow only); title binds to lecture name alone
 - [ ] Upload the 3 teaching-visual images to the `lecture-visuals` bucket
 - [ ] Deploy edge functions + populate remaining media buckets
 - [ ] Superwall production paywall finalization
