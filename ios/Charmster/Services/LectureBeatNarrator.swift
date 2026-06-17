@@ -42,6 +42,9 @@ final class LectureBeatNarrator: NSObject, AVSpeechSynthesizerDelegate {
   // MP3 fallback context — kept so we can drop to TTS if streaming fails.
   private var fallbackText: String = ""
   private var fallbackStyle: CoachStyle = .wingman
+  /// The exact remote URL of the clip currently being attempted, logged on any
+  /// load failure so a genuine 404 is visible before the TTS fallback.
+  private var currentRemoteURL: URL?
 
   override init() {
     super.init()
@@ -113,8 +116,12 @@ final class LectureBeatNarrator: NSObject, AVSpeechSynthesizerDelegate {
     if let url = LectureAudioURL.url(
       coachId: coach.id, trackId: lecture.trackId, number: lecture.number, segment: segment)
     {
+      currentRemoteURL = url
       playRemote(url: url)
     } else {
+      TenXPreviewSupport.log(
+        "[LectureAudio] could not build URL (coach=\(coach.id) t\(lecture.trackId)-l\(lecture.number)) -> TTS"
+      )
       speakWithTTS(text: text, style: coach.style)
     }
   }
@@ -130,6 +137,10 @@ final class LectureBeatNarrator: NSObject, AVSpeechSynthesizerDelegate {
     statusObservation = item.observe(\.status, options: [.new]) { [weak self] item, _ in
       guard let self else { return }
       if item.status == .failed {
+        let detail = item.error.map { " error=\($0.localizedDescription)" } ?? ""
+        TenXPreviewSupport.log(
+          "[LectureAudio] load FAILED url=\(self.currentRemoteURL?.absoluteString ?? "nil")\(detail) -> falling back to AVSpeechSynthesizer"
+        )
         DispatchQueue.main.async { self.failoverToTTS() }
       }
     }
@@ -184,6 +195,7 @@ final class LectureBeatNarrator: NSObject, AVSpeechSynthesizerDelegate {
     endObserver = nil
     player?.pause()
     player = nil
+    currentRemoteURL = nil
   }
 
   // MARK: - TTS fallback

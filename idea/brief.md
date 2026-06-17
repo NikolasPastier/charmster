@@ -4,16 +4,18 @@ Charmster is a dating/social-skills coaching app: audio-first lectures taught by
 
 ### Core flow
 - Roadmap/path → lecture story player (5-beat audio-first) → practice handoff → scored session → review queue (SM-2).
-- Coaches have real voice + avatar clips streamed from the public Supabase `Avatars` bucket.
+- Coaches have real voice + avatar clips streamed from Supabase Storage.
 
-### Lecture audio (FX5 — shipped)
-- Per-beat narration now plays pre-generated MP3s from `Avatars/Lectures/{coachStorageId}/t{track}-l{number}/{beat}.mp3` via `LectureAudioURL`.
-- `LectureBeatNarrator` streams the MP3 with `AVPlayer` and fails over to on-device `AVSpeechSynthesizer` TTS when a clip is missing/unreachable, so beats are never silent.
-- Recall beat plays two clips: `recall-question`, then `recall-why` after the user answers.
+### Lecture audio (FX5 + FX5.1 — shipped)
+- Per-beat narration plays pre-generated MP3s from the public Supabase Storage bucket `lecture-audio` at `{lectureId}/{coachId}/{beatId}.mp3` (e.g. `t1-l1/leo/hook.mp3`) via `LectureAudioURL`.
+- `lectureId` = `t{track}-l{number}`; `coachId` is `CoachPersona.id` verbatim (`theo`, `dr_ray`, `cole`, `noah`, `leo`) — NO `dr_ray -> ray` remap for audio (that remap is video-clips only). `beatId` ∈ `hook`, `coreInsight`, `goodVsBad`, `recallQuestion`, `recallWhy`, `takeawayHandoff`.
+- FX5.1 corrected the previously-wrong `Avatars/Lectures/...` path that caused every clip to 404 and silently degrade to TTS.
+- `LectureBeatNarrator` streams the MP3 with `AVPlayer` and fails over to on-device `AVSpeechSynthesizer` TTS only on a genuine load failure, which now logs the exact resolved URL (+ underlying error) via `TenXPreviewSupport.log` before falling back.
+- Recall beat plays two clips: `recallQuestion`, then `recallWhy` after the user answers.
 
 ### Backend / integration state
 - Supabase connected (project ref uvjtrhvhldeeslgnvhyd). Coach/lecture media served as public Storage URLs.
-- Audio degrades gracefully to TTS, so a missing/private bucket does not break playback.
+- Audio degrades gracefully to TTS, so a missing/private object does not break playback.
 
 ### Known blocker
-- Storage bucket public-flip + inspection currently blocked by Supabase `502 No such refresh token found` (session/auth error). Needs Supabase reconnect + re-approval before the bucket can be set public from here.
+- Storage bucket public-flip + inspection blocked by Supabase `502 No such refresh token found` (session/auth error). Needs Supabase reconnect + re-approval before the bucket can be set public from here.
