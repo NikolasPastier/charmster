@@ -430,6 +430,9 @@ struct LectureStoryPlayerView: View {
       guard recallChoice == nil else { return }
       recallChoice = i
       app.awardRecallPing(correct: isCorrect)
+      if let beat = currentBeat {
+        narrator.speakRecallWhy(beat, coach: coach, lecture: lecture) {}
+      }
     } label: {
       HStack {
         Text(recall.options[i])
@@ -514,7 +517,7 @@ struct LectureStoryPlayerView: View {
   private func startBeat() {
     guard let beat = currentBeat else { return }
     isPaused = false
-    narrator.speak(beat, coach: coach.style) {
+    narrator.speak(beat, coach: coach, lecture: lecture) {
       // Auto-advance after audio ends — except the recall beat, which waits
       // for a tap so the user actually answers.
       if beat.kind == .recallCheck { return }

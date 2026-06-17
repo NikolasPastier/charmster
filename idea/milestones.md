@@ -1,0 +1,6 @@
+- [x] Lecture story player (5-beat audio-first) UI
+- [x] Coach avatar/voice asset resolvers (clips, stills, preview lines)
+- [x] Lecture-beat narration plays pre-generated MP3s with TTS fallback (FX5)
+- [x] Themed presentation + Aura backgrounds across lecture/onboarding surfaces (FX1–FX3)
+- [ ] Confirm/flip Storage bucket to public (blocked on Supabase session error)
+- [ ] FX6 remaining audit-pass fixes
