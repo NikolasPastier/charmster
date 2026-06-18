@@ -11,6 +11,7 @@
 - [x] Coach lecture clip playback fixed — one shared LoopingVideoPlayer for coach + female avatar
 - [x] Home Today card — single "TODAY" (eyebrow only); title binds to lecture name alone
 - [x] Live practice overlay safe-area fix — top/bottom controls + atmosphere bar respect insets, no clipping
+- [x] Blurred coach backdrop — GPU-cheap static blurred idle still behind lecture beats, Aura-tinted, sharp foreground on top
 - [ ] Upload the 3 teaching-visual images to the `lecture-visuals` bucket
 - [ ] Deploy edge functions + populate remaining media buckets
 - [ ] Superwall production paywall finalization

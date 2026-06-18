@@ -50,6 +50,9 @@ struct LectureStoryPlayerView: View {
     Group {
       ZStack {
         AuraBackground()
+        // FX9.6 — soft blurred coach STILL glowing behind the content. Static,
+        // GPU-cheap, tinted into the Aura palette; foreground stays sharp.
+        CoachBackdrop(coach: coach)
         if let story {
           content(story: story)
         } else {
