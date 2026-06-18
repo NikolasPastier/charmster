@@ -118,7 +118,7 @@ struct RoadmapView: View {
             LectureNode(
               lecture: lec,
               state: effectiveState(for: lec),
-              onTap: { presentedLecture = lec }
+              onTap: { handleTap(lec) }
             )
             if !idx.isMultiple(of: 2) { Spacer() }
           }
