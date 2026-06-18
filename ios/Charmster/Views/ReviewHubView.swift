@@ -23,7 +23,7 @@ struct ReviewHubView: View {
           .padding(18)
         }
         .background(AuraBackground())
-        .navigationTitle("Review")
+        .toolbarVisibility(.hidden, for: .navigationBar)
       }
       .sheet(item: $presentedLecture) { lec in
         LectureDetailSheet(lecture: lec).environment(app)

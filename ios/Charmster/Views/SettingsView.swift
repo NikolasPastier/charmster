@@ -31,7 +31,7 @@ struct SettingsView: View {
         .padding(18)
       }
       .background(AuraBackground())
-      .navigationTitle("Settings")
+      .navigationBarTitleDisplayMode(.inline)
       .tint(Theme.accent)
       .fullScreenCover(isPresented: $showRedoOnboarding) {
         NavigationStack { OnboardingFlowView().environment(app) }

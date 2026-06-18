@@ -21,7 +21,7 @@ struct ProfileView: View {
           .padding(18)
         }
         .background(AuraBackground())
-        .navigationTitle("Profile")
+        .navigationBarTitleDisplayMode(.inline)
         .navigationDestination(isPresented: $goToSettings) {
           SettingsView()
         }

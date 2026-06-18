@@ -33,7 +33,7 @@ struct PracticeHubView: View {
           .padding(18)
         }
         .background(AuraBackground())
-        .navigationTitle("Sandbox")
+        .toolbarVisibility(.hidden, for: .navigationBar)
       }
       .fullScreenCover(item: $presentedConfig) { cfg in
         SandboxRunner(config: cfg) { _ in
