@@ -35,6 +35,11 @@ final class LiveSessionPipeline: NSObject {
   var userSpeaking: Bool = false
   var captionsBuffer: String = ""
   var lastMoodTag: AvatarState?
+  /// UX4 — mirrors of the latest completed user turn for the coach-nudge
+  /// trigger. The view observes `userTurnCount` changing and reads
+  /// `lastUserUtterance` to build a nudge.
+  var userTurnCount: Int = 0
+  var lastUserUtterance: String = ""
   var lastVisionFace: Int?
   var lastVisionBody: Int?
   var lastVisionWarmth: Double?
@@ -135,6 +140,8 @@ final class LiveSessionPipeline: NSObject {
     partnerSpeaking = realtime.partnerSpeaking
     userSpeaking = realtime.userSpeaking
     if let tag = realtime.lastMoodTag { lastMoodTag = tag }
+    userTurnCount = realtime.userTurnCount
+    lastUserUtterance = realtime.lastUserUtterance
     if !realtime.liveTranscript.isEmpty {
       captionsBuffer = String(realtime.liveTranscript.suffix(240))
     }

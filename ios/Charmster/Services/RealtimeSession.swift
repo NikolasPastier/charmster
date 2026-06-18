@@ -102,6 +102,9 @@ final class RealtimeLiveSession: NSObject {
   private(set) var userSpeaking: Bool = false
   private(set) var liveTranscript: String = ""
   private(set) var lastUserUtterance: String = ""
+  /// Monotonic count of COMPLETED user turns (transcribed utterances). Drives
+  /// the UX4 coach-nudge trigger — the view observes this changing.
+  private(set) var userTurnCount: Int = 0
   private(set) var lastMoodTag: AvatarState?
   private(set) var turnsTaken: Int = 0
   private(set) var lastResponseLatencySeconds: Double?
@@ -321,6 +324,7 @@ final class RealtimeLiveSession: NSObject {
       if let text = obj["transcript"] as? String {
         lastUserUtterance = text
         liveTranscript += "\nYou: \(text)\n"
+        userTurnCount += 1
       }
     case "response.function_call_arguments.done":
       if let name = obj["name"] as? String, name == "set_mood",

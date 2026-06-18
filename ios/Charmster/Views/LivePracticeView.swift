@@ -20,12 +20,18 @@ struct LivePracticeView: View {
   @State private var dailyCapHit: Bool = false
   @State private var pendingReaction: AvatarState?
   @State private var lastReactionTag: AvatarState?
+  /// UX4 — coach nudge state. Coordinator owns rate-limiting + auto-hide.
+  @State private var nudges = CoachNudgeCoordinator()
   private let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
   /// Captions visibility comes from `profile.captionsEnabled` (Settings).
   private var showCaptions: Bool { app.profile.captionsEnabled }
 
   private var avatarPersona: AvatarPersona { AvatarPersona.resolve(from: config.persona.id) }
+
+  /// UX4 — the coach character whose voice the nudges speak in. The session's
+  /// `config.coach` is a tone style; resolve it to the matching named persona.
+  private var nudgeCoach: CoachPersona { CoachPersona.forStyle(config.coach) }
 
   private var practiceLimitSeconds: Int {
     let base: Int
@@ -77,7 +83,9 @@ struct LivePracticeView: View {
         if winddown && !dailyCapHit { winddownOverlay }
       }
       .task { await openSession() }
+      .onAppear { nudges.configure(level: app.profile.nudgeLevel) }
       .onReceive(timer) { _ in tickFrame() }
+      .onChange(of: pipeline.userTurnCount) { _, _ in maybeNudge() }
       .onChange(of: pipeline.lastMoodTag) { _, tag in
         guard let tag, !tag.isLooping, tag != lastReactionTag else { return }
         lastReactionTag = tag
@@ -107,8 +115,15 @@ struct LivePracticeView: View {
           )
           .padding(.horizontal, 22)
       }
+      if let nudge = nudges.current {
+        CoachNudgeBar(nudge: nudge, coach: nudgeCoach, coordinator: nudges)
+          .padding(.bottom, 4)
+      }
       bottomBar
     }
+    .animation(
+      reduceMotion ? .none : .spring(response: 0.4, dampingFraction: 0.85),
+      value: nudges.current?.id)
   }
 
   // MARK: - Top bar (minimal)
@@ -315,6 +330,25 @@ struct LivePracticeView: View {
       withAnimation { winddown = true }
     }
     if remaining == 0 { endNow() }
+  }
+
+  /// UX4 — fired when a user turn completes. Builds + (maybe) shows a nudge.
+  /// Entirely fail-silent: any missing data simply yields no nudge.
+  private func maybeNudge() {
+    guard !ended, !dailyCapHit, !winddown else { return }
+    let utterance = pipeline.lastUserUtterance.trimmingCharacters(in: .whitespacesAndNewlines)
+    guard !utterance.isEmpty else { return }
+    let shown = nudges.handleUserTurn(
+      userMessage: utterance,
+      recentContext: [],
+      avatarFeeling: pipeline.lastMoodTag,
+      feelingIntensity: pipeline.liveFeel,
+      skillTarget: lecture?.skill,
+      coach: nudgeCoach,
+      turnIndex: pipeline.userTurnCount)
+    if shown, app.profile.soundAndHaptics, !reduceMotion {
+      UIImpactFeedbackGenerator(style: .soft).impactOccurred()
+    }
   }
 
   private func endNow() {

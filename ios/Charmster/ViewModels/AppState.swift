@@ -60,6 +60,9 @@ struct PersonalizationProfile: Codable {
   var analyticsOptIn: Bool = true
   var captionsEnabled: Bool = true
   var soundAndHaptics: Bool = true
+  // UX4 — live coach-nudge intensity. Defaults to gentle "coaching"; existing
+  // users decode the default for the missing key. Off disables the bar entirely.
+  var nudgeLevel: NudgeLevel = .coaching
   var notificationsStreak: Bool = true
   var notificationsDailyChallenge: Bool = true
   var notificationsNewContent: Bool = true

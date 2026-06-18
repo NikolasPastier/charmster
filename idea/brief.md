@@ -1,15 +1,17 @@
 ## Charmster — App Plan
 
-Audio-first dating-skills coaching app. Lectures are delivered as a swipeable, audio-first story player. Each lecture now opens on a silent intro Card 0 ("What you'll learn") and continues into the proven 5-beat structure (Hook, Core Insight, Good vs Bad, Recall Check, Takeaway/Handoff) in the selected coach's voice, followed by live practice. Visual language is the dark "Aura" system (Theme tokens, love-spectrum gradients, feathered coach clips).
+Audio-first dating-skills coaching app. Lectures are delivered as a swipeable, audio-first story player (silent Card 0 "What you'll learn" → 5-beat structure → live practice). Live practice is a real-time voice/video rehearsal with an AI practice partner, scored at session end. Visual language is the dark "Aura" system (Theme tokens, love-spectrum gradients, feathered coach clips).
 
-### Lecture Story Player (current)
-- UX5: every lecture opens on Card 0, a silent "By the end, you'll be able to:" prelude previewing 2–3 outcome lines, then advances into Beat 1 (audio Hook). Card 0 is skippable, has a "Start lecture" CTA, and back from Beat 1 returns to it. Progress bar shows a distinct smaller prelude segment ahead of the 5 beat segments.
-- One beat per card; narration is AUDIO only; on-screen shows a single short signal phrase via `KeyPointPopView` (Duolingo-style pop + Aura sweep + light haptic, once per beat, Reduce Motion fade fallback).
-- Optional `CoachPopInOverlay` adds a sparing coach PiP pop-in with 1-line flavor on Hook + Takeaway beats only.
-- Reuses existing `LectureBeat`/`LectureStory` model, `LectureStoryBuilder`, and `AuraCoachStage`.
+### Live Practice (current)
+- Real-time partner via `LiveSessionPipeline` → `RealtimeLiveSession` (OpenAI Realtime). Mic+camera capture, per-turn mood tags, atmosphere meter, end-of-session scoring via `SessionScorer`.
+- UX4 — **Coach Nudges**: after each completed user turn, the selected coach gives ONE brief cue at the bottom of the screen (praise / improvement / calibration), in the coach persona's voice, driven by the latest utterance + avatar feeling (`lastMoodTag`) + atmosphere intensity. On-device deterministic generation (no new network call), fail-silent. Bar sits above the controls, never blocks typing/scroll; "Try this" reveals a rewrite, "Why" reveals rationale; swipe-down/X dismiss; praise auto-hides ~5s, critical ~8s. Reduced-motion = fade only.
 
 ### Architecture / decisions
-- Design tokens centralized in `Theme.swift`; dark-only resolution.
-- Beat model: `Models/LectureBeat.swift`; `LectureStory.learningObjectives` (UX5) is derived by `LectureStoryBuilder` from existing lecture metadata + teaching content — never a curriculum rewrite. Defaulted to `[]` so older decoded stories stay valid (no migration).
-- Objective fallback rule: capability line + behavior line + optional "Avoid…" line (only when a bad-example signal already exists).
-- Haptics via `UIImpactFeedbackGenerator`, gated by Reduce Motion.
+- Nudge model `Models/Nudge.swift`; engine + rate-limiting coordinator `Services/CoachNudgeEngine.swift`; UI `Components/CoachNudgeBar.swift`.
+- Anti-spam (required): max 1 nudge per N user turns (Minimal 3 / Coaching 2), never two improvements back-to-back, confidence floor per level, Minimal = praise-only, Off = disabled.
+- Turn trigger: `RealtimeLiveSession.userTurnCount` increments on transcription-completed, mirrored onto the pipeline; view observes it.
+- Setting: `PersonalizationProfile.nudgeLevel` (Off/Minimal/Coaching, default Coaching, Codable-safe) + Settings → Coaching & difficulty picker.
+- Design tokens centralized in `Theme.swift`; haptics gated by Sound & Haptics + Reduce Motion.
+
+### Lecture Story Player
+- Card 0 "What you'll learn" objectives prelude + 5 audio beats (Hook, Core Insight, Good vs Bad, Recall Check, Takeaway). Duolingo-style key-point pops, optional coach pop-in. `LectureStoryBuilder` derives objectives from existing content (no curriculum rewrite).

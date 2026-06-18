@@ -160,6 +160,19 @@ struct SettingsView: View {
         )
         .font(.caption).foregroundStyle(Theme.textMuted)
       }
+      SettingsDivider()
+      SettingsRow {
+        VStack(alignment: .leading, spacing: 2) {
+          Text("Coach nudges").foregroundStyle(Theme.text)
+          Text(app.profile.nudgeLevel.blurb)
+            .font(.caption).foregroundStyle(Theme.textMuted)
+        }
+        Spacer(minLength: 8)
+        Picker("Coach nudges", selection: bindingFor(\.profile.nudgeLevel)) {
+          ForEach(NudgeLevel.allCases) { Text($0.title).tag($0) }
+        }
+        .labelsHidden().pickerStyle(.menu).tint(Theme.accent)
+      }
     }
   }
 

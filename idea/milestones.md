@@ -5,4 +5,5 @@
 - [x] Optional coach pop-in moment on Hook/Takeaway beats
 - [x] Reduced-motion / accessibility handling for new animations
 - [x] UX5 — Card 0 "What you'll learn" objectives prelude + distinct progress segment
-- [ ] On-device pass to tune haptic feel and dynamic-type layouts
+- [x] UX4 — Coach Nudges during live practice (toggleable, rate-limited, fail-silent)
+- [ ] On-device pass to tune nudge timing/wording + haptic feel and dynamic-type layouts
