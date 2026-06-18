@@ -1,17 +1,7 @@
-- [x] Dark Aura design system + tokens
-- [x] 13-step onboarding conversion flow
-- [x] Category-parallel lecture path + unlock model
-- [x] Audio-first lecture story player with coach clips
-- [x] Live practice review pipeline + scoring
-- [x] Coach/partner/user imagery wired from Supabase
-- [x] Lock app to dark-only; remove Appearance control + light palette fallback
-- [x] Path header cleanup — no mini logo, no "Your path" title; symmetrical edge-pinned Aura/Streak pills
-- [x] Single-line Settings rows
-- [x] Lecture UI v2 — Aura glow on every beat, no duplicate titles, per-beat coach, side-by-side Good vs Bad, cached Core Insight teaching visuals
-- [x] Coach lecture clip playback fixed — one shared LoopingVideoPlayer for coach + female avatar
-- [x] Home Today card — single "TODAY" (eyebrow only); title binds to lecture name alone
-- [x] Live practice overlay safe-area fix — top/bottom controls + atmosphere bar respect insets, no clipping
-- [x] Blurred coach backdrop — GPU-cheap static blurred idle still behind lecture beats, Aura-tinted, sharp foreground on top
-- [ ] Upload the 3 teaching-visual images to the `lecture-visuals` bucket
-- [ ] Deploy edge functions + populate remaining media buckets
-- [ ] Superwall production paywall finalization
+- [x] Audio-first 5-beat lecture story player
+- [x] Aura visual system (coach stage, backdrop, gradients)
+- [x] Beat-level signal phrase model + builder
+- [x] Duolingo-style key-point pop animation + Aura sweep + light haptic
+- [x] Optional coach pop-in moment on Hook/Takeaway beats
+- [x] Reduced-motion / accessibility handling for new animations
+- [ ] On-device pass to tune haptic feel and dynamic-type layouts

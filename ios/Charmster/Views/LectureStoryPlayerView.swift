@@ -257,12 +257,13 @@ struct LectureStoryPlayerView: View {
       // primary headline. Core Insight (visual carries its own headline) and
       // Recall (question is the headline) suppress it to avoid a duplicate title.
       if showsBottomSignal(beat) {
-        Text(beat.signalPhrase)
-          .font(.system(size: 26, weight: .heavy))
-          .multilineTextAlignment(.center)
-          .foregroundStyle(Theme.text)
-          .shadow(color: Color(hex: 0x0B0910).opacity(0.7), radius: 8, y: 2)
-          .padding(.horizontal, 24)
+        // FX9.6 / UX4 — Duolingo-style key-point pop. Keyed on the beat id so it
+        // animates once per beat and replays only on a real beat change.
+        KeyPointPopView(
+          text: beat.signalPhrase,
+          emphasisLevel: beat.kind == .takeawayHandoff ? 1.0 : 0.85,
+          replayToken: beat.id
+        )
       }
 
       if captionsOn {
@@ -292,7 +293,17 @@ struct LectureStoryPlayerView: View {
     switch beat.visual {
     case .avatar:
       // Beats 1 (hook) + 5 (takeaway): coach TALKING, full face-on, feathered.
+      // FX9.6 / UX4 — a sparing coach "pop-in" bubble slides in for flavor.
       auraStage(big: true)
+        .overlay(alignment: .bottomLeading) {
+          CoachPopInOverlay(
+            coach: coach,
+            placement: .bottomLeading,
+            message: coachPopInMessage(for: beat),
+            talkingTake: talkingTake,
+            replayToken: beat.id
+          )
+        }
     case .contrastCards:
       // CORE INSIGHT: the teaching visual fills the card as its background and
       // owns the headline. NO full/framed coach — at most a tiny corner PiP.
@@ -325,6 +336,17 @@ struct LectureStoryPlayerView: View {
       .clipShape(Circle())
       .overlay(Circle().stroke(Theme.border, lineWidth: 1))
       .padding(12)
+  }
+
+  /// Optional 1-line flavor micro-text for the coach pop-in (3–7 words). It must
+  /// NOT duplicate narration — purely character flavor. Hook welcomes; takeaway
+  /// hands off to practice. Returns nil for any non-avatar beat.
+  private func coachPopInMessage(for beat: LectureBeat) -> String? {
+    switch beat.kind {
+    case .hook: return "Quick one — stay with me"
+    case .takeawayHandoff: return "Your turn now"
+    default: return nil
+    }
   }
 
   private func insightChips(mode: ConversationMode) -> [String] {
