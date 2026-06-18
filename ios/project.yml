@@ -1,8 +1,5 @@
 name: Charmster
 packages:
-  Supabase:
-    url: 'https://github.com/supabase/supabase-swift'
-    from: '2.0.0'
   Superwall:
     url: 'https://github.com/superwall/Superwall-iOS'
     from: '4.0.0'
@@ -14,8 +11,6 @@ targets:
     sources:
       - path: Charmster
     dependencies:
-          - package: Supabase
-            product: Supabase
           - package: Superwall
             product: SuperwallKit
     settings:
