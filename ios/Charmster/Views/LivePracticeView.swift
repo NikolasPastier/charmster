@@ -12,6 +12,8 @@ struct LivePracticeView: View {
   let onFinish: (SessionResult) -> Void
   let onClose: () -> Void
 
+  @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
   @State private var pipeline = LiveSessionPipeline()
   @State private var elapsed: Int = 0
   @State private var showSelfView: Bool = true
