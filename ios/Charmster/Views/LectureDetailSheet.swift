@@ -72,10 +72,12 @@ struct LectureDetailSheet: View {
   }
 
   /// The immersive story player + handoff + replay setup hide the sheet's nav
-  /// chrome; practice/results/quiz keep the close button.
+  /// chrome; results/quiz keep the close button. Live practice is excluded
+  /// because LivePracticeView owns its own top bar (with a correctly-wired
+  /// endNow() dismiss that scores the session before closing).
   private var showsChrome: Bool {
     switch route {
-    case .lecture, .handoff, .replaySetup, nil: return false
+    case .lecture, .handoff, .replaySetup, .practice, nil: return false
     default: return true
     }
   }
