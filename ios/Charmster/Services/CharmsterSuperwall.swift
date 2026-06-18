@@ -19,9 +19,12 @@ enum CharmsterSuperwall {
       ?? (Bundle.main.object(forInfoDictionaryKey: "SUPERWALL_PUBLIC_API_KEY") as? String)
       ?? ""
     guard !key.isEmpty else { return }
-    Superwall.configure(apiKey: key)
     #if DEBUG
-      Superwall.shared.options.paywalls.shouldShowPurchaseFailureAlert = true
+      let swOptions = SuperwallOptions()
+      swOptions.paywalls.shouldShowPurchaseFailureAlert = true
+      Superwall.configure(apiKey: key, options: swOptions)
+    #else
+      Superwall.configure(apiKey: key)
     #endif
   }
 
