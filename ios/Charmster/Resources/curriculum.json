@@ -1,0 +1,359 @@
+{
+  "version": 1,
+  "generatedFor": "Charmster AI — canonical curriculum v1",
+  "tracks": [
+    {
+      "id": 0,
+      "slug": "onboarding",
+      "emoji": "✨",
+      "title": "Onboarding",
+      "coreQuestion": "Let's tune Charmster to you.",
+      "subtitle": "First-run personalization quiz",
+      "symbol": "sparkles",
+      "order": 0,
+      "accessDefault": "free",
+      "lectures": []
+    },
+    {
+      "id": 1,
+      "slug": "foundations-of-attraction",
+      "emoji": "🌱",
+      "title": "Foundations of Attraction",
+      "coreQuestion": "Why do people actually click?",
+      "subtitle": "Why do people actually click?",
+      "symbol": "leaf.fill",
+      "order": 1,
+      "accessDefault": "free",
+      "lectures": [
+        { "number": 1, "title": "Proximity & Familiarity", "access": "free", "format": "video", "minutes": 5, "skill": "Foundations" },
+        { "number": 2, "title": "The Similarity Magnet", "access": "free", "format": "video", "minutes": 5, "skill": "Foundations" },
+        { "number": 3, "title": "Reciprocity of Liking", "access": "free", "format": "video", "minutes": 5, "skill": "Foundations" },
+        { "number": 4, "title": "What's Actually Attractive", "access": "free", "format": "video", "minutes": 5, "skill": "Foundations" },
+        { "number": 5, "title": "Warmth + Competence", "access": "free", "format": "video", "minutes": 5, "skill": "Foundations" },
+        { "number": 6, "title": "It's Odds, Not a Cheat Code", "access": "free", "format": "video", "minutes": 5, "skill": "Foundations" },
+        { "number": 7, "title": "Building an Attractive Life", "access": "free", "format": "video", "minutes": 5, "skill": "Foundations" },
+        { "number": 8, "title": "Abundance vs Scarcity Mindset", "access": "free", "format": "video", "minutes": 5, "skill": "Foundations" }
+      ],
+      "capstone": { "title": "The Approach", "scenario": "Walk up, open, hold a real exchange, and exit cleanly.", "minutes": 10, "access": "free", "format": "assessment" }
+    },
+    {
+      "id": 2,
+      "slug": "first-impressions-openers",
+      "emoji": "👋",
+      "title": "First Impressions & Openers",
+      "coreQuestion": "How do I start strong?",
+      "subtitle": "How do I start strong?",
+      "symbol": "hand.wave.fill",
+      "order": 2,
+      "accessDefault": "taster",
+      "lectures": [
+        { "number": 1, "title": "The First Few Seconds", "access": "taster", "format": "video", "minutes": 5, "skill": "Opening" },
+        { "number": 2, "title": "Openers That Earn a Reply", "access": "taster", "format": "video", "minutes": 5, "skill": "Opening" },
+        { "number": 3, "title": "Lowering the Cost of Replying", "access": "pro", "format": "video", "minutes": 5, "skill": "Opening" },
+        { "number": 4, "title": "Confidence vs Arrogance", "access": "pro", "format": "video", "minutes": 5, "skill": "Opening" },
+        { "number": 5, "title": "Opening In Person", "access": "pro", "format": "video", "minutes": 5, "skill": "Opening" },
+        { "number": 6, "title": "Approaching in Groups & Social Circles", "access": "pro", "format": "video", "minutes": 5, "skill": "Opening" }
+      ],
+      "capstone": { "title": "First coffee, end to end", "scenario": "Open, hold a real conversation, and exit cleanly.", "minutes": 10, "access": "pro", "format": "assessment" }
+    },
+    {
+      "id": 3,
+      "slug": "conversation-flow",
+      "emoji": "💬",
+      "title": "Conversation Flow & Momentum",
+      "coreQuestion": "How do I keep it going?",
+      "subtitle": "How do I keep it going?",
+      "symbol": "bubble.left.and.bubble.right.fill",
+      "order": 3,
+      "accessDefault": "taster",
+      "lectures": [
+        { "number": 1, "title": "Catching Bids for Connection", "access": "taster", "format": "video", "minutes": 5, "skill": "Flow" },
+        { "number": 2, "title": "The Disclosure Ladder", "access": "pro", "format": "video", "minutes": 5, "skill": "Flow" },
+        { "number": 3, "title": "Active Listening & Responsiveness", "access": "pro", "format": "video", "minutes": 5, "skill": "Flow" },
+        { "number": 4, "title": "Asking Better Questions", "access": "pro", "format": "video", "minutes": 5, "skill": "Flow" },
+        { "number": 5, "title": "Being Interesting (Storytelling)", "access": "pro", "format": "video", "minutes": 5, "skill": "Flow" },
+        { "number": 6, "title": "Conversation Killers", "access": "pro", "format": "video", "minutes": 5, "skill": "Flow" },
+        { "number": 7, "title": "Vulnerable Storytelling", "access": "pro", "format": "video", "minutes": 5, "skill": "Flow" },
+        { "number": 8, "title": "Push–Pull & Playful Tension", "access": "pro", "format": "video", "minutes": 5, "skill": "Flow" },
+        { "number": 9, "title": "Graceful Topic Transitions", "access": "pro", "format": "video", "minutes": 5, "skill": "Flow" }
+      ],
+      "capstone": { "title": "A full bar conversation", "scenario": "Hold 8 minutes of real flow without filler.", "minutes": 10, "access": "pro", "format": "assessment" }
+    },
+    {
+      "id": 4,
+      "slug": "humor-banter",
+      "emoji": "😏",
+      "title": "Humor, Playfulness & Banter",
+      "coreQuestion": "How do I make it fun?",
+      "subtitle": "How do I make it fun?",
+      "symbol": "face.smiling.inverse",
+      "order": 4,
+      "accessDefault": "pro",
+      "lectures": [
+        { "number": 1, "title": "Why Humor Works", "access": "pro", "format": "video", "minutes": 5, "skill": "Banter" },
+        { "number": 2, "title": "Good Humor vs Bad Humor", "access": "pro", "format": "video", "minutes": 5, "skill": "Banter" },
+        { "number": 3, "title": "Playful Teasing (done kindly)", "access": "pro", "format": "video", "minutes": 5, "skill": "Banter" },
+        { "number": 4, "title": "Callbacks & Inside Jokes", "access": "pro", "format": "video", "minutes": 5, "skill": "Banter" },
+        { "number": 5, "title": "Reading the Room", "access": "pro", "format": "video", "minutes": 5, "skill": "Banter" },
+        { "number": 6, "title": "Improv \"Yes-And\" for Spontaneous Banter", "access": "pro", "format": "video", "minutes": 5, "skill": "Banter" }
+      ],
+      "capstone": { "title": "Playful disagreement, kept warm", "scenario": "Disagree on something small, stay warm and playful.", "minutes": 10, "access": "pro", "format": "assessment" }
+    },
+    {
+      "id": 5,
+      "slug": "reading-signals",
+      "emoji": "👀",
+      "title": "Reading Signals & Calibration",
+      "coreQuestion": "Is she interested — and how do I respect that?",
+      "subtitle": "Is she interested — and how do I respect that?",
+      "symbol": "eye.fill",
+      "order": 5,
+      "accessDefault": "pro",
+      "lectures": [
+        { "number": 1, "title": "The Five Flirting Styles", "access": "pro", "format": "video", "minutes": 5, "skill": "Calibration" },
+        { "number": 2, "title": "Clusters, Not Single Cues", "access": "pro", "format": "video", "minutes": 5, "skill": "Calibration" },
+        { "number": 3, "title": "Signals Are Probabilities", "access": "pro", "format": "video", "minutes": 5, "skill": "Calibration" },
+        { "number": 4, "title": "Interest vs Politeness", "access": "pro", "format": "video", "minutes": 5, "skill": "Calibration" },
+        { "number": 5, "title": "Comfort, Consent & Escalation", "access": "pro", "format": "video", "minutes": 5, "skill": "Calibration" },
+        { "number": 6, "title": "De-escalation & Repair (advanced)", "access": "pro", "format": "video", "minutes": 5, "skill": "Calibration" },
+        { "number": 7, "title": "Microexpression Clusters", "access": "pro", "format": "video", "minutes": 5, "skill": "Calibration" }
+      ],
+      "capstone": { "title": "Reading the room, live", "scenario": "Calibrate to her cues in real time across a full exchange.", "minutes": 10, "access": "pro", "format": "assessment" }
+    },
+    {
+      "id": 6,
+      "slug": "presence-charisma",
+      "emoji": "🔥",
+      "title": "Presence: Body Language & Vocal Charisma",
+      "coreQuestion": "How do I carry myself?",
+      "subtitle": "How do I carry myself?",
+      "symbol": "flame.fill",
+      "order": 6,
+      "accessDefault": "pro",
+      "lectures": [
+        { "number": 1, "title": "Presence + Warmth + Power", "access": "pro", "format": "video", "minutes": 5, "skill": "Presence" },
+        { "number": 2, "title": "Open, Expansive Posture", "access": "pro", "format": "video", "minutes": 5, "skill": "Presence" },
+        { "number": 3, "title": "Eye Contact & Smiling", "access": "pro", "format": "video", "minutes": 5, "skill": "Presence" },
+        { "number": 4, "title": "Vocal Presence", "access": "pro", "format": "video", "minutes": 5, "skill": "Presence" },
+        { "number": 5, "title": "Synchrony & Mirroring", "access": "pro", "format": "video", "minutes": 5, "skill": "Presence" },
+        { "number": 6, "title": "Calm Under Pressure", "access": "pro", "format": "video", "minutes": 5, "skill": "Presence" }
+      ],
+      "capstone": { "title": "Frame and presence, full date", "scenario": "Stay grounded and present across a full date arc.", "minutes": 10, "access": "pro", "format": "assessment" }
+    },
+    {
+      "id": 7,
+      "slug": "deep-connection",
+      "emoji": "💞",
+      "title": "Deep Connection & Emotional Intimacy",
+      "coreQuestion": "How do I turn a chat into a bond?",
+      "subtitle": "How do I turn a chat into a bond?",
+      "symbol": "heart.fill",
+      "order": 7,
+      "accessDefault": "pro",
+      "lectures": [
+        { "number": 1, "title": "The 36-Questions Mechanism", "access": "pro", "format": "video", "minutes": 5, "skill": "Connection" },
+        { "number": 2, "title": "Matching Depth", "access": "pro", "format": "video", "minutes": 5, "skill": "Connection" },
+        { "number": 3, "title": "Vulnerability as Strength", "access": "pro", "format": "video", "minutes": 5, "skill": "Connection" },
+        { "number": 4, "title": "Understanding, Validation, Care", "access": "pro", "format": "video", "minutes": 5, "skill": "Connection" },
+        { "number": 5, "title": "Celebrating Good News", "access": "pro", "format": "video", "minutes": 5, "skill": "Connection" },
+        { "number": 6, "title": "Building Trust Over Time", "access": "pro", "format": "video", "minutes": 5, "skill": "Connection" },
+        { "number": 7, "title": "Empathy & Emotional Attunement", "access": "pro", "format": "video", "minutes": 5, "skill": "Connection" },
+        { "number": 8, "title": "Active-Constructive Responding", "access": "pro", "format": "video", "minutes": 5, "skill": "Connection" }
+      ],
+      "capstone": { "title": "Dinner with friction", "scenario": "She pushes; you stay grounded, warm, and connected.", "minutes": 10, "access": "pro", "format": "assessment" }
+    },
+    {
+      "id": 8,
+      "slug": "confidence-rejection",
+      "emoji": "🛡️",
+      "title": "Confidence, Anxiety & Handling Rejection",
+      "coreQuestion": "How do I stop being in my own head?",
+      "subtitle": "How do I stop being in my own head?",
+      "symbol": "shield.lefthalf.filled",
+      "order": 8,
+      "accessDefault": "pro",
+      "lectures": [
+        { "number": 1, "title": "Why You Get Nervous", "access": "pro", "format": "video", "minutes": 5, "skill": "Confidence" },
+        { "number": 2, "title": "Dropping Safety Behaviors", "access": "pro", "format": "video", "minutes": 5, "skill": "Confidence" },
+        { "number": 3, "title": "Reframing Thinking Traps", "access": "pro", "format": "video", "minutes": 5, "skill": "Confidence" },
+        { "number": 4, "title": "Graded Exposure Reps", "access": "pro", "format": "video", "minutes": 5, "skill": "Confidence" },
+        { "number": 5, "title": "Non-Neediness", "access": "pro", "format": "video", "minutes": 5, "skill": "Confidence" },
+        { "number": 6, "title": "Bouncing Back from a \"No\"", "access": "pro", "format": "video", "minutes": 5, "skill": "Confidence" },
+        { "number": 7, "title": "Self-Worth & Identity", "access": "pro", "format": "video", "minutes": 5, "skill": "Confidence" },
+        { "number": 8, "title": "Self-Compassion After Rejection", "access": "pro", "format": "video", "minutes": 5, "skill": "Confidence" },
+        { "number": 9, "title": "Social-Media Comparison", "access": "pro", "format": "video", "minutes": 5, "skill": "Confidence" },
+        { "number": 10, "title": "Approach Anxiety in the Field", "access": "pro", "format": "video", "minutes": 5, "skill": "Confidence" }
+      ],
+      "capstone": { "title": "Recover after a rejection", "scenario": "Take a clean no, reset, and continue your evening with composure.", "minutes": 10, "access": "pro", "format": "assessment" }
+    },
+    {
+      "id": 9,
+      "slug": "secure-dating",
+      "emoji": "🧭",
+      "title": "Personalization & Secure Dating",
+      "coreQuestion": "How do I grow past my patterns?",
+      "subtitle": "How do I grow past my patterns?",
+      "symbol": "location.north.line.fill",
+      "order": 9,
+      "accessDefault": "pro",
+      "lectures": [
+        { "number": 1, "title": "Your Attachment Style", "access": "pro", "format": "video", "minutes": 5, "skill": "Attachment" },
+        { "number": 2, "title": "Earned Security", "access": "pro", "format": "video", "minutes": 5, "skill": "Attachment" },
+        { "number": 3, "title": "Anxious Patterns", "access": "pro", "format": "video", "minutes": 5, "skill": "Attachment" },
+        { "number": 4, "title": "Avoidant Patterns", "access": "pro", "format": "video", "minutes": 5, "skill": "Attachment" },
+        { "number": 5, "title": "Communicating Needs Securely", "access": "pro", "format": "video", "minutes": 5, "skill": "Attachment" },
+        { "number": 6, "title": "Values & Compatibility (Choosing Well)", "access": "pro", "format": "video", "minutes": 5, "skill": "Attachment" }
+      ],
+      "capstone": { "title": "The Next Chapter", "scenario": "Make a secure, values-aligned move in a real moment.", "minutes": 10, "access": "pro", "format": "assessment" }
+    },
+    {
+      "id": 10,
+      "slug": "texting",
+      "emoji": "📱",
+      "title": "Texting Track",
+      "coreQuestion": "How do I win the chat before the date?",
+      "subtitle": "How do I win the chat before the date?",
+      "symbol": "message.fill",
+      "order": 10,
+      "accessDefault": "pro",
+      "lectures": [
+        { "number": 1, "title": "The First Message", "access": "pro", "format": "text", "minutes": 4, "skill": "Texting" },
+        { "number": 2, "title": "Building Rapport Over Text", "access": "pro", "format": "text", "minutes": 4, "skill": "Texting" },
+        { "number": 3, "title": "Keeping Momentum (no dry texting)", "access": "pro", "format": "text", "minutes": 4, "skill": "Texting" },
+        { "number": 4, "title": "Flirting Over Text", "access": "pro", "format": "text", "minutes": 4, "skill": "Texting" },
+        { "number": 5, "title": "Asking for the Date", "access": "pro", "format": "text", "minutes": 4, "skill": "Texting" },
+        { "number": 6, "title": "Reviving a Dead Chat", "access": "pro", "format": "text", "minutes": 4, "skill": "Texting" },
+        { "number": 7, "title": "Reading Tone & Pacing", "access": "pro", "format": "text", "minutes": 4, "skill": "Texting" },
+        { "number": 8, "title": "Voice Notes & Multimedia", "access": "pro", "format": "text", "minutes": 4, "skill": "Texting" },
+        { "number": 9, "title": "The Talking Stage", "access": "pro", "format": "text", "minutes": 4, "skill": "Texting" },
+        { "number": 10, "title": "Handling Flakes & Ghosting", "access": "pro", "format": "text", "minutes": 4, "skill": "Texting" }
+      ],
+      "capstone": { "title": "From match to date, by text", "scenario": "Take a fresh match from first message to a confirmed date.", "minutes": 10, "access": "pro", "format": "assessment" }
+    },
+    {
+      "id": 11,
+      "slug": "dating-apps",
+      "emoji": "📲",
+      "title": "Dating App Strategy",
+      "coreQuestion": "How do I win before the first message?",
+      "subtitle": "How do I win before the first message?",
+      "symbol": "rectangle.stack.badge.person.crop.fill",
+      "order": 11,
+      "accessDefault": "pro",
+      "lectures": [
+        { "number": 1, "title": "Photos That Work", "access": "free", "format": "video", "minutes": 5, "skill": "Apps" },
+        { "number": 2, "title": "A Bio That Sparks Replies", "access": "pro", "format": "video", "minutes": 5, "skill": "Apps" },
+        { "number": 3, "title": "Swiping Strategy & Standards", "access": "pro", "format": "video", "minutes": 5, "skill": "Apps" },
+        { "number": 4, "title": "Profile as Positioning", "access": "pro", "format": "video", "minutes": 5, "skill": "Apps" },
+        { "number": 5, "title": "Avoiding App Burnout", "access": "pro", "format": "video", "minutes": 5, "skill": "Apps" },
+        { "number": 6, "title": "Video & Voice Prompts", "access": "pro", "format": "video", "minutes": 5, "skill": "Apps" },
+        { "number": 7, "title": "Safety, Scams & Catfishing", "access": "pro", "format": "video", "minutes": 5, "skill": "Apps" },
+        { "number": 8, "title": "Authenticity in the AI Era", "access": "pro", "format": "video", "minutes": 5, "skill": "Apps" }
+      ],
+      "capstone": { "title": "A profile that converts", "scenario": "Rebuild your profile end-to-end and pressure-test it.", "minutes": 10, "access": "pro", "format": "assessment" }
+    },
+    {
+      "id": 12,
+      "slug": "first-date-logistics",
+      "emoji": "📅",
+      "title": "First-Date Logistics",
+      "coreQuestion": "How do I plan and navigate the first date?",
+      "subtitle": "How do I plan and navigate the first date?",
+      "symbol": "calendar",
+      "order": 12,
+      "accessDefault": "pro",
+      "lectures": [
+        { "number": 1, "title": "Choosing the Venue", "access": "free", "format": "video", "minutes": 5, "skill": "Dates" },
+        { "number": 2, "title": "Planning & Confirming", "access": "pro", "format": "video", "minutes": 5, "skill": "Dates" },
+        { "number": 3, "title": "First-Date Nerves", "access": "pro", "format": "video", "minutes": 5, "skill": "Dates" },
+        { "number": 4, "title": "Who Pays & Graceful Logistics", "access": "pro", "format": "video", "minutes": 5, "skill": "Dates" },
+        { "number": 5, "title": "Ending a Date Well", "access": "pro", "format": "video", "minutes": 5, "skill": "Dates" },
+        { "number": 6, "title": "Post-Date Follow-Up", "access": "pro", "format": "video", "minutes": 5, "skill": "Dates" },
+        { "number": 7, "title": "Date Safety (Both People)", "access": "pro", "format": "video", "minutes": 5, "skill": "Dates" },
+        { "number": 8, "title": "Creative Date Planning", "access": "pro", "format": "video", "minutes": 5, "skill": "Dates" }
+      ],
+      "capstone": { "title": "The whole first date", "scenario": "Plan, meet, navigate, and close a real first date.", "minutes": 10, "access": "pro", "format": "assessment" }
+    },
+    {
+      "id": 13,
+      "slug": "dates-to-relationship",
+      "emoji": "💞",
+      "title": "Dates → Relationship",
+      "coreQuestion": "How do I turn good dates into something real?",
+      "subtitle": "How do I turn good dates into something real?",
+      "symbol": "heart.text.square.fill",
+      "order": 13,
+      "accessDefault": "pro",
+      "lectures": [
+        { "number": 1, "title": "Securing the Second Date", "access": "pro", "format": "video", "minutes": 5, "skill": "Relationship" },
+        { "number": 2, "title": "Deepening Across Dates", "access": "pro", "format": "video", "minutes": 5, "skill": "Relationship" },
+        { "number": 3, "title": "Physical Escalation & Consent", "access": "pro", "format": "video", "minutes": 5, "skill": "Relationship" },
+        { "number": 4, "title": "The Exclusivity Talk", "access": "pro", "format": "video", "minutes": 5, "skill": "Relationship" },
+        { "number": 5, "title": "Early-Relationship Security", "access": "pro", "format": "video", "minutes": 5, "skill": "Relationship" },
+        { "number": 6, "title": "Navigating Mismatched Pace", "access": "pro", "format": "video", "minutes": 5, "skill": "Relationship" },
+        { "number": 7, "title": "Setting & Respecting Boundaries", "access": "pro", "format": "video", "minutes": 5, "skill": "Relationship" },
+        { "number": 8, "title": "Conflict & Repair", "access": "pro", "format": "video", "minutes": 5, "skill": "Relationship" },
+        { "number": 9, "title": "Intimacy & Sexual-Health Communication", "access": "pro", "format": "video", "minutes": 5, "skill": "Relationship" },
+        { "number": 10, "title": "Ending Things Kindly", "access": "pro", "format": "video", "minutes": 5, "skill": "Relationship" }
+      ],
+      "capstone": { "title": "The exclusivity talk", "scenario": "Have the real conversation about where this is going.", "minutes": 10, "access": "pro", "format": "assessment" }
+    },
+    {
+      "id": 14,
+      "slug": "style-grooming",
+      "emoji": "🎨",
+      "title": "Style, Grooming & Self-Presentation",
+      "coreQuestion": "How do I show up as my best self?",
+      "subtitle": "How do I show up as my best self?",
+      "symbol": "paintpalette.fill",
+      "order": 14,
+      "accessDefault": "pro",
+      "lectures": [
+        { "number": 1, "title": "Grooming Fundamentals", "access": "pro", "format": "video", "minutes": 5, "skill": "Style" },
+        { "number": 2, "title": "Dressing for Your Body & Context", "access": "pro", "format": "video", "minutes": 5, "skill": "Style" },
+        { "number": 3, "title": "Enclothed Confidence", "access": "pro", "format": "video", "minutes": 5, "skill": "Style" },
+        { "number": 4, "title": "Photo-Ready Presentation", "access": "pro", "format": "video", "minutes": 5, "skill": "Style" },
+        { "number": 5, "title": "Building a Signature Look", "access": "pro", "format": "video", "minutes": 5, "skill": "Style" }
+      ],
+      "capstone": { "title": "The Put-Together Debut", "scenario": "Show up looking and feeling like the polished version of you.", "minutes": 10, "access": "pro", "format": "assessment" }
+    },
+    {
+      "id": 15,
+      "slug": "emotional-intelligence",
+      "emoji": "🧠",
+      "title": "Emotional Intelligence & Empathy",
+      "coreQuestion": "How do I read and respond to emotions?",
+      "subtitle": "How do I read and respond to emotions?",
+      "symbol": "brain.head.profile",
+      "order": 15,
+      "accessDefault": "pro",
+      "lectures": [
+        { "number": 1, "title": "Naming Your Emotions", "access": "pro", "format": "video", "minutes": 5, "skill": "EQ" },
+        { "number": 2, "title": "Self-Regulation in the Moment", "access": "pro", "format": "video", "minutes": 5, "skill": "EQ" },
+        { "number": 3, "title": "Reading Her Emotional State", "access": "pro", "format": "video", "minutes": 5, "skill": "EQ" },
+        { "number": 4, "title": "Empathic Responding", "access": "pro", "format": "video", "minutes": 5, "skill": "EQ" },
+        { "number": 5, "title": "Emotional Bids & Repair", "access": "pro", "format": "video", "minutes": 5, "skill": "EQ" }
+      ],
+      "capstone": { "title": "The Attuned Date", "scenario": "Stay attuned across a full date — name, regulate, respond.", "minutes": 10, "access": "pro", "format": "assessment" }
+    },
+    {
+      "id": 16,
+      "slug": "inclusive-paths",
+      "emoji": "🌍",
+      "title": "Your Dating Context (Inclusive Paths)",
+      "coreQuestion": "How does dating fit my life and identity?",
+      "subtitle": "How does dating fit my life and identity?",
+      "symbol": "globe.americas.fill",
+      "order": 16,
+      "accessDefault": "pro",
+      "lectures": [
+        { "number": 1, "title": "Dating in Your 30s, 40s & Beyond", "access": "pro", "format": "video", "minutes": 5, "skill": "Context" },
+        { "number": 2, "title": "Dating After a Breakup or Divorce", "access": "pro", "format": "video", "minutes": 5, "skill": "Context" },
+        { "number": 3, "title": "Dating with Social Anxiety or as a Neurodivergent Dater", "access": "pro", "format": "video", "minutes": 5, "skill": "Context" },
+        { "number": 4, "title": "LGBTQ+ Dating Contexts", "access": "pro", "format": "video", "minutes": 5, "skill": "Context" },
+        { "number": 5, "title": "Cross-Cultural & Intercultural Dating", "access": "pro", "format": "video", "minutes": 5, "skill": "Context" }
+      ],
+      "capstone": { "title": "Your Authentic Date", "scenario": "Bring your real self into a real moment of connection.", "minutes": 10, "access": "pro", "format": "assessment" }
+    }
+  ]
+}
