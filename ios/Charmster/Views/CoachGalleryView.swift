@@ -56,17 +56,19 @@ struct CoachGalleryView: View {
   private var gallery: some View {
     VStack(spacing: 14) {
       if embedded {
-        VStack(spacing: 6) {
-          Text("Pick your coach")
-            .font(.system(size: 26, weight: .heavy))
-            .foregroundStyle(Theme.text)
-          Text("They'll run your practice, debrief, and nudges. Switch anytime — it's free.")
-            .font(.system(size: 14))
-            .multilineTextAlignment(.center)
-            .foregroundStyle(Theme.textMuted)
-            .padding(.horizontal, 12)
+        GlassCard {
+          VStack(spacing: 6) {
+            Text("Pick your coach")
+              .font(.system(size: 26, weight: .heavy))
+              .foregroundStyle(Theme.text)
+            Text("They'll run your practice, debrief, and nudges. Switch anytime — it's free.")
+              .font(.system(size: 14))
+              .multilineTextAlignment(.center)
+              .foregroundStyle(Theme.textMuted)
+              .padding(.horizontal, 12)
+          }
+          .frame(maxWidth: .infinity)
         }
-        .padding(.bottom, 4)
       }
 
       ForEach(CoachPersona.library) { coach in
