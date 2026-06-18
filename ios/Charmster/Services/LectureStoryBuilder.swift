@@ -243,8 +243,20 @@ enum LectureStoryBuilder {
     switch lecture.skill {
     case "Opening": return "One true thing invites a real reply — questions feel like a survey."
     case "Presence": return "A chosen pause reads as calm; a nervous glance reads as anxious."
-    case "Frame": return "Holding tone keeps the frame; explaining yourself collapses it."
     case "Flow": return "A callback proves you listened — that's what makes her stay."
+    case "Confidence": return "Confidence isn't loudness — it's the willingness to take up space quietly."
+    case "Banter": return "Light teasing signals ease; over-explaining collapses it instantly."
+    case "Calibration": return "Meeting her halfway — not all the way — is what gives you the pull."
+    case "Connection": return "Real connection requires one person to go first — that's your move."
+    case "Texting": return "Restraint in texting reads as confidence, not disinterest."
+    case "Dates": return "A specific plan removes friction; a vague plan creates it."
+    case "Style": return "First impressions are made before you open your mouth."
+    case "Attachment": return "Space given on purpose is different from disappearing — she feels the difference."
+    case "EQ": return "Being heard is what people need most and get least."
+    case "Context": return "Environment shapes the emotional register before either person speaks."
+    case "Apps": return "Specific openers show attention; generic ones show automation."
+    case "Relationship": return "Healthy attachment needs two separate people finding a shared pace."
+    case "Foundations": return "Understanding the mechanism lets you apply it — not just hope for it."
     default: return "Being interested beats trying to be interesting."
     }
   }
