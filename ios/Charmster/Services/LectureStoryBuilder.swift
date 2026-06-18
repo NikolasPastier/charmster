@@ -60,7 +60,64 @@ enum LectureStoryBuilder {
     ]
 
     return LectureStory(
-      lectureId: lecture.id, coachId: coach.id, conversationMode: mode, beats: beats)
+      lectureId: lecture.id, coachId: coach.id, conversationMode: mode, beats: beats,
+      learningObjectives: learningObjectives(for: lecture, content: content, mode: mode))
+  }
+
+  // MARK: - Learning objectives (UX5 — Card 0 "What you'll learn")
+
+  /// 2–3 outcome lines previewed on the intro card. DERIVED from existing
+  /// lecture metadata + already-built teaching content — never a rewrite.
+  ///   • obj1: the skill/concept as a capability ("You'll be able to ____")
+  ///   • obj2: one behavior outcome ("Say/Do ____")
+  ///   • obj3 (optional): "Avoid ____" — only when the lecture already carries
+  ///     a bad-example signal to anchor it.
+  static func learningObjectives(
+    for lecture: Lecture, content: TeachingContent, mode: ConversationMode
+  ) -> [String] {
+    var out: [String] = []
+    out.append(capabilityObjective(for: lecture))
+    out.append(behaviorObjective(for: lecture, mode: mode))
+    if let avoid = avoidObjective(for: lecture, content: content) {
+      out.append(avoid)
+    }
+    return Array(out.prefix(3))
+  }
+
+  private static func capabilityObjective(for lecture: Lecture) -> String {
+    switch lecture.skill {
+    case "Opening": return "Open with one true line that earns a real reply"
+    case "Presence": return "Stay present instead of performing"
+    case "Frame": return "Hold your frame under a light test"
+    case "Flow": return "Keep a conversation moving with callbacks"
+    default: return "Handle \(lecture.skill.lowercased()) with calm intent"
+    }
+  }
+
+  private static func behaviorObjective(for lecture: Lecture, mode: ConversationMode) -> String {
+    switch lecture.skill {
+    case "Opening":
+      return mode == .texting
+        ? "Send a first message that invites a reply" : "Say a clean, specific opener out loud"
+    case "Presence": return "Notice, breathe, and hold the moment"
+    case "Frame": return "Keep your tone steady when she tests it"
+    case "Flow": return "Use one callback to show you listened"
+    default: return mode == .texting ? "Reply with intent, not filler" : "Say it with steady tone"
+    }
+  }
+
+  /// Only surfaced when the lecture already has a usable bad-example signal —
+  /// so the "Avoid" line is grounded in existing content, not invented.
+  private static func avoidObjective(for lecture: Lecture, content: TeachingContent) -> String? {
+    let bad = content.badExample.trimmingCharacters(in: .whitespacesAndNewlines)
+    guard !bad.isEmpty else { return nil }
+    switch lecture.skill {
+    case "Opening": return "Avoid the survey-style question opener"
+    case "Presence": return "Avoid the nervous, over-eager read"
+    case "Frame": return "Avoid explaining yourself out of the frame"
+    case "Flow": return "Avoid one-word, momentum-killing replies"
+    default: return "Avoid the move that makes her check out"
+    }
   }
 
   // MARK: - Conversation mode inference

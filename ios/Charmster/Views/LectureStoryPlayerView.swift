@@ -37,6 +37,10 @@ struct LectureStoryPlayerView: View {
   @State private var captionsOn: Bool = false
   @State private var isPaused: Bool = false
   @State private var showProfileLabel: Bool = false
+  /// UX5 — the lecture opens on Card 0 ("What you'll learn"), a silent prelude
+  /// shown before Beat 1. It's skippable like any card; advancing starts the
+  /// audio Hook. Going back from Beat 1 returns here.
+  @State private var inPrelude: Bool = true
 
   /// Talking take chosen ONCE per lecture, held for the whole session.
   @State private var talkingTake: Int = 1
@@ -67,7 +71,8 @@ struct LectureStoryPlayerView: View {
         Task { await CoachClipCatalog.shared.preload(persona: coach, talkingTake: talkingTake) }
         buildStoryIfNeeded()
         captionsOn = false  // default OFF (redundancy principle)
-        startBeat()
+        // UX5 — start on the silent Card 0; audio Hook begins when the user
+        // advances past the prelude.
         showProfileMicroLabelIfNeeded()
       }
       .onDisappear { narrator.stop() }
@@ -126,10 +131,18 @@ struct LectureStoryPlayerView: View {
     VStack(spacing: 0) {
       topBar
       ZStack {
-        ForEach(Array(beats.enumerated()), id: \.element.id) { i, beat in
-          if i == index {
-            beatCard(beat: beat, mode: story.conversationMode)
-              .transition(.opacity)
+        if inPrelude {
+          LectureObjectivesCard(
+            objectives: story.learningObjectives,
+            replayToken: "\(story.id)#prelude"
+          )
+          .transition(.opacity)
+        } else {
+          ForEach(Array(beats.enumerated()), id: \.element.id) { i, beat in
+            if i == index {
+              beatCard(beat: beat, mode: story.conversationMode)
+                .transition(.opacity)
+            }
           }
         }
       }
@@ -179,6 +192,7 @@ struct LectureStoryPlayerView: View {
           .font(.system(size: 12, weight: .bold).monospacedDigit())
           .foregroundStyle(Theme.textMuted)
           .frame(minWidth: 34, alignment: .trailing)
+          .opacity(inPrelude ? 0 : 1)
 
         Button {
           captionsOn.toggle()
@@ -223,6 +237,17 @@ struct LectureStoryPlayerView: View {
 
   private var progressBar: some View {
     HStack(spacing: 5) {
+      // UX5 — a distinct, smaller "prelude" segment for Card 0.
+      GeometryReader { geo in
+        ZStack(alignment: .leading) {
+          Capsule().fill(Theme.surfaceRaised)
+          Capsule()
+            .fill(Theme.auraGradient)
+            .frame(width: geo.size.width * (inPrelude ? 0.5 : 1))
+        }
+      }
+      .frame(width: 16, height: 4)
+
       ForEach(beats.indices, id: \.self) { i in
         GeometryReader { geo in
           ZStack(alignment: .leading) {
@@ -236,10 +261,12 @@ struct LectureStoryPlayerView: View {
       }
     }
     .animation(.easeInOut(duration: 0.25), value: index)
+    .animation(.easeInOut(duration: 0.25), value: inPrelude)
     .animation(.linear(duration: 0.2), value: narrator.progress)
   }
 
   private func segmentFill(_ i: Int) -> CGFloat {
+    if inPrelude { return 0 }
     if i < index { return 1 }
     if i > index { return 0 }
     return CGFloat(max(0.04, narrator.progress))
@@ -476,7 +503,11 @@ struct LectureStoryPlayerView: View {
   @ViewBuilder
   private func bottomBar(beat: LectureBeat?) -> some View {
     VStack(spacing: 10) {
-      if isLast {
+      if inPrelude {
+        AuraButton(title: "Start lecture", systemImage: "play.fill") {
+          advanceFromTap()
+        }
+      } else if isLast {
         AuraButton(title: "Start practice", systemImage: "waveform") {
           narrator.stop()
           onPractice()
@@ -535,6 +566,12 @@ struct LectureStoryPlayerView: View {
   }
 
   private func advanceFromTap() {
+    // UX5 — leaving Card 0 starts the audio Hook.
+    if inPrelude {
+      withAnimation(.easeInOut(duration: 0.3)) { inPrelude = false }
+      startBeat()
+      return
+    }
     // On the recall beat, a tap should not skip past an unanswered question.
     if currentBeat?.kind == .recallCheck, recallChoice == nil { return }
     if isLast {
@@ -554,6 +591,12 @@ struct LectureStoryPlayerView: View {
   }
 
   private func goBack() {
+    // UX5 — from Beat 1, going back returns to the silent Card 0.
+    if !inPrelude, index == 0 {
+      narrator.stop()
+      withAnimation(.easeInOut(duration: 0.3)) { inPrelude = true }
+      return
+    }
     guard index > 0 else { return }
     narrator.stop()
     withAnimation(.easeInOut(duration: 0.3)) { index -= 1 }

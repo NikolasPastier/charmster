@@ -91,4 +91,9 @@ struct LectureStory: Identifiable, Hashable, Codable {
   let coachId: String
   let conversationMode: ConversationMode
   let beats: [LectureBeat]
+  /// UX5 — 2–3 outcome lines previewed on the intro "What you'll learn" card
+  /// (Card 0). Derived from existing lecture metadata; never a curriculum
+  /// rewrite. Each line is a short "You'll be able to…" / "Say…" / "Avoid…"
+  /// outcome. Defaulted so older decoded stories stay valid.
+  var learningObjectives: [String] = []
 }

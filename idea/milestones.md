@@ -4,4 +4,5 @@
 - [x] Duolingo-style key-point pop animation + Aura sweep + light haptic
 - [x] Optional coach pop-in moment on Hook/Takeaway beats
 - [x] Reduced-motion / accessibility handling for new animations
+- [x] UX5 — Card 0 "What you'll learn" objectives prelude + distinct progress segment
 - [ ] On-device pass to tune haptic feel and dynamic-type layouts
