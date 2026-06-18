@@ -88,8 +88,20 @@ enum LectureStoryBuilder {
     switch lecture.skill {
     case "Opening": return "Open with one true line that earns a real reply"
     case "Presence": return "Stay present instead of performing"
-    case "Frame": return "Hold your frame under a light test"
     case "Flow": return "Keep a conversation moving with callbacks"
+    case "Confidence": return "Project calm self-assurance without broadcasting it"
+    case "Banter": return "Hold light back-and-forth without collapsing into seriousness"
+    case "Calibration": return "Read her energy and meet it at the right level"
+    case "Connection": return "Create a moment where she actually opens up"
+    case "Texting": return "Write messages that invite a real reply, not just a read receipt"
+    case "Dates": return "Plan and lead a date without seeking approval"
+    case "Style": return "Let your presentation do quiet work before you speak"
+    case "Attachment": return "Respond to push-and-pull without chasing or disappearing"
+    case "EQ": return "Read the emotional room and respond, not react"
+    case "Context": return "Choose environments that do half the work for you"
+    case "Apps": return "Stand out with a message that's actually about her"
+    case "Relationship": return "Hold a healthy pace when both of you are invested"
+    case "Foundations": return "Understand why attraction works before you optimize for it"
     default: return "Handle \(lecture.skill.lowercased()) with calm intent"
     }
   }
@@ -100,8 +112,22 @@ enum LectureStoryBuilder {
       return mode == .texting
         ? "Send a first message that invites a reply" : "Say a clean, specific opener out loud"
     case "Presence": return "Notice, breathe, and hold the moment"
-    case "Frame": return "Keep your tone steady when she tests it"
     case "Flow": return "Use one callback to show you listened"
+    case "Confidence": return "Hold a pause without filling it"
+    case "Banter": return "Return one light tease without over-explaining"
+    case "Calibration": return "Read her energy and respond one step inside it"
+    case "Connection": return "Ask one real question and actually wait for the answer"
+    case "Texting": return "Reply with intent, not reflex"
+    case "Dates": return "Name a plan without asking for approval"
+    case "Style": return "Let the detail create the opening for you"
+    case "Attachment": return "Give space on purpose and see what comes back"
+    case "EQ": return "Name what's happening without making it bigger"
+    case "Context": return "Choose the setting before choosing the opener"
+    case "Apps": return "Write one message that references something specific in her profile"
+    case "Relationship": return "Hold your pace when she changes hers"
+    case "Foundations":
+      return mode == .texting
+        ? "Apply one principle deliberately, once" : "Identify the mechanism in a real moment"
     default: return mode == .texting ? "Reply with intent, not filler" : "Say it with steady tone"
     }
   }
@@ -114,8 +140,20 @@ enum LectureStoryBuilder {
     switch lecture.skill {
     case "Opening": return "Avoid the survey-style question opener"
     case "Presence": return "Avoid the nervous, over-eager read"
-    case "Frame": return "Avoid explaining yourself out of the frame"
     case "Flow": return "Avoid one-word, momentum-killing replies"
+    case "Confidence": return "Avoid explaining yourself when silence would do"
+    case "Banter": return "Avoid taking a tease seriously and deflating the energy"
+    case "Calibration": return "Avoid matching her energy all the way up or down"
+    case "Connection": return "Avoid pivoting to yourself before she's finished"
+    case "Texting": return "Avoid triple-texting when she hasn't replied"
+    case "Dates": return "Avoid asking 'what do you want to do?' and leaving it open"
+    case "Style": return "Avoid over-explaining your choices before she notices"
+    case "Attachment": return "Avoid chasing reassurance when she pulls back"
+    case "EQ": return "Avoid rushing to fix what she just needs to feel"
+    case "Context": return "Avoid noisy venues that work against connection"
+    case "Apps": return "Avoid the generic opener that looks like everyone else's"
+    case "Relationship": return "Avoid accelerating the pace when she slows down"
+    case "Foundations": return "Avoid performing attractiveness instead of embodying it"
     default: return "Avoid the move that makes her check out"
     }
   }
