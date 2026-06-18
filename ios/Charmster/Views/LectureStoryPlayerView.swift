@@ -48,6 +48,9 @@ struct LectureStoryPlayerView: View {
   // Recall beat state
   @State private var recallChoice: Int?
 
+  /// Single horizontal margin token used by every beat, top bar, and bottom bar.
+  private let hMargin: CGFloat = 20
+
   private var coach: CoachPersona { coachOverride ?? app.selectedCoach }
 
   var body: some View {
@@ -166,6 +169,7 @@ struct LectureStoryPlayerView: View {
       )
       bottomBar(beat: currentBeat)
     }
+    .frame(maxWidth: .infinity, maxHeight: .infinity)
   }
 
   // MARK: - Top bar (X exit + segmented progress + timer + captions)
@@ -212,7 +216,9 @@ struct LectureStoryPlayerView: View {
           onSkipToPractice()
         } label: {
           HStack(spacing: 5) {
-            Text("Skip to practice").font(.system(size: 12, weight: .bold))
+            Text("Skip to practice")
+              .font(.system(size: 12, weight: .bold))
+              .lineLimit(1)
             Image(systemName: "forward.fill").font(.system(size: 10, weight: .bold))
           }
           .foregroundStyle(Theme.textFaint)
@@ -220,7 +226,7 @@ struct LectureStoryPlayerView: View {
         .buttonStyle(.plain)
       }
     }
-    .padding(.horizontal, 18)
+    .padding(.horizontal, hMargin)
     .padding(.top, 8)
     .padding(.bottom, 8)
   }
@@ -298,7 +304,7 @@ struct LectureStoryPlayerView: View {
           .font(.system(size: 13))
           .foregroundStyle(Theme.textMuted)
           .multilineTextAlignment(.center)
-          .padding(.horizontal, 26)
+          .padding(.horizontal, hMargin)
           .transition(.opacity)
       }
     }
@@ -340,12 +346,12 @@ struct LectureStoryPlayerView: View {
         caption: insightChips(mode: mode).joined(separator: " · ")
       )
       .overlay(alignment: .bottomTrailing) { coachPiP }
-      .padding(.horizontal, 18)
+      .padding(.horizontal, hMargin)
     case .spokenLineCards, .chatMockup:
       // GOOD vs BAD: two side-by-side cards. Voiceover narrates — NO coach.
       if let good = beat.goodExample, let bad = beat.badExample {
         GoodBadContrastFrame(mode: mode, good: good, bad: bad)
-          .padding(.horizontal, 18)
+          .padding(.horizontal, hMargin)
       }
     case .recallQuestion:
       // RECALL: question + tappable options. Voice only — NO coach.
@@ -411,14 +417,14 @@ struct LectureStoryPlayerView: View {
         .font(.system(size: 22, weight: .heavy))
         .multilineTextAlignment(.center)
         .foregroundStyle(Theme.text)
-        .padding(.horizontal, 22)
+        .padding(.horizontal, hMargin)
 
       VStack(spacing: 10) {
         ForEach(recall.options.indices, id: \.self) { i in
           recallOption(recall, i)
         }
       }
-      .padding(.horizontal, 18)
+      .padding(.horizontal, hMargin)
 
       if let choice = recallChoice {
         let correct = choice == recall.correctIndex
@@ -434,7 +440,7 @@ struct LectureStoryPlayerView: View {
             .font(.system(size: 14))
             .foregroundStyle(Theme.textMuted)
             .multilineTextAlignment(.center)
-            .padding(.horizontal, 24)
+            .padding(.horizontal, hMargin)
           if correct {
             HStack(spacing: 5) {
               Image(systemName: "sparkles").font(.system(size: 11, weight: .bold))
@@ -547,7 +553,7 @@ struct LectureStoryPlayerView: View {
         }
       }
     }
-    .padding(.horizontal, 18)
+    .padding(.horizontal, hMargin)
     .padding(.top, 8)
     .padding(.bottom, 18)
   }

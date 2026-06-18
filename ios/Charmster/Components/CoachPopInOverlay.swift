@@ -75,7 +75,9 @@ struct CoachPopInOverlay: View {
 
   private var offsetX: CGFloat {
     guard !reduceMotion, !shown else { return 0 }
-    return placement == .bottomLeading ? -24 : 24
+    // -14 keeps the bubble within the 18pt horizontal padding at its start position,
+    // preventing the left-edge clip that -24 caused (18 - 14 = 4pt on screen).
+    return placement == .bottomLeading ? -14 : 14
   }
 
   private func play() {

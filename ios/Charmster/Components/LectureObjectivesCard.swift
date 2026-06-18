@@ -29,7 +29,7 @@ struct LectureObjectivesCard: View {
           .font(.system(size: 21, weight: .heavy))
           .multilineTextAlignment(.center)
           .foregroundStyle(Theme.text)
-          .padding(.horizontal, 24)
+          .padding(.horizontal, 20)
       }
       .opacity(shown ? 1 : 0)
       .offset(y: shown || reduceMotion ? 0 : 10)
@@ -39,7 +39,7 @@ struct LectureObjectivesCard: View {
           objectiveRow(line, index: i)
         }
       }
-      .padding(.horizontal, 26)
+      .padding(.horizontal, 20)
 
       Text("You'll practice this next.")
         .font(.system(size: 13, weight: .semibold))
