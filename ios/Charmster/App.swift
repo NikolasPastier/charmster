@@ -1,6 +1,7 @@
 import SuperwallKit
 import SwiftUI
 
+// Charmster app entry point.
 @main
 struct CharmsterApp: App {
   @State private var appState = AppState()
