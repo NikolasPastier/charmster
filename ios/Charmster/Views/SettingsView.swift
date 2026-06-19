@@ -438,7 +438,7 @@ struct SettingsView: View {
         Text(title).foregroundStyle(Theme.text)
         Spacer()
         Image(systemName: "chevron.right").font(.system(size: 13, weight: .bold))
-          .foregroundStyle(Theme.textFaint)
+          .foregroundStyle(Theme.textMuted)
       }
     }
     .buttonStyle(.plain)
@@ -570,7 +570,7 @@ private struct FocusAreasView: View {
       }
       .padding(18)
     }
-    .background(Theme.bg.ignoresSafeArea())
+    .background(AuraBackground())
     .navigationTitle("Focus areas")
   }
 }
@@ -608,7 +608,7 @@ private struct AttachmentCheckInView: View {
       }
       .padding(18)
     }
-    .background(Theme.bg.ignoresSafeArea())
+    .background(AuraBackground())
     .navigationTitle("Attachment check-in")
   }
 }
@@ -657,7 +657,7 @@ private struct AvatarLookView: View {
               }
           }
           Text("Display-only — pick a custom name or leave blank to use the look's name.")
-            .font(.system(size: 12)).foregroundStyle(Theme.textFaint)
+            .font(.system(size: 12)).foregroundStyle(Theme.textMuted)
         }
         VStack(alignment: .leading, spacing: 10) {
           SectionHeader(title: "Partner voice", systemImage: "waveform")
@@ -672,7 +672,7 @@ private struct AvatarLookView: View {
       }
       .padding(18)
     }
-    .background(Theme.bg.ignoresSafeArea())
+    .background(AuraBackground())
     .navigationTitle("Practice partner")
     .onAppear {
       name =
@@ -786,7 +786,7 @@ private struct CancelSurveyView: View {
     }
     .padding(18)
     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-    .background(Theme.bg.ignoresSafeArea())
+    .background(AuraBackground())
   }
 }
 

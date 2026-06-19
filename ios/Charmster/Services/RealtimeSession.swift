@@ -34,6 +34,7 @@ struct RealtimeSessionService {
     /// function uses this when minting the session so the partner speaks in the
     /// user's chosen voice. Optional so older callers stay valid.
     let realtime_voice: String?
+    let focus_skills: [String]?
 
     struct PersonaPayload: Encodable {
       let id: String

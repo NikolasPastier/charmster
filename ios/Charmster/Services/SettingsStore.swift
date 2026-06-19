@@ -17,6 +17,7 @@ enum SettingsStore {
   private static let tierKey = "charmster.difficultyTier.v1"
   private static let streakFreezeKey = "charmster.streakFreezes.v1"
   private static let lastFreezeRefillKey = "charmster.lastFreezeRefill.v1"
+  private static let sandboxFreeUsedKey = "charmster.sandboxFreeUsed.v1"
 
   // MARK: - Profile
 
@@ -75,11 +76,24 @@ enum SettingsStore {
     UserDefaults.standard.set(date, forKey: lastFreezeRefillKey)
   }
 
+  // MARK: - Sandbox free usage
+
+  static func loadSandboxFreeUsed() -> Int? {
+    UserDefaults.standard.object(forKey: sandboxFreeUsedKey) as? Int
+  }
+
+  static func saveSandboxFreeUsed(_ count: Int) {
+    UserDefaults.standard.set(count, forKey: sandboxFreeUsedKey)
+  }
+
   // MARK: - Wipe (used by deleteAccount)
 
   static func wipeAll() {
     let d = UserDefaults.standard
-    [profileKey, coachKey, coachIdKey, tierKey, streakFreezeKey, lastFreezeRefillKey].forEach {
+    [
+      profileKey, coachKey, coachIdKey, tierKey,
+      streakFreezeKey, lastFreezeRefillKey, sandboxFreeUsedKey,
+    ].forEach {
       d.removeObject(forKey: $0)
     }
   }

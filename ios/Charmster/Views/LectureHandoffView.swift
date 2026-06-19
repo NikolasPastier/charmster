@@ -76,7 +76,7 @@ struct LectureHandoffView: View {
           }
           Text("\(coach.humanName) is in your corner")
             .font(.system(size: 12, weight: .semibold))
-            .foregroundStyle(Theme.textFaint)
+            .foregroundStyle(Theme.textMuted)
         }
         .padding(.horizontal, 18)
         .padding(.bottom, 20)
@@ -86,6 +86,9 @@ struct LectureHandoffView: View {
   }
 
   private var goalLine: String {
+    if lecture.isCapstone, let cap = CapstoneContentStore.shared.content(for: lecture) {
+      return cap.stages.first?.goal ?? lecture.scenario
+    }
     switch lecture.skill {
     case "Opening": return "Open with one true thing, then one real question."
     case "Presence": return "Hold a calm, chosen pause — warm, not anxious."

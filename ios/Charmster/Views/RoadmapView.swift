@@ -133,6 +133,10 @@ struct RoadmapView: View {
   private func effectiveState(for lecture: Lecture) -> LectureState {
     let base = app.state(of: lecture)
     guard !app.isPro, lecture.access == .pro else { return base }
+    // LEC3.1: Each track's first lecture is always accessible so users can enter
+    // any section regardless of subscription tier.
+    let firstInTrack = Curriculum.lectures(in: lecture.trackId).first(where: { !$0.isCapstone })
+    if firstInTrack?.id == lecture.id { return base }
     switch base {
     case .mastered, .capstoneMastered: return base
     case .capstoneLocked, .capstoneAvailable: return .capstoneLocked
@@ -269,7 +273,7 @@ private struct WeeklyDropTile: View {
             .frame(height: 84)
           Image(systemName: locked ? "lock.fill" : "sparkles")
             .font(.system(size: 24, weight: .bold))
-            .foregroundStyle(locked ? Theme.textFaint : .white)
+            .foregroundStyle(locked ? Theme.textMuted : .white)
         }
         Text(lecture.title)
           .font(.system(size: 13, weight: .heavy))
@@ -408,7 +412,7 @@ private struct LectureNode: View {
 
   private var iconColor: Color {
     switch state {
-    case .locked, .capstoneLocked: return Theme.textFaint
+    case .locked, .capstoneLocked: return Theme.textMuted
     case .current, .mastered: return Theme.accent
     case .capstoneAvailable: return .black
     case .capstoneMastered: return Theme.gold

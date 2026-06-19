@@ -157,6 +157,7 @@ struct ResultsView: View {
             .textCase(.uppercase)
           Spacer()
         }
+        // CAP1: for capstones, replace debriefText with CapstoneContentStore.shared.content(for: lecture)?.coachRecap
         Text(
           LectureContentStore.shared.debriefText(
             coach: app.coachMode,

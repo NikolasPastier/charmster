@@ -16,8 +16,7 @@ struct QuizView: View {
         if questions.isEmpty {
           ProgressView().tint(Theme.accent)
         } else {
-          ProgressView(value: Double(index + 1), total: Double(questions.count))
-            .tint(Theme.accent)
+          OnboardingProgressBar(step: index + 1, total: questions.count)
           let q = questions[index]
           VStack(alignment: .leading, spacing: 12) {
             Text("Q\(index + 1) of \(questions.count)")

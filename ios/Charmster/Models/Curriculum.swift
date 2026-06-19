@@ -42,6 +42,14 @@ enum Curriculum {
     for key in byTrack.keys {
       byTrack[key]?.sort { $0.number < $1.number }
     }
+    // LEC3.2: The Supabase lectures table doesn't carry capstone rows — preserve
+    // each track's bundle capstone so the capstone node always appears in the path.
+    for key in byTrack.keys {
+      guard let lecs = byTrack[key], !lecs.contains(where: { $0.isCapstone }),
+            let bundleCap = loaded.byTrack[key]?.first(where: { $0.isCapstone }) else { continue }
+      byTrack[key]!.append(bundleCap)
+      byId[bundleCap.id] = bundleCap
+    }
     overlay = LoadedCurriculum(
       tracks: remoteTracks.sorted { $0.order < $1.order },
       lectures: remoteLectures,

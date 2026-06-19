@@ -11,6 +11,7 @@ enum CharmsterSuperwall {
     case premiumDailyPracticeCap = "premium_daily_practice_cap"
     case premiumCapstone = "premium_capstone"
     case premiumPartnerPersona = "premium_partner_persona"
+    case premiumSandbox = "premium_sandbox"
   }
 
   static func configure() {

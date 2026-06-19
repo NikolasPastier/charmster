@@ -84,7 +84,7 @@ enum SessionScorer {
     var w = baseWeight * tier.tierWeight
     if isSandbox && sandboxScored { w *= 0.5 }
     if isSandbox && !sandboxScored { w = 0 }
-    w = max(0.05, min(0.40, w))
+    if w > 0 { w = max(0.05, min(0.40, w)) }
 
     let oldAura = max(0, min(100, currentAura))
     let blended = (1.0 - w) * Double(oldAura) + w * Double(session)

@@ -1,0 +1,2818 @@
+{
+  "lectures": [
+    {
+      "id": "1.1",
+      "objectives": [
+        "Understand how repeated exposure creates comfort before conversation",
+        "Position yourself to be naturally seen — without forcing an interaction",
+        "Avoid the approach that reads as pursuit before there's any shared context"
+      ],
+      "goodVsBad": {
+        "works": "You show up in the same space across three visits. You're calm, not performing. By the third time, she initiates the first words.",
+        "avoid": "You introduce yourself on first sighting, ask if she comes here often, and try to hold a conversation she didn't invite.",
+        "leansIn": "She initiates",
+        "checksOut": "She exits politely"
+      },
+      "recall": {
+        "question": "What does repeated exposure actually change?",
+        "options": [
+          "Her threat response — you're no longer a stranger",
+          "Her interest — she's now curious about you",
+          "Your confidence — you feel less nervous around her"
+        ],
+        "answerIndex": 0,
+        "explanation": "Familiarity lowers the alarm — she relaxes before you say a single word."
+      }
+    },
+    {
+      "id": "1.2",
+      "objectives": [
+        "Recognize that shared traits create warmth faster than performance does",
+        "Surface a genuine point of similarity early — without manufacturing one",
+        "Avoid the fake common-ground that registers as trying"
+      ],
+      "goodVsBad": {
+        "works": "She mentions she's exhausted. You say: 'Same. I've been here since eight.' The conversation opens because you're both in the same reality.",
+        "avoid": "You claim to love the same band she mentioned, even though you barely know their name. She can feel the stretch.",
+        "leansIn": "She opens up",
+        "checksOut": "She pulls back"
+      },
+      "recall": {
+        "question": "Why does shared experience create connection faster than charm?",
+        "options": [
+          "It bypasses the social-performance layer entirely",
+          "It makes you seem more interesting",
+          "It gives her something to respond to",
+          "It lowers your own anxiety in the moment"
+        ],
+        "answerIndex": 0,
+        "explanation": "Two people in the same reality don't need to perform — the ground is already common."
+      }
+    },
+    {
+      "id": "1.3",
+      "objectives": [
+        "Understand that liking tends to be reciprocal — real interest invites interest back",
+        "Show genuine curiosity at a level that matches what she's giving",
+        "Avoid over-investing before she's offered anything in return"
+      ],
+      "goodVsBad": {
+        "works": "You ask one real question and actually listen. She warms up and asks one back. The interest is now moving in both directions.",
+        "avoid": "You compliment her three times, offer to buy the drink, and keep the conversation alive single-handedly. It reads as need, not interest.",
+        "leansIn": "She invests back",
+        "checksOut": "She coasts on your effort"
+      },
+      "recall": {
+        "question": "Why does showing genuine interest tend to be attractive?",
+        "options": [
+          "It proves how confident you are",
+          "Liking is usually reciprocal — interest invites interest",
+          "It flatters her into responding",
+          "It speeds the whole thing up"
+        ],
+        "answerIndex": 1,
+        "explanation": "We're drawn to people who are genuinely drawn to us — as long as it isn't overdone."
+      }
+    },
+    {
+      "id": "1.4",
+      "objectives": [
+        "Know which traits are most universally valued — kindness, intelligence, humor",
+        "Focus on developing real, buildable qualities rather than displaying status",
+        "Avoid betting everything on looks or money as the only levers"
+      ],
+      "goodVsBad": {
+        "works": "You let your dry humor and genuine kindness show in how you treat the waiter and answer her questions. She notices the character, not a performance.",
+        "avoid": "You steer the talk toward your car, your job title, and your gym numbers. It signals status anxiety, not value.",
+        "leansIn": "She's drawn in",
+        "checksOut": "She tunes out"
+      },
+      "recall": {
+        "question": "What's the healthiest takeaway from mate-preference research?",
+        "options": [
+          "Looks are the only thing that really matters",
+          "There's one line that works on everyone",
+          "Most attractive traits are behaviors you can build"
+        ],
+        "answerIndex": 2,
+        "explanation": "Kindness, intelligence and humor top the list across cultures — and all three are trainable."
+      }
+    },
+    {
+      "id": "1.5",
+      "objectives": [
+        "Understand the two dimensions every first impression is built on: warmth and competence",
+        "Project both at once — approachable and capable — in a short intro",
+        "Avoid leaning so hard on one that you read as cold or as a pushover"
+      ],
+      "goodVsBad": {
+        "works": "You greet her with an easy smile (warmth) and speak about your work without apologizing for it (competence). She reads you as both safe and substantial.",
+        "avoid": "You're impressive but cold — clipped answers, no smile. She respects you and feels nothing.",
+        "leansIn": "She feels at ease",
+        "checksOut": "She stays guarded"
+      },
+      "recall": {
+        "question": "What two things is every first impression built on?",
+        "options": [
+          "Warmth and competence",
+          "Looks and money",
+          "Humor and height",
+          "Confidence alone"
+        ],
+        "answerIndex": 0,
+        "explanation": "People instantly read 'can I trust you' (warmth) and 'can I respect you' (competence). You need both."
+      }
+    },
+    {
+      "id": "1.6",
+      "objectives": [
+        "Reframe a single rejection as one probability event, not a verdict on your worth",
+        "Keep taking shots because attraction is multivariate and noisy",
+        "Avoid reading one 'no' as proof that the approach itself was wrong"
+      ],
+      "goodVsBad": {
+        "works": "She's not interested. You think 'wrong fit, not wrong me,' thank her, and your night continues unbothered. The next conversation flows easily.",
+        "avoid": "One no, and you decide you're undateable, replay it for an hour, and leave. One data point became a life sentence.",
+        "leansIn": "You stay in the game",
+        "checksOut": "You spiral out"
+      },
+      "recall": {
+        "question": "How should you read a single rejection?",
+        "options": [
+          "As proof you're not attractive",
+          "As one probability event, not a verdict",
+          "As a sign to change everything about yourself"
+        ],
+        "answerIndex": 1,
+        "explanation": "Attraction is probabilistic — any single outcome tells you almost nothing about the next one."
+      }
+    },
+    {
+      "id": "1.7",
+      "objectives": [
+        "See that a full, engaging life is itself the most reliable attraction asset",
+        "Identify one or two areas to invest in that make you a more compelling partner",
+        "Avoid making dating the center of your identity at the expense of everything else"
+      ],
+      "goodVsBad": {
+        "works": "You talk about the climbing trip you're training for. The enthusiasm is real and contagious — she wants in on a life that's already moving.",
+        "avoid": "Your whole world is finding a girlfriend, so every conversation quietly auditions her for the role. The pressure leaks through.",
+        "leansIn": "She wants in",
+        "checksOut": "She feels the pressure"
+      },
+      "recall": {
+        "question": "Why does building an interesting life help your dating?",
+        "options": [
+          "It gives you stories to impress people with",
+          "A compelling, self-expanding life is genuinely attractive and takes the pressure off any one outcome",
+          "It keeps you too busy to feel rejected"
+        ],
+        "answerIndex": 1,
+        "explanation": "People are drawn to lives in motion — and a full life means no single date has to carry your whole happiness."
+      }
+    },
+    {
+      "id": "1.8",
+      "objectives": [
+        "Recognize scarcity thinking — 'this is my only chance' — and how it distorts behavior",
+        "Operate from a grounded abundance frame where one outcome isn't everything",
+        "Avoid the clinging that scarcity produces and that reliably pushes people away"
+      ],
+      "goodVsBad": {
+        "works": "You like her, and you're also fine if it doesn't work. That calm lets you be honest and playful instead of careful. She feels the lack of desperation.",
+        "avoid": "You treat her as your last shot at love, so you over-text, over-plan, and over-give. The neediness arrives before the second date.",
+        "leansIn": "She relaxes",
+        "checksOut": "She feels smothered"
+      },
+      "recall": {
+        "question": "What does an abundance mindset actually give you?",
+        "options": [
+          "Permission to treat people as interchangeable",
+          "The calm to be yourself because no single outcome is everything",
+          "A reason to never commit to anyone"
+        ],
+        "answerIndex": 1,
+        "explanation": "Abundance isn't arrogance — it's the security that lets you act freely instead of clinging."
+      }
+    },
+    {
+      "id": "2.1",
+      "objectives": [
+        "Read the moment before you speak — presence first, words second",
+        "Open with one honest, specific line that earns a response, not just a reaction",
+        "Avoid the scripted opener that sounds rehearsed to everyone except you"
+      ],
+      "goodVsBad": {
+        "works": "She's reading something with full focus. You say: 'That looks heavier than my afternoon.' She glances up, half-smiles. You wait.",
+        "avoid": "You launch into a memorized opener. It lands flat. You explain the joke. Then fill the silence with two more sentences.",
+        "leansIn": "She's interested",
+        "checksOut": "She turns back to her book"
+      },
+      "recall": {
+        "question": "What should the first sentence actually do?",
+        "options": [
+          "Earn a response — invite her in",
+          "Signal confidence before she speaks",
+          "Set up the next line you planned",
+          "Make her laugh immediately"
+        ],
+        "answerIndex": 0,
+        "explanation": "The opener that invites her in beats anything that's primarily about you."
+      }
+    },
+    {
+      "id": "2.2",
+      "objectives": [
+        "Turn a flat opener into a real exchange with one honest follow-through",
+        "Stay with what she gives you instead of retreating to a prepared script",
+        "Avoid doubling down when an opener doesn't land"
+      ],
+      "goodVsBad": {
+        "works": "Your opener gets a short reply. You nod, wait a half-beat, then ask the one question her answer actually raised. She says three sentences.",
+        "avoid": "She gives a one-word answer. You pivot to another pre-planned line. She stops engaging.",
+        "leansIn": "She stays in it",
+        "checksOut": "She wraps it up"
+      },
+      "recall": {
+        "question": "When an opener gets a short reply, what's the move?",
+        "options": [
+          "Ask the one question her answer actually raised",
+          "Try a different opener",
+          "Give her a compliment to warm her up",
+          "Wait for her to keep the conversation going"
+        ],
+        "answerIndex": 0,
+        "explanation": "One real follow-through on what she said is worth ten prepared lines."
+      }
+    },
+    {
+      "id": "2.3",
+      "objectives": [
+        "Understand that the easiest opener to answer is the one most likely to get a reply",
+        "Lower the cost of responding by giving her an easy, safe on-ramp",
+        "Avoid openers that feel like a test, a demand, or hard work to answer"
+      ],
+      "goodVsBad": {
+        "works": "You ask something light she can answer in a sentence and build on if she wants. Replying costs her nothing, so she does.",
+        "avoid": "You open with 'impress me' or a heavy question that needs a paragraph. Now replying feels like a chore, so she doesn't.",
+        "leansIn": "She replies easily",
+        "checksOut": "She leaves it on read"
+      },
+      "recall": {
+        "question": "What makes an opener more likely to get a reply?",
+        "options": [
+          "It's clever and shows off your wit",
+          "It's easy and low-risk to answer",
+          "It puts her on the spot"
+        ],
+        "answerIndex": 1,
+        "explanation": "The lower the cost of replying, the more likely she actually does."
+      }
+    },
+    {
+      "id": "2.4",
+      "objectives": [
+        "Tell the difference between confidence (self-assured) and arrogance (needing to prove it)",
+        "Hold a confident frame without bragging or putting others down",
+        "Avoid the status-signaling that real confidence never needs"
+      ],
+      "goodVsBad": {
+        "works": "You state your opinion calmly and don't crumble when she disagrees. You also laugh at yourself. Secure, not defensive.",
+        "avoid": "You name-drop, correct her, and one-up her stories. Each brag quietly announces the insecurity underneath.",
+        "leansIn": "She respects it",
+        "checksOut": "She's put off"
+      },
+      "recall": {
+        "question": "What separates confidence from arrogance?",
+        "options": [
+          "Confidence is loud; arrogance is quiet",
+          "Confidence is self-assured; arrogance needs to prove itself",
+          "They're basically the same thing"
+        ],
+        "answerIndex": 1,
+        "explanation": "Real confidence has nothing to prove — bragging is insecurity wearing a costume."
+      }
+    },
+    {
+      "id": "2.5",
+      "objectives": [
+        "Use the shared situation as your opener instead of a canned line",
+        "Make an observational, in-the-moment comment that fits where you both are",
+        "Avoid importing app-style openers into a face-to-face moment"
+      ],
+      "goodVsBad": {
+        "works": "In line at the cafe you nod at the chaos behind the counter: 'I think we picked the wrong day for fast caffeine.' Shared reality, easy laugh.",
+        "avoid": "You walk up and deliver a rehearsed pickup line that ignores the entire situation. It feels beamed in from another planet.",
+        "leansIn": "She plays along",
+        "checksOut": "She gives a polite nod"
+      },
+      "recall": {
+        "question": "What makes the best in-person opener?",
+        "options": [
+          "It references the shared situation you're both in",
+          "It's a memorized line that always works",
+          "It compliments her looks right away"
+        ],
+        "answerIndex": 0,
+        "explanation": "The moment you're both standing in is the most natural thing to open on."
+      }
+    },
+    {
+      "id": "2.6",
+      "objectives": [
+        "Win over the group before you focus on any one person",
+        "Open warmly to everyone so you read as a friend, not a threat",
+        "Avoid singling her out in a way that makes the whole group protective"
+      ],
+      "goodVsBad": {
+        "works": "You make the whole group laugh first, include her friends, and only gradually turn toward her. The group adopts you, and she relaxes.",
+        "avoid": "You ignore her three friends and laser in on her immediately. The friends close ranks and the door shuts.",
+        "leansIn": "The group adopts you",
+        "checksOut": "Her friends close ranks"
+      },
+      "recall": {
+        "question": "When approaching someone in a group, what comes first?",
+        "options": [
+          "Isolating her from her friends quickly",
+          "Winning over the whole group so you're not a threat",
+          "Ignoring everyone but her"
+        ],
+        "answerIndex": 1,
+        "explanation": "Get the group on your side first — her friends are the gatekeepers."
+      }
+    },
+    {
+      "id": "3.1",
+      "objectives": [
+        "Feel the natural rhythm of a conversation instead of driving it",
+        "Use callbacks and silence as active listening tools",
+        "Avoid filling every pause — some pauses are her thinking, not her leaving"
+      ],
+      "goodVsBad": {
+        "works": "She trails off mid-thought. You let the silence sit for two seconds. She finishes the thought herself, and it's the most honest thing she's said.",
+        "avoid": "She pauses. You jump in with a question to keep it going. She was about to say something real — now the moment's gone.",
+        "leansIn": "She opens up",
+        "checksOut": "She closes down"
+      },
+      "recall": {
+        "question": "What does a well-placed pause signal to her?",
+        "options": [
+          "That you're listening — not waiting to talk",
+          "That you're confident and unhurried",
+          "That you're thinking carefully before you reply",
+          "That you want her to keep going"
+        ],
+        "answerIndex": 0,
+        "explanation": "Holding a pause says: I heard you. That's rarer than people think."
+      }
+    },
+    {
+      "id": "3.2",
+      "objectives": [
+        "Understand that closeness grows through gradual, mutual disclosure",
+        "Match the depth she offers instead of jumping too deep or staying too shallow",
+        "Avoid trauma-dumping or staying surface-level for too long"
+      ],
+      "goodVsBad": {
+        "works": "She shares a small worry about her job. You match it with a real but proportional one of your own. The depth climbs one rung, together.",
+        "avoid": "She makes light small talk and you respond with your deepest childhood wound. The jump in depth makes her freeze.",
+        "leansIn": "She goes a layer deeper",
+        "checksOut": "She freezes up"
+      },
+      "recall": {
+        "question": "How does real closeness develop in conversation?",
+        "options": [
+          "By disclosing everything as fast as possible",
+          "Through gradual, mutual, step-by-step disclosure",
+          "By keeping it light and never going deep"
+        ],
+        "answerIndex": 1,
+        "explanation": "Intimacy is a ladder climbed together — one matched rung at a time."
+      }
+    },
+    {
+      "id": "3.3",
+      "objectives": [
+        "Make her feel understood by reflecting and validating, not just hearing words",
+        "Respond to the feeling underneath what she says, then follow up",
+        "Avoid answering an emotion with a fact or a fix"
+      ],
+      "goodVsBad": {
+        "works": "She says her week was brutal. You say 'that sounds exhausting' before asking what happened. She feels gotten, and tells you more.",
+        "avoid": "She says her week was brutal and you immediately list three productivity tips. She wanted to be heard, not managed.",
+        "leansIn": "She feels understood",
+        "checksOut": "She shuts the topic"
+      },
+      "recall": {
+        "question": "What does real responsiveness do that simple listening doesn't?",
+        "options": [
+          "It makes her feel understood, validated, and cared for",
+          "It proves you were paying attention",
+          "It lets you solve her problem faster"
+        ],
+        "answerIndex": 0,
+        "explanation": "Feeling understood is the engine of connection — answer the feeling before the facts."
+      }
+    },
+    {
+      "id": "3.4",
+      "objectives": [
+        "Ask open-ended questions that open doors instead of yes/no dead ends",
+        "Build each question off her last answer so it feels like talking, not an interview",
+        "Avoid rapid-fire questioning that turns a conversation into an interrogation"
+      ],
+      "goodVsBad": {
+        "works": "She mentions a trip. You ask what made her pick that place, then follow her answer with a curious 'what surprised you there?' It unfolds naturally.",
+        "avoid": "Where are you from? What do you do? Any siblings? Each new question ignores her last answer. She feels processed, not met.",
+        "leansIn": "She elaborates",
+        "checksOut": "She gives short answers"
+      },
+      "recall": {
+        "question": "What turns questions into a real conversation rather than an interview?",
+        "options": [
+          "Asking lots of questions quickly",
+          "Following up on her answers with genuine curiosity",
+          "Sticking to a fixed list of questions"
+        ],
+        "answerIndex": 1,
+        "explanation": "A good follow-up shows you actually heard her — that's what kills interview mode."
+      }
+    },
+    {
+      "id": "3.5",
+      "objectives": [
+        "Understand that a good short story creates closeness, not just entertainment",
+        "Tell a 30-second story with a hook, a turn, and a point",
+        "Avoid the rambling, detail-stuffed version that loses her halfway"
+      ],
+      "goodVsBad": {
+        "works": "You tell a tight story: a setup, one funny turn, a landing. She's leaning in by the punchline and adds her own version.",
+        "avoid": "You start a story but get lost in irrelevant detail — wait, was it Tuesday? Her attention drifts before you reach the point.",
+        "leansIn": "She's hooked",
+        "checksOut": "She drifts off"
+      },
+      "recall": {
+        "question": "What makes a story land in conversation?",
+        "options": [
+          "Including every detail so it's accurate",
+          "A tight shape: hook, turn, and a clear point",
+          "Making it as long as possible"
+        ],
+        "answerIndex": 1,
+        "explanation": "Structure beats detail — a story with shape pulls people in."
+      }
+    },
+    {
+      "id": "3.6",
+      "objectives": [
+        "Spot the habits that quietly kill conversations: interview mode, one-word replies, over-talking",
+        "Catch yourself mid-pattern and rebalance the give-and-take",
+        "Avoid dominating the airtime or leaving her to do all the work"
+      ],
+      "goodVsBad": {
+        "works": "You notice you've been talking for two minutes straight, so you ask what she thinks and genuinely hand the floor back. Balance restored.",
+        "avoid": "You monologue about your job, barely pausing. She nods less and less until the conversation quietly flatlines.",
+        "leansIn": "It stays balanced",
+        "checksOut": "It flatlines"
+      },
+      "recall": {
+        "question": "What's the common thread behind most conversation killers?",
+        "options": [
+          "The give-and-take breaks down",
+          "Not having enough topics ready",
+          "Talking about the wrong subjects"
+        ],
+        "answerIndex": 0,
+        "explanation": "Interview mode, monologuing, one-word replies — all are failures of turn-taking."
+      }
+    },
+    {
+      "id": "3.7",
+      "objectives": [
+        "Understand that revealing something real builds more closeness than sounding impressive",
+        "Tell a story that shows a genuine, slightly imperfect part of you",
+        "Avoid only ever telling the highlight-reel, hero version of yourself"
+      ],
+      "goodVsBad": {
+        "works": "You share the time a plan fell apart and what it taught you. The honesty makes you more human, and she opens up in return.",
+        "avoid": "Every story is a win where you're the hero. It's polished and impressive and leaves zero room to actually connect.",
+        "leansIn": "She trusts you more",
+        "checksOut": "She keeps it surface"
+      },
+      "recall": {
+        "question": "Why does a vulnerable story often connect better than an impressive one?",
+        "options": [
+          "It shows you've had a hard life",
+          "Real, slightly imperfect honesty invites her to open up too",
+          "It makes her feel sorry for you"
+        ],
+        "answerIndex": 1,
+        "explanation": "Others read our vulnerability more warmly than we expect — the beautiful mess effect."
+      }
+    },
+    {
+      "id": "3.8",
+      "objectives": [
+        "Understand how a little playful tension keeps a conversation alive",
+        "Balance warmth with a light, teasing challenge so it isn't all agreement",
+        "Avoid both pure agreeableness and tension that tips into negging"
+      ],
+      "goodVsBad": {
+        "works": "She makes a bold claim. You raise an eyebrow: 'Strong words from someone who just put pineapple on pizza.' Warm challenge, she grins and pushes back.",
+        "avoid": "You agree with everything she says to be safe. With no spark of tension, it gets pleasant, polite, and boring.",
+        "leansIn": "The spark builds",
+        "checksOut": "It goes flat"
+      },
+      "recall": {
+        "question": "What does light push-pull add to a conversation?",
+        "options": [
+          "A spark of playful tension that keeps energy alive",
+          "A way to keep her slightly off-balance",
+          "Proof that you're the dominant one"
+        ],
+        "answerIndex": 0,
+        "explanation": "A little warm challenge beats endless agreement — agreement alone gets boring."
+      }
+    },
+    {
+      "id": "3.9",
+      "objectives": [
+        "Move between topics smoothly instead of letting threads dead-end",
+        "Bridge from something she just said into the next subject",
+        "Avoid the awkward hard reset of 'so... anyway' when a topic runs out"
+      ],
+      "goodVsBad": {
+        "works": "The travel topic winds down, so you bridge: 'You said you went alone — are you usually the spontaneous one?' Seamless turn into something new.",
+        "avoid": "The topic dies and you blurt 'so... anyway.' The jarring reset leaves a silence you both feel.",
+        "leansIn": "It flows on",
+        "checksOut": "It stalls"
+      },
+      "recall": {
+        "question": "How do you transition topics gracefully?",
+        "options": [
+          "Announce that you're changing the subject",
+          "Bridge from something she just said into the next topic",
+          "Wait in silence until someone starts fresh"
+        ],
+        "answerIndex": 1,
+        "explanation": "The smoothest new topic is hidden inside what she just told you."
+      }
+    },
+    {
+      "id": "4.1",
+      "objectives": [
+        "Understand that humor is a top-valued, learnable trait — not a fixed gift",
+        "Land one light, playful line that invites her to play back",
+        "Avoid forcing jokes or over-explaining the ones that don't land"
+      ],
+      "goodVsBad": {
+        "works": "You make a small, dry observation about the situation. She laughs and volleys one back. You've started a game, not just told a joke.",
+        "avoid": "You tell a long rehearsed joke, it falls flat, and you explain why it was funny. The explanation kills whatever was left.",
+        "leansIn": "She plays back",
+        "checksOut": "She forces a smile"
+      },
+      "recall": {
+        "question": "Why is humor so attractive?",
+        "options": [
+          "It proves you're smarter than her",
+          "It signals intelligence and creativity, and it's a skill you can build",
+          "It distracts from your nerves"
+        ],
+        "answerIndex": 1,
+        "explanation": "Producing humor reads as intelligence and creativity — and it's trainable, not innate."
+      }
+    },
+    {
+      "id": "4.2",
+      "objectives": [
+        "Tell affiliative humor (warm, inclusive) from aggressive or self-defeating humor",
+        "Convert a put-down joke into one that pulls you both onto the same side",
+        "Avoid humor at her expense or constant self-deprecation"
+      ],
+      "goodVsBad": {
+        "works": "You joke about the absurd situation you're both stuck in. You're laughing together at the world. The humor includes her.",
+        "avoid": "You tease her about something she's clearly insecure about. The laugh, if it comes, has a sting she remembers.",
+        "leansIn": "You laugh together",
+        "checksOut": "The joke stings"
+      },
+      "recall": {
+        "question": "Which humor style is most consistently attractive?",
+        "options": [
+          "Affiliative — warm and inclusive",
+          "Aggressive — put-downs and teasing she didn't sign up for",
+          "Self-defeating — constantly mocking yourself"
+        ],
+        "answerIndex": 0,
+        "explanation": "Warm, inclusive humor draws people in; humor at someone's expense pushes them away."
+      }
+    },
+    {
+      "id": "4.3",
+      "objectives": [
+        "Understand that good teasing is an invitation to play, never a real criticism",
+        "Tease lightly about something safe and surface, with obvious warmth",
+        "Avoid teasing about anything she might actually be sensitive about"
+      ],
+      "goodVsBad": {
+        "works": "She admits she's competitive about board games. You smile: 'Noted — I'll hide the Monopoly money.' Light, warm, she fires back.",
+        "avoid": "You tease her about her job or her looks. It's too close to the bone, and the playfulness curdles.",
+        "leansIn": "She fires back",
+        "checksOut": "She gets defensive"
+      },
+      "recall": {
+        "question": "What keeps teasing playful instead of hurtful?",
+        "options": [
+          "Teasing about things she's genuinely insecure about",
+          "Keeping it light, safe, and obviously warm",
+          "Making sure it stings a little so it lands"
+        ],
+        "answerIndex": 1,
+        "explanation": "Good teasing is a wink, not a jab — it says 'I'm comfortable with you.'"
+      }
+    },
+    {
+      "id": "4.4",
+      "objectives": [
+        "Understand how callbacks build a private, shared world between two people",
+        "Reference an earlier joke or moment later to create an inside joke",
+        "Avoid forcing callbacks so often they become a tic"
+      ],
+      "goodVsBad": {
+        "works": "Twenty minutes after she joked about being a 'cereal expert,' you deadpan 'I defer to the expert.' The callback lands and it's now your bit.",
+        "avoid": "You repeat the same callback five times in ten minutes. What was funny once is now a running joke only you find funny.",
+        "leansIn": "It becomes your bit",
+        "checksOut": "It gets old fast"
+      },
+      "recall": {
+        "question": "Why are callbacks and inside jokes so powerful?",
+        "options": [
+          "They prove you have a good memory",
+          "They build a shared, private world that's just yours",
+          "They fill silences"
+        ],
+        "answerIndex": 1,
+        "explanation": "An inside joke is a tiny shared world — instant 'us.'"
+      }
+    },
+    {
+      "id": "4.5",
+      "objectives": [
+        "Read the room to sense when humor fits and when it doesn't",
+        "Recover gracefully when a joke falls flat instead of forcing it",
+        "Avoid joking through a serious or tender moment"
+      ],
+      "goodVsBad": {
+        "works": "She shifts into something serious about her family. You drop the jokes, match her tone, and just listen. She feels safe to keep going.",
+        "avoid": "She gets vulnerable and you crack a joke to ease your own discomfort. The mood breaks and she pulls the topic back.",
+        "leansIn": "She feels safe",
+        "checksOut": "The mood breaks"
+      },
+      "recall": {
+        "question": "What's the key skill behind reading the room?",
+        "options": [
+          "Always having a joke ready",
+          "Sensing when not to joke and matching her tone",
+          "Recovering a flat joke with a bigger one"
+        ],
+        "answerIndex": 1,
+        "explanation": "Knowing when not to joke is as important as the jokes themselves."
+      }
+    },
+    {
+      "id": "4.6",
+      "objectives": [
+        "Understand the improv principle of yes-and: build on what she offers",
+        "Take her joke or premise and add to it instead of blocking it",
+        "Avoid shutting down her bit by correcting it or topping it"
+      ],
+      "goodVsBad": {
+        "works": "She jokes you're both 'clearly the smartest people here.' You yes-and it: 'Obviously. Should we start a club?' The bit grows between you.",
+        "avoid": "She starts a playful premise and you reply 'well, technically...' The correction blocks the game and the energy dies.",
+        "leansIn": "The bit grows",
+        "checksOut": "The game dies"
+      },
+      "recall": {
+        "question": "What's the core of yes-and banter?",
+        "options": [
+          "Build on what she offers instead of blocking it",
+          "Top her joke with a better one",
+          "Correct the parts that don't make sense"
+        ],
+        "answerIndex": 0,
+        "explanation": "Accept her premise and add to it — that's how spontaneous banter snowballs."
+      }
+    },
+    {
+      "id": "5.1",
+      "objectives": [
+        "Learn that flirting comes in distinct styles, not one universal signal",
+        "Identify her style and your own so you read cues in the right context",
+        "Avoid assuming everyone flirts the way you do"
+      ],
+      "goodVsBad": {
+        "works": "You notice she's a playful, teasing flirt and meet her there with light banter. You're speaking the same dialect, and it clicks.",
+        "avoid": "You expect overt signals from someone whose style is polite and subtle, so you miss her interest entirely.",
+        "leansIn": "You're in sync",
+        "checksOut": "You miss her cues"
+      },
+      "recall": {
+        "question": "Why do the five flirting styles matter?",
+        "options": [
+          "They prove flirting is universal",
+          "People signal interest differently, so the cues vary by style",
+          "They let you pick the best style and use it on everyone"
+        ],
+        "answerIndex": 1,
+        "explanation": "A subtle flirt and a playful flirt show interest in totally different ways."
+      }
+    },
+    {
+      "id": "5.2",
+      "objectives": [
+        "Understand that single gestures are unreliable — clusters and baseline shifts aren't",
+        "Read several cues together plus a change from how she normally acts",
+        "Avoid reading one gesture as a definite signal either way"
+      ],
+      "goodVsBad": {
+        "works": "She leans in, holds eye contact longer, and laughs more than earlier. The cluster, plus the shift from her baseline, tells you she's engaged.",
+        "avoid": "She touches her hair once and you decide she's into you, ignoring that she's also checking her phone and angling away.",
+        "leansIn": "You read it right",
+        "checksOut": "You misread one cue"
+      },
+      "recall": {
+        "question": "What's the reliable way to read interest?",
+        "options": [
+          "One dramatic gesture",
+          "Clusters of cues plus shifts from her baseline",
+          "Whatever your gut says first"
+        ],
+        "answerIndex": 1,
+        "explanation": "No single cue means much — read the cluster and the change from normal."
+      }
+    },
+    {
+      "id": "5.3",
+      "objectives": [
+        "Treat interest as a probability you update, not a yes/no you decide",
+        "Stay humble about reading signals — people are often wrong",
+        "Avoid the overconfidence that leads to both creepiness and missed chances"
+      ],
+      "goodVsBad": {
+        "works": "You read her as 'probably interested, let's see,' so you test gently and keep updating. The calibration keeps you respectful and accurate.",
+        "avoid": "You decide she's definitely into you from one smile and escalate hard. The certainty was never earned.",
+        "leansIn": "You stay calibrated",
+        "checksOut": "You overshoot"
+      },
+      "recall": {
+        "question": "How accurate are people at reading flirting?",
+        "options": [
+          "Very accurate — trust your read",
+          "Often inaccurate, so stay humble and update",
+          "Never wrong if you know the cues"
+        ],
+        "answerIndex": 1,
+        "explanation": "Research shows we misread interest constantly — hold your read loosely."
+      }
+    },
+    {
+      "id": "5.4",
+      "objectives": [
+        "Distinguish genuine interest from ordinary politeness and friendliness",
+        "Look for cues that go beyond what good manners require",
+        "Avoid mistaking basic kindness for romantic interest"
+      ],
+      "goodVsBad": {
+        "works": "She not only answers but asks about you, extends the conversation, and re-engages after a pause. That's effort beyond politeness.",
+        "avoid": "She's warm because she's a warm person, and you read her customer-service friendliness as a green light.",
+        "leansIn": "She invests extra",
+        "checksOut": "She's just being polite"
+      },
+      "recall": {
+        "question": "How do you tell interest from politeness?",
+        "options": [
+          "Politeness and interest look identical",
+          "Interest shows up as effort beyond what manners require",
+          "Anyone who smiles is interested"
+        ],
+        "answerIndex": 1,
+        "explanation": "Politeness is the baseline; interest is the extra investment on top of it."
+      }
+    },
+    {
+      "id": "5.5",
+      "objectives": [
+        "Read comfort and discomfort signals as the guide for any escalation",
+        "Check in and ease off the moment you sense hesitation",
+        "Avoid pushing past a discomfort cue — consent is non-negotiable"
+      ],
+      "goodVsBad": {
+        "works": "You sense a flicker of hesitation, so you slow down and lightly check in. She relaxes because she feels respected and in control.",
+        "avoid": "You notice her pull back slightly but press on anyway because the night was going well. The discomfort hardens.",
+        "leansIn": "She feels safe",
+        "checksOut": "She shuts down"
+      },
+      "recall": {
+        "question": "What should guide any escalation?",
+        "options": [
+          "How well the night is going overall",
+          "Her real-time comfort and consent signals",
+          "How long you've been talking"
+        ],
+        "answerIndex": 1,
+        "explanation": "Comfort and ongoing consent lead every step — a discomfort cue means stop and check in."
+      }
+    },
+    {
+      "id": "5.6",
+      "objectives": [
+        "Recognize when you've misread a cue and need to step back",
+        "Repair the moment with a light, low-pressure de-escalation",
+        "Avoid making a misread worse with defensiveness or apology spirals"
+      ],
+      "goodVsBad": {
+        "works": "You realize you misjudged the moment, so you ease back naturally and change tack without drama. The reset lands and the vibe recovers.",
+        "avoid": "You misread, then over-apologize five times, making it heavier and more awkward than the original mistake.",
+        "leansIn": "The vibe recovers",
+        "checksOut": "It gets heavier"
+      },
+      "recall": {
+        "question": "After misreading a cue, what's the graceful move?",
+        "options": [
+          "Ease back naturally and shift gears without drama",
+          "Apologize repeatedly until she reassures you",
+          "Pretend nothing happened and push again"
+        ],
+        "answerIndex": 0,
+        "explanation": "A calm, light reset repairs far better than an apology spiral."
+      }
+    },
+    {
+      "id": "5.7",
+      "objectives": [
+        "Notice fleeting facial expressions as part of a larger cluster",
+        "Combine micro-cues with context rather than over-reading a single flash",
+        "Avoid treating one micro-expression as a mind-reading certainty"
+      ],
+      "goodVsBad": {
+        "works": "You catch a quick flash of genuine delight alongside her words and warm body language. The cluster confirms she's enjoying this.",
+        "avoid": "You spot one micro-frown and decide she hates you, ignoring everything else she's doing that says otherwise.",
+        "leansIn": "You read the whole picture",
+        "checksOut": "You over-read one flash"
+      },
+      "recall": {
+        "question": "How should you use micro-expressions?",
+        "options": [
+          "As certain proof of her hidden thoughts",
+          "As one input within a cluster and its context",
+          "As the only thing worth reading"
+        ],
+        "answerIndex": 1,
+        "explanation": "A micro-expression is a hint, not a verdict — read it with everything else."
+      }
+    },
+    {
+      "id": "6.1",
+      "objectives": [
+        "Understand charisma as three trainable parts: presence, warmth, and power",
+        "Deliver a line that carries all three at once",
+        "Avoid mistaking charisma for a fixed personality you either have or don't"
+      ],
+      "goodVsBad": {
+        "works": "You speak fully present, with a warm tone and grounded steadiness. She feels seen, at ease, and quietly impressed all at once.",
+        "avoid": "You're distracted and checking the room, so even good words land hollow. Presence was missing, so nothing else registered.",
+        "leansIn": "She feels your presence",
+        "checksOut": "You seem checked out"
+      },
+      "recall": {
+        "question": "What are the three trainable ingredients of charisma?",
+        "options": [
+          "Looks, money, and status",
+          "Presence, warmth, and power",
+          "Humor, height, and confidence"
+        ],
+        "answerIndex": 1,
+        "explanation": "Charisma isn't magic — it's presence plus warmth plus power, all learnable."
+      }
+    },
+    {
+      "id": "6.2",
+      "objectives": [
+        "Understand how open, expansive posture changes how you're perceived",
+        "Hold grounded, upright, space-taking posture without forcing it",
+        "Avoid the closed, hunched posture that reads as nervous and small"
+      ],
+      "goodVsBad": {
+        "works": "You stand tall, shoulders open, taking up your space comfortably. You read as confident and approachable before you say a word.",
+        "avoid": "You hunch, fold your arms, and shrink into yourself. The body language quietly broadcasts anxiety.",
+        "leansIn": "You read as open",
+        "checksOut": "You read as closed"
+      },
+      "recall": {
+        "question": "What did the research find about expansive posture?",
+        "options": [
+          "It had no real effect",
+          "It roughly doubled dating success at zero acquaintance",
+          "It only helped in photos"
+        ],
+        "answerIndex": 1,
+        "explanation": "Open, expansive posture nearly doubled attraction in the study — it's that powerful."
+      }
+    },
+    {
+      "id": "6.3",
+      "objectives": [
+        "Use calibrated eye contact that connects without staring",
+        "Pair it with a genuine, unforced smile",
+        "Avoid both darting, avoidant eyes and an intense, unbroken stare"
+      ],
+      "goodVsBad": {
+        "works": "You hold easy eye contact while she talks, glance away naturally, and smile when something lands. Warm and present.",
+        "avoid": "You either stare without blinking or can't hold her gaze at all. Both make the moment uncomfortable.",
+        "leansIn": "She feels connected",
+        "checksOut": "She feels uneasy"
+      },
+      "recall": {
+        "question": "What's healthy eye contact in conversation?",
+        "options": [
+          "Unbroken, intense staring",
+          "Warm, connected, with natural breaks",
+          "Avoiding her eyes to seem mysterious"
+        ],
+        "answerIndex": 1,
+        "explanation": "Calibrated eye contact plus a genuine smile signals warmth and confidence."
+      }
+    },
+    {
+      "id": "6.4",
+      "objectives": [
+        "Use pace, pauses, and tone to project calm authority",
+        "Slow down and let pauses do some of the work",
+        "Avoid the fast, high, rushed delivery that signals nerves"
+      ],
+      "goodVsBad": {
+        "works": "You speak a little slower than feels natural, let a pause land, and drop your tone at the end of sentences. You sound grounded.",
+        "avoid": "You rush every sentence, voice rising, no pauses. The pace alone tells her you're anxious.",
+        "leansIn": "You sound grounded",
+        "checksOut": "You sound rushed"
+      },
+      "recall": {
+        "question": "What signals vocal presence?",
+        "options": [
+          "Talking fast so you don't lose her",
+          "Controlled pace, real pauses, and steady tone",
+          "Speaking as quietly as possible"
+        ],
+        "answerIndex": 1,
+        "explanation": "A slower pace and unhurried pauses read as calm and in control."
+      }
+    },
+    {
+      "id": "6.5",
+      "objectives": [
+        "Understand how subtle synchrony builds rapport beneath awareness",
+        "Gently match her energy, rhythm, and tempo",
+        "Avoid obvious, mechanical mirroring that feels like mimicry"
+      ],
+      "goodVsBad": {
+        "works": "As she relaxes and slows down, you naturally settle into the same easy rhythm. The unspoken sync builds quiet rapport.",
+        "avoid": "You copy her gestures a beat after she makes them, clearly and deliberately. It feels like being studied, not matched.",
+        "leansIn": "Rapport builds",
+        "checksOut": "It feels staged"
+      },
+      "recall": {
+        "question": "How should you use synchrony and mirroring?",
+        "options": [
+          "Copy her gestures deliberately so she notices",
+          "Subtly match her energy and rhythm beneath awareness",
+          "Mirror every move exactly"
+        ],
+        "answerIndex": 1,
+        "explanation": "Subtle synchrony builds rapport; obvious mimicry just feels weird."
+      }
+    },
+    {
+      "id": "6.6",
+      "objectives": [
+        "Notice the physical signs of nerves rising mid-conversation",
+        "Reset with breath and pace so you stay composed under pressure",
+        "Avoid letting a spike of anxiety hijack your delivery"
+      ],
+      "goodVsBad": {
+        "works": "You feel your heart speed up, take one slow breath, and let a pause settle you. You stay present instead of spiraling.",
+        "avoid": "Nerves spike and you start talking faster and faster to outrun them. The panic feeds itself.",
+        "leansIn": "You stay composed",
+        "checksOut": "You spiral"
+      },
+      "recall": {
+        "question": "What's the move when nerves spike mid-conversation?",
+        "options": [
+          "Talk faster to push through it",
+          "Slow your breath and pace to reset",
+          "End the conversation quickly"
+        ],
+        "answerIndex": 1,
+        "explanation": "A single slow breath and a pause break the panic loop and bring you back."
+      }
+    },
+    {
+      "id": "7.1",
+      "objectives": [
+        "Understand how escalating, mutual questions generate real closeness",
+        "Run a short ladder of questions that deepen step by step",
+        "Avoid turning the ladder into a one-sided interrogation"
+      ],
+      "goodVsBad": {
+        "works": "You ask, then answer yourself, then she goes deeper, then you do. Each round climbs a little, and twenty minutes in it feels like you've known her for months.",
+        "avoid": "You fire deep questions at her without ever sharing your own answers. It feels like a survey, not a connection.",
+        "leansIn": "You both open up",
+        "checksOut": "It feels like a survey"
+      },
+      "recall": {
+        "question": "What actually creates closeness in the 36-questions effect?",
+        "options": [
+          "The exact questions you ask",
+          "Escalating, mutual self-disclosure",
+          "Talking for the longest time"
+        ],
+        "answerIndex": 1,
+        "explanation": "It's the rising, two-way sharing that builds the bond — not any magic question."
+      }
+    },
+    {
+      "id": "7.2",
+      "objectives": [
+        "Understand that disclosure should be reciprocal — you share at the depth you ask",
+        "After asking a deep question, answer it yourself at the same level",
+        "Avoid extracting her depth without offering any of your own"
+      ],
+      "goodVsBad": {
+        "works": "You ask what she's most afraid of, she answers, and then you share yours just as honestly. The depth is matched, so trust builds.",
+        "avoid": "She opens up about something real and you reply 'wow, that's deep' and move on. The imbalance leaves her exposed.",
+        "leansIn": "Trust builds",
+        "checksOut": "She feels exposed"
+      },
+      "recall": {
+        "question": "After she answers a deep question, what should you do?",
+        "options": [
+          "Move on to the next question",
+          "Share your own answer at the same depth",
+          "Tell her how brave she is and change topics"
+        ],
+        "answerIndex": 1,
+        "explanation": "Matching her depth keeps disclosure mutual — and mutual is what builds trust."
+      }
+    },
+    {
+      "id": "7.3",
+      "objectives": [
+        "Understand that sharing an imperfection often lands more warmly than you expect",
+        "Reveal a genuine vulnerability at the right moment",
+        "Avoid hiding behind a flawless image that keeps her at arm's length"
+      ],
+      "goodVsBad": {
+        "works": "You admit something you're still figuring out about yourself. Instead of looking weak, you look human, and she leans in.",
+        "avoid": "You keep everything polished and in control, never showing a crack. She finds you impressive but can't get close.",
+        "leansIn": "She leans in",
+        "checksOut": "She stays at arm's length"
+      },
+      "recall": {
+        "question": "Why does showing vulnerability usually help?",
+        "options": [
+          "Others judge our vulnerability more kindly than we expect",
+          "It makes her feel sorry for you",
+          "It proves you have nothing to hide"
+        ],
+        "answerIndex": 0,
+        "explanation": "The beautiful mess effect: people read our openness far more warmly than we fear."
+      }
+    },
+    {
+      "id": "7.4",
+      "objectives": [
+        "Understand the three pillars of feeling close: understanding, validation, and care",
+        "Respond so she feels truly gotten, not just heard",
+        "Avoid the surface 'mhm' that signals you weren't really there"
+      ],
+      "goodVsBad": {
+        "works": "You reflect back what she meant, tell her it makes sense, and show you care about how it landed for her. She feels fully gotten.",
+        "avoid": "You nod along with 'totally, yeah' while clearly half-listening. She can tell the understanding isn't real.",
+        "leansIn": "She feels gotten",
+        "checksOut": "She feels unheard"
+      },
+      "recall": {
+        "question": "What three things make someone feel responded to?",
+        "options": [
+          "Understanding, validation, and care",
+          "Advice, solutions, and follow-up",
+          "Agreement, flattery, and attention"
+        ],
+        "answerIndex": 0,
+        "explanation": "Feeling understood, validated, and cared for is the core of real connection."
+      }
+    },
+    {
+      "id": "7.5",
+      "objectives": [
+        "Understand that how you react to her good news shapes the bond",
+        "Respond to a win with genuine, active enthusiasm",
+        "Avoid the flat or deflating reaction that quietly drains the moment"
+      ],
+      "goodVsBad": {
+        "works": "She shares some good news and you light up, ask about it, and celebrate with her. The shared joy pulls you closer.",
+        "avoid": "She shares a win and you say 'nice' and change the subject. The deflation registers more than the news did.",
+        "leansIn": "You celebrate together",
+        "checksOut": "You deflate it"
+      },
+      "recall": {
+        "question": "Why does celebrating her good news matter so much?",
+        "options": [
+          "It distracts from your own day",
+          "Active, enthusiastic responses to wins build intimacy",
+          "It obligates her to celebrate yours"
+        ],
+        "answerIndex": 1,
+        "explanation": "How you show up for the good news predicts closeness as much as the hard times."
+      }
+    },
+    {
+      "id": "7.6",
+      "objectives": [
+        "Understand that trust is paced across many interactions, not one big moment",
+        "Let intimacy build gradually across a multi-conversation arc",
+        "Avoid forcing deep trust before it's been earned"
+      ],
+      "goodVsBad": {
+        "works": "Over several conversations you each reveal a little more and follow through on small things. Trust accumulates quietly and holds.",
+        "avoid": "You push for total openness on day one, demanding her secrets before any trust exists. It feels invasive.",
+        "leansIn": "Trust deepens",
+        "checksOut": "It feels rushed"
+      },
+      "recall": {
+        "question": "How is trust actually built?",
+        "options": [
+          "In one big vulnerable moment",
+          "Gradually, across many small interactions",
+          "By demanding openness early"
+        ],
+        "answerIndex": 1,
+        "explanation": "Trust is paced — it accumulates through consistent, gradual disclosure."
+      }
+    },
+    {
+      "id": "7.7",
+      "objectives": [
+        "Tune into her emotional state, not just her words",
+        "Reflect the feeling back so she knows you're attuned",
+        "Avoid responding to the content while missing the emotion underneath"
+      ],
+      "goodVsBad": {
+        "works": "You sense the hurt under her casual story and gently name it: 'That sounds like it actually stung.' She exhales — finally, someone saw it.",
+        "avoid": "You take her words literally and miss that she's upset. You answer the surface and skate right past the feeling.",
+        "leansIn": "She feels attuned to",
+        "checksOut": "She feels missed"
+      },
+      "recall": {
+        "question": "What is emotional attunement?",
+        "options": [
+          "Reading and reflecting the feeling under her words",
+          "Remembering everything she says",
+          "Agreeing with all her opinions"
+        ],
+        "answerIndex": 0,
+        "explanation": "Attunement means tracking the emotion, not just the content."
+      }
+    },
+    {
+      "id": "7.8",
+      "objectives": [
+        "Recognize active-constructive responding as the most bonding reaction to good news",
+        "Engage with enthusiasm and curiosity when she shares a win",
+        "Avoid passive, dismissive, or competing reactions to her happiness"
+      ],
+      "goodVsBad": {
+        "works": "She got the job. You react big, ask how she celebrated, and savor it with her. Your genuine excitement makes the win bigger.",
+        "avoid": "She got the job and you immediately mention your own work stress. You hijacked her moment.",
+        "leansIn": "You amplify her joy",
+        "checksOut": "You hijack the moment"
+      },
+      "recall": {
+        "question": "What's the most bonding way to respond to her good news?",
+        "options": [
+          "Active and constructive — engaged, enthusiastic, curious",
+          "Calm and understated so you don't overdo it",
+          "Quickly relate it back to your own life"
+        ],
+        "answerIndex": 0,
+        "explanation": "Active-constructive responding turns her win into a shared, connection-building moment."
+      }
+    },
+    {
+      "id": "8.1",
+      "objectives": [
+        "Understand the basic cycle of dating anxiety: thought, feeling, behavior",
+        "Map your own triggers so they lose some of their grip",
+        "Avoid treating nerves as proof that something is wrong with you"
+      ],
+      "goodVsBad": {
+        "works": "You notice 'she'll think I'm boring' is the thought driving your nerves, name it, and the spiral loosens its grip.",
+        "avoid": "You feel anxious and conclude you're just bad at this, so you avoid the next chance entirely. Avoidance feeds the fear.",
+        "leansIn": "You see the pattern",
+        "checksOut": "You avoid and shrink"
+      },
+      "recall": {
+        "question": "What drives the cycle of dating anxiety?",
+        "options": [
+          "A random chemical glitch",
+          "Thoughts feeding feelings feeding avoidant behavior",
+          "Simply not being attractive enough"
+        ],
+        "answerIndex": 1,
+        "explanation": "Anxiety runs on a thought-feeling-behavior loop — naming the thought is step one."
+      }
+    },
+    {
+      "id": "8.2",
+      "objectives": [
+        "Recognize safety behaviors like over-rehearsing or avoiding eye contact",
+        "Run a conversation without your usual crutch to see you survive it",
+        "Avoid the safety behaviors that secretly keep the anxiety alive"
+      ],
+      "goodVsBad": {
+        "works": "You drop the over-rehearsing and just respond in the moment. It's a little scary and totally fine, and the fear shrinks a notch.",
+        "avoid": "You script every line in advance and grip your drink the whole time. The crutches make the anxiety permanent.",
+        "leansIn": "The fear shrinks",
+        "checksOut": "The fear sticks around"
+      },
+      "recall": {
+        "question": "What do safety behaviors like over-rehearsing actually do?",
+        "options": [
+          "Cure anxiety quickly",
+          "Keep anxiety alive over time",
+          "Have no real effect"
+        ],
+        "answerIndex": 1,
+        "explanation": "Crutches prevent you from learning you're safe — so the fear never updates."
+      }
+    },
+    {
+      "id": "8.3",
+      "objectives": [
+        "Catch the thinking traps that inflate dating fear, like catastrophizing",
+        "Reframe a distorted thought into a more accurate one",
+        "Avoid accepting your worst-case thoughts as facts"
+      ],
+      "goodVsBad": {
+        "works": "After an awkward moment you catch 'I ruined it' and reframe: 'one clumsy line isn't the whole interaction.' The panic deflates.",
+        "avoid": "One pause and your mind declares the date a disaster. You believe the catastrophe and check out emotionally.",
+        "leansIn": "You reframe it",
+        "checksOut": "You believe the worst"
+      },
+      "recall": {
+        "question": "What's the skill of cognitive reframing?",
+        "options": [
+          "Forcing yourself to feel positive",
+          "Catching a distorted thought and correcting it to something accurate",
+          "Ignoring all negative thoughts"
+        ],
+        "answerIndex": 1,
+        "explanation": "Reframing replaces the catastrophic story with a truer, fairer one."
+      }
+    },
+    {
+      "id": "8.4",
+      "objectives": [
+        "Understand graded exposure: getting comfortable one step harder at a time",
+        "Take on a slightly tougher scenario than last time",
+        "Avoid either staying in your comfort zone or leaping too far too fast"
+      ],
+      "goodVsBad": {
+        "works": "Last week you said hi; this week you hold a two-minute chat. Each rep is just past comfortable, so confidence compounds.",
+        "avoid": "You skip the small steps and try the scariest possible scenario first. It overwhelms you and confirms your fear.",
+        "leansIn": "Confidence compounds",
+        "checksOut": "You overwhelm yourself"
+      },
+      "recall": {
+        "question": "How does graded exposure build confidence?",
+        "options": [
+          "By facing the scariest thing immediately",
+          "By taking steps just past your comfort zone, repeatedly",
+          "By waiting until you feel no fear at all"
+        ],
+        "answerIndex": 1,
+        "explanation": "Each manageable step teaches your nervous system it's safe, and the next gets easier."
+      }
+    },
+    {
+      "id": "8.5",
+      "objectives": [
+        "Understand non-neediness as holding your frame regardless of the outcome",
+        "Stay relaxed and genuine without fixating on a specific result",
+        "Avoid the over-investment that signals your happiness rides on her answer"
+      ],
+      "goodVsBad": {
+        "works": "You're warm and interested and completely okay either way. The lack of pressure makes the whole interaction lighter and more attractive.",
+        "avoid": "Every message and pause is loaded with 'please like me.' The neediness colors everything you do.",
+        "leansIn": "She feels the ease",
+        "checksOut": "She feels the pressure"
+      },
+      "recall": {
+        "question": "What is non-neediness really about?",
+        "options": [
+          "Pretending you don't care at all",
+          "Staying grounded because no single outcome is everything",
+          "Playing hard to get on purpose"
+        ],
+        "answerIndex": 1,
+        "explanation": "Non-neediness is genuine outcome-independence, not an act of indifference."
+      }
+    },
+    {
+      "id": "8.6",
+      "objectives": [
+        "Treat a 'no' as information and a rep, not a referendum on you",
+        "Reframe the rejection and line up the next attempt",
+        "Avoid letting one no end your momentum for weeks"
+      ],
+      "goodVsBad": {
+        "works": "She passes. You note what you learned, remind yourself it's one data point, and keep your week moving. The bounce-back is fast.",
+        "avoid": "One no and you withdraw for a month, replaying it nightly. The single event becomes a long story about you.",
+        "leansIn": "You bounce back",
+        "checksOut": "You withdraw"
+      },
+      "recall": {
+        "question": "What's the healthiest way to handle a no?",
+        "options": [
+          "Treat it as proof you should stop trying",
+          "Reframe it as information and line up the next rep",
+          "Demand to know what went wrong"
+        ],
+        "answerIndex": 1,
+        "explanation": "A no is one data point — learn what you can and take the next shot."
+      }
+    },
+    {
+      "id": "8.7",
+      "objectives": [
+        "Anchor your sense of worth in your identity, not dating outcomes",
+        "Build a self-image that a rejection can't dismantle",
+        "Avoid outsourcing your self-esteem to whether she likes you"
+      ],
+      "goodVsBad": {
+        "works": "Your worth rests on who you are and what you value, so a bad date stings but doesn't shake the foundation. You stay steady.",
+        "avoid": "Your entire self-worth hinges on getting her number. When it doesn't happen, your whole self-image takes the hit.",
+        "leansIn": "You stay steady",
+        "checksOut": "You're destabilized"
+      },
+      "recall": {
+        "question": "Where should your sense of worth be anchored?",
+        "options": [
+          "In dating outcomes and validation",
+          "In your identity and values, independent of any date",
+          "In how many matches you get"
+        ],
+        "answerIndex": 1,
+        "explanation": "Worth anchored in identity can't be handed to or taken by any one person."
+      }
+    },
+    {
+      "id": "8.8",
+      "objectives": [
+        "Understand self-compassion as treating yourself like a good friend would",
+        "Respond to a setback with kindness instead of harsh self-criticism",
+        "Avoid the inner attack that makes recovery slower and harder"
+      ],
+      "goodVsBad": {
+        "works": "After a rough date you talk to yourself the way you'd talk to a friend: 'That was hard, and you showed up anyway.' You recover faster.",
+        "avoid": "You berate yourself for every awkward second, calling yourself pathetic. The self-attack deepens the wound.",
+        "leansIn": "You recover faster",
+        "checksOut": "You spiral down"
+      },
+      "recall": {
+        "question": "What does self-compassion after a setback do?",
+        "options": [
+          "Makes you complacent and lazy",
+          "Helps you recover and try again faster",
+          "Lets you off the hook for everything"
+        ],
+        "answerIndex": 1,
+        "explanation": "Kindness to yourself speeds recovery; self-attack just prolongs the pain."
+      }
+    },
+    {
+      "id": "8.9",
+      "objectives": [
+        "Recognize how social-media comparison quietly erodes dating confidence",
+        "Defuse the comparison trap by remembering you're seeing highlight reels",
+        "Avoid measuring your real life against everyone's curated best moments"
+      ],
+      "goodVsBad": {
+        "works": "You catch yourself comparing your night to someone's posted highlight and remember it's a curated sliver. The envy loses its power.",
+        "avoid": "You scroll others' perfect relationships and conclude you're behind and unlovable. The comparison spiral kills your confidence.",
+        "leansIn": "You stay grounded",
+        "checksOut": "You feel behind"
+      },
+      "recall": {
+        "question": "Why is social-media comparison so corrosive?",
+        "options": [
+          "Everyone really is doing better than you",
+          "You compare your full reality to others' curated highlights",
+          "It wastes time you could spend dating"
+        ],
+        "answerIndex": 1,
+        "explanation": "You see their highlight reel and your behind-the-scenes — an unfair, rigged comparison."
+      }
+    },
+    {
+      "id": "8.10",
+      "objectives": [
+        "Understand approach anxiety as a feeling to act alongside, not eliminate first",
+        "Take one small, real-world approach step despite the nerves",
+        "Avoid waiting for the fear to fully disappear before you act"
+      ],
+      "goodVsBad": {
+        "works": "You feel the nerves and say a simple hello anyway. The fear was the price of entry, and acting through it shrinks it for next time.",
+        "avoid": "You wait until you feel completely calm to approach — which never comes — so you never do.",
+        "leansIn": "You act anyway",
+        "checksOut": "You wait forever"
+      },
+      "recall": {
+        "question": "What's the goal with approach anxiety?",
+        "options": [
+          "Eliminate all fear before acting",
+          "Act well alongside the nerves, not after they vanish",
+          "Only approach when you feel nothing"
+        ],
+        "answerIndex": 1,
+        "explanation": "You act through the fear — waiting for zero nerves means waiting forever."
+      }
+    },
+    {
+      "id": "9.1",
+      "objectives": [
+        "Understand the three attachment styles and how they shape dating behavior",
+        "Recognize your own style playing out in real situations",
+        "Avoid treating your style as a fixed, permanent identity"
+      ],
+      "goodVsBad": {
+        "works": "You notice your anxious urge to over-text and recognize it as your attachment pattern, not reality. Naming it gives you a choice.",
+        "avoid": "You act on every attachment impulse without seeing it, then wonder why the same dynamic keeps repeating.",
+        "leansIn": "You gain insight",
+        "checksOut": "You repeat the pattern"
+      },
+      "recall": {
+        "question": "What's true about your attachment style?",
+        "options": [
+          "It's fixed for life",
+          "It's a pattern that can shift toward security",
+          "It's only about your childhood"
+        ],
+        "answerIndex": 1,
+        "explanation": "Attachment is a learned pattern — and patterns can be changed with practice."
+      }
+    },
+    {
+      "id": "9.2",
+      "objectives": [
+        "Understand earned security: building secure responses through practice",
+        "Practice the secure reaction to a trigger that usually hijacks you",
+        "Avoid believing you're stuck with your default reaction"
+      ],
+      "goodVsBad": {
+        "works": "She takes hours to reply. Instead of spiraling, you self-soothe and stay warm when she does. You just ran the secure play.",
+        "avoid": "A slow reply triggers you and you fire off three anxious texts. The old pattern wins again.",
+        "leansIn": "You respond securely",
+        "checksOut": "The trigger wins"
+      },
+      "recall": {
+        "question": "What is earned security?",
+        "options": [
+          "Being born secure",
+          "Building secure responses through deliberate practice",
+          "Avoiding anyone who triggers you"
+        ],
+        "answerIndex": 1,
+        "explanation": "Security can be earned — you practice the secure response until it becomes default."
+      }
+    },
+    {
+      "id": "9.3",
+      "objectives": [
+        "Recognize anxious protest behaviors like double-texting or testing",
+        "Pause and self-soothe instead of acting on the urge",
+        "Avoid the protest behaviors that push the other person away"
+      ],
+      "goodVsBad": {
+        "works": "You feel the urge to double-text, recognize it as a protest behavior, and sit with the discomfort instead. The urge passes.",
+        "avoid": "You give in and send 'you there??' twice, then a 'guess not.' The protest behavior creates the distance you feared.",
+        "leansIn": "You ride it out",
+        "checksOut": "You act on the urge"
+      },
+      "recall": {
+        "question": "What's the move when an anxious protest urge hits?",
+        "options": [
+          "Act on it before you lose the chance",
+          "Pause and self-soothe until it passes",
+          "Test them to see if they care"
+        ],
+        "answerIndex": 1,
+        "explanation": "Protest behaviors create the distance they fear — riding out the urge breaks the loop."
+      }
+    },
+    {
+      "id": "9.4",
+      "objectives": [
+        "Recognize the avoidant urge to pull away when things get close",
+        "Practice leaning in instead of creating distance when it gets real",
+        "Avoid the deactivating moves that sabotage growing intimacy"
+      ],
+      "goodVsBad": {
+        "works": "Things get close and you feel the urge to find a flaw and bail. You notice it, stay, and share something real instead. Connection deepens.",
+        "avoid": "As soon as it gets serious you start nitpicking her and pulling back. The distance protects you and kills the bond.",
+        "leansIn": "You lean in",
+        "checksOut": "You pull away"
+      },
+      "recall": {
+        "question": "What's the avoidant pattern to watch for?",
+        "options": [
+          "Pulling away or finding flaws when it gets close",
+          "Texting too much when anxious",
+          "Sharing too deeply too soon"
+        ],
+        "answerIndex": 0,
+        "explanation": "Avoidance creates distance right when closeness grows — leaning in is the counter-move."
+      }
+    },
+    {
+      "id": "9.5",
+      "objectives": [
+        "Understand how to state a need clearly, directly, and kindly",
+        "Ask for what you need without blame or hints",
+        "Avoid hinting, sulking, or expecting her to read your mind"
+      ],
+      "goodVsBad": {
+        "works": "You say plainly: 'I'd love a heads up if plans change — it helps me relax.' Clear and warm, she gets it and adjusts.",
+        "avoid": "You go quiet and hope she notices you're upset about the canceled plans. The hint never lands, and resentment builds.",
+        "leansIn": "She responds well",
+        "checksOut": "Resentment builds"
+      },
+      "recall": {
+        "question": "How do you communicate a need securely?",
+        "options": [
+          "Hint at it and hope she notices",
+          "State it clearly, directly, and without blame",
+          "Withhold affection until she figures it out"
+        ],
+        "answerIndex": 1,
+        "explanation": "Secure communication is direct and kind — no mind-reading required."
+      }
+    },
+    {
+      "id": "9.6",
+      "objectives": [
+        "Clarify your real values so you can screen for genuine compatibility",
+        "Choose partners by alignment, not just chemistry or availability",
+        "Avoid ignoring clear value mismatches because the spark feels good"
+      ],
+      "goodVsBad": {
+        "works": "You know what you actually need long-term, so you notice early whether her values line up. You choose with clear eyes, not just feelings.",
+        "avoid": "The chemistry is electric so you ignore that you want totally different lives. The mismatch surfaces painfully later.",
+        "leansIn": "You choose well",
+        "checksOut": "You ignore red flags"
+      },
+      "recall": {
+        "question": "What does choosing well actually require?",
+        "options": [
+          "Following the strongest chemistry",
+          "Screening for real value alignment, not just spark",
+          "Picking whoever is most available"
+        ],
+        "answerIndex": 1,
+        "explanation": "Chemistry opens the door; shared values are what make it last."
+      }
+    },
+    {
+      "id": "10.1",
+      "objectives": [
+        "Understand why specific first messages beat generic ones",
+        "Write an opener that references a real detail from her profile",
+        "Avoid the lazy hey that signals zero effort"
+      ],
+      "goodVsBad": {
+        "works": "You reference the specific thing in her photos and ask an easy question about it. It's clearly for her, so she replies.",
+        "avoid": "You send hey to twenty people including her. It signals you didn't even look, and it gets ignored.",
+        "leansIn": "She replies",
+        "checksOut": "It gets ignored"
+      },
+      "recall": {
+        "question": "Why do specific first messages outperform hey?",
+        "options": [
+          "They're longer",
+          "They signal genuine attention to this specific person",
+          "They use cleverer words"
+        ],
+        "answerIndex": 1,
+        "explanation": "Specificity proves you actually looked — and that you're messaging her, not everyone."
+      }
+    },
+    {
+      "id": "10.2",
+      "objectives": [
+        "Build rapport over text through reciprocal back-and-forth",
+        "Share and ask in balanced turns, like a real conversation",
+        "Avoid interview-mode texting that's all questions, no you"
+      ],
+      "goodVsBad": {
+        "works": "You trade little stories and questions in roughly even turns. The thread feels alive because you're both putting in.",
+        "avoid": "You fire question after question with nothing about yourself. It reads like a form, and her replies shrink.",
+        "leansIn": "The thread flows",
+        "checksOut": "Her replies shrink"
+      },
+      "recall": {
+        "question": "What builds rapport over text?",
+        "options": [
+          "Asking lots of questions back to back",
+          "Reciprocal back-and-forth — sharing and asking in balance",
+          "Sending long paragraphs"
+        ],
+        "answerIndex": 1,
+        "explanation": "Texting rapport is a rally — both sides give, or it dies."
+      }
+    },
+    {
+      "id": "10.3",
+      "objectives": [
+        "Notice when text energy is flattening before it dies",
+        "Revive momentum with a fresh hook or playful pivot",
+        "Avoid the dry one-word replies that let a thread fizzle out"
+      ],
+      "goodVsBad": {
+        "works": "Replies are getting shorter, so you send a light, specific question that's easy and fun to answer. The energy comes back up.",
+        "avoid": "You both drift into 'lol' and 'same' until the thread quietly dies. Nobody revived it.",
+        "leansIn": "Energy comes back",
+        "checksOut": "The thread dies"
+      },
+      "recall": {
+        "question": "How do you keep text momentum?",
+        "options": [
+          "Wait for her to carry it",
+          "Spot flattening energy and inject a fresh, easy hook",
+          "Send more frequent texts"
+        ],
+        "answerIndex": 1,
+        "explanation": "Catch the fade early and reignite with something fun and easy to answer."
+      }
+    },
+    {
+      "id": "10.4",
+      "objectives": [
+        "Flirt over text through playful, calibrated lightness",
+        "Use teasing and warmth that fit where the conversation is",
+        "Avoid jumping to heavy or explicit flirtation too early"
+      ],
+      "goodVsBad": {
+        "works": "You drop a light, teasing line that builds on her joke. It's playful and calibrated, and she escalates the banter right back.",
+        "avoid": "Three messages in you send something heavy and overtly sexual. It's miscalibrated and she goes quiet.",
+        "leansIn": "She escalates back",
+        "checksOut": "She goes quiet"
+      },
+      "recall": {
+        "question": "What makes text flirting work?",
+        "options": [
+          "Going bold and explicit fast",
+          "Playful, calibrated lightness that fits the moment",
+          "Complimenting her looks repeatedly"
+        ],
+        "answerIndex": 1,
+        "explanation": "Calibrated playfulness invites her to play; miscalibrated heat shuts it down."
+      }
+    },
+    {
+      "id": "10.5",
+      "objectives": [
+        "Recognize the right moment to move from chat to a real date",
+        "Make a low-cost, specific ask that's easy to say yes to",
+        "Avoid endless texting that never converts to meeting"
+      ],
+      "goodVsBad": {
+        "works": "The rapport is good, so you suggest a specific, easy plan: 'There's a great coffee spot near you — Saturday?' Clear and low-pressure.",
+        "avoid": "You text for two weeks without ever asking her out, until the momentum fades and she moves on.",
+        "leansIn": "She says yes",
+        "checksOut": "Momentum fades"
+      },
+      "recall": {
+        "question": "How do you ask for the date?",
+        "options": [
+          "Keep texting until she suggests it",
+          "Make a specific, low-cost, easy-to-accept plan",
+          "Ask vaguely if she ever wants to hang"
+        ],
+        "answerIndex": 1,
+        "explanation": "A specific, low-pressure ask at the right moment converts rapport into a date."
+      }
+    },
+    {
+      "id": "10.6",
+      "objectives": [
+        "Re-open a stalled thread without neediness",
+        "Restart with something light and genuinely relevant, not a guilt trip",
+        "Avoid the needy you there or double-text spiral"
+      ],
+      "goodVsBad": {
+        "works": "The chat stalled, so you send a relaxed, relevant note about something she mentioned. No pressure, easy to pick back up.",
+        "avoid": "You send 'wow ok' and 'guess you're busy' after silence. The neediness guarantees she won't re-engage.",
+        "leansIn": "She re-engages",
+        "checksOut": "She stays gone"
+      },
+      "recall": {
+        "question": "How do you revive a dead chat?",
+        "options": [
+          "Send a light, relevant message with no pressure",
+          "Call out the silence to make her feel guilty",
+          "Double-text until she answers"
+        ],
+        "answerIndex": 0,
+        "explanation": "A relaxed, relevant restart works; a guilt trip or pile-up never does."
+      }
+    },
+    {
+      "id": "10.7",
+      "objectives": [
+        "Read tone and pacing from her message length and speed",
+        "Match her energy and rhythm rather than overwhelming the thread",
+        "Avoid over-texting or sending walls of text she didn't invite"
+      ],
+      "goodVsBad": {
+        "works": "She sends short, quick replies, so you keep yours light and matched. The rhythm feels natural and neither of you feels crowded.",
+        "avoid": "She sends one line and you reply with five paragraphs. The mismatch makes you seem over-eager.",
+        "leansIn": "The rhythm fits",
+        "checksOut": "You overwhelm her"
+      },
+      "recall": {
+        "question": "How do you read tone and pacing over text?",
+        "options": [
+          "Always write more than she does",
+          "Match her message length and energy",
+          "Reply instantly every time"
+        ],
+        "answerIndex": 1,
+        "explanation": "Matching her length and pace keeps the thread balanced and comfortable."
+      }
+    },
+    {
+      "id": "10.8",
+      "objectives": [
+        "Understand how voice notes and media add warmth that text strips away",
+        "Use a voice note or photo to inject tone and personality",
+        "Avoid overusing them or sending long, rambling voice notes early"
+      ],
+      "goodVsBad": {
+        "works": "You send a short, warm voice note that lets her hear your humor. The tone lands in a way text never could, and she replies in kind.",
+        "avoid": "You send a three-minute rambling voice note before you've built any rapport. It's too much, too soon.",
+        "leansIn": "She hears your warmth",
+        "checksOut": "It's too much too soon"
+      },
+      "recall": {
+        "question": "Why can voice notes help over text?",
+        "options": [
+          "They're faster than typing",
+          "They restore tone and warmth that text strips out",
+          "They prove you're serious"
+        ],
+        "answerIndex": 1,
+        "explanation": "Text loses tone — a short voice note brings your personality back into the thread."
+      }
+    },
+    {
+      "id": "10.9",
+      "objectives": [
+        "Navigate the modern talking stage without losing momentum",
+        "Keep building toward something real instead of texting in limbo",
+        "Avoid letting an endless talking stage replace actual dating"
+      ],
+      "goodVsBad": {
+        "works": "You keep the talking stage moving toward real meetups and growing intimacy. It has direction, so it deepens instead of stalling.",
+        "avoid": "You text daily for months with no plans and no progress. The talking stage becomes a comfortable dead end.",
+        "leansIn": "It moves forward",
+        "checksOut": "It stalls in limbo"
+      },
+      "recall": {
+        "question": "What keeps the talking stage healthy?",
+        "options": [
+          "Texting consistently with no expectations",
+          "Keeping momentum toward real meetups and depth",
+          "Letting it run as long as it wants"
+        ],
+        "answerIndex": 1,
+        "explanation": "A talking stage needs direction — without it, it quietly becomes a dead end."
+      }
+    },
+    {
+      "id": "10.10",
+      "objectives": [
+        "Respond to flaking or ghosting without neediness or anger",
+        "Hold your frame and let actions speak instead of chasing",
+        "Avoid the angry paragraph or the desperate follow-up barrage"
+      ],
+      "goodVsBad": {
+        "works": "She flakes. You reply once, easy and unbothered, and let her make the next move. The calm preserves your dignity and your options.",
+        "avoid": "She goes quiet and you send an angry essay about respect. The reaction confirms exactly why she pulled back.",
+        "leansIn": "You keep your frame",
+        "checksOut": "You lose your cool"
+      },
+      "recall": {
+        "question": "How do you handle flaking or ghosting?",
+        "options": [
+          "Send an angry message about respect",
+          "Respond once calmly, then let actions speak",
+          "Follow up repeatedly until they answer"
+        ],
+        "answerIndex": 1,
+        "explanation": "Non-neediness keeps your dignity — chasing only confirms why they pulled away."
+      }
+    },
+    {
+      "id": "11.1",
+      "objectives": [
+        "Understand that photos are judged in a fraction of a second and stick",
+        "Audit your lineup for a clear face shot, genuine smile, and real-life variety",
+        "Avoid group-photo confusion, sunglasses in every shot, and heavy filters"
+      ],
+      "goodVsBad": {
+        "works": "Your lead photo is a clear, warm, genuine smile, followed by shots that show your actual life. The thin-slice read is instantly positive.",
+        "avoid": "Every photo is a sunglasses group shot, so she can't tell which one is you or what you look like. She swipes on.",
+        "leansIn": "She swipes right",
+        "checksOut": "She can't find you"
+      },
+      "recall": {
+        "question": "How fast do people judge a profile photo?",
+        "options": [
+          "After studying it carefully",
+          "In about a tenth of a second, and it sticks",
+          "Only after reading the bio"
+        ],
+        "answerIndex": 1,
+        "explanation": "Thin-slice judgments form in ~100ms — your lead photo has to land instantly."
+      }
+    },
+    {
+      "id": "11.2",
+      "objectives": [
+        "Understand a bio as signaling — specific details invite conversation",
+        "Write a bio with concrete hooks she can reply to",
+        "Avoid generic clichés like loves to laugh and fluent in sarcasm"
+      ],
+      "goodVsBad": {
+        "works": "Your bio names two specific, slightly unusual things you actually do. Each one is an easy conversation hook, and openers write themselves.",
+        "avoid": "Your bio says you love adventure, food, and good vibes. It says nothing about you and gives her nothing to grab.",
+        "leansIn": "It sparks openers",
+        "checksOut": "It gives her nothing"
+      },
+      "recall": {
+        "question": "What makes a bio spark replies?",
+        "options": [
+          "Specific, concrete details that invite a response",
+          "Listing universal positives like fun and food",
+          "Keeping it mysterious and blank"
+        ],
+        "answerIndex": 0,
+        "explanation": "Specific hooks give people something to actually message you about."
+      }
+    },
+    {
+      "id": "11.3",
+      "objectives": [
+        "Understand how endless swiping erodes satisfaction and decisiveness",
+        "Swipe intentionally with real standards instead of on autopilot",
+        "Avoid the mindless mass-swiping that leads to burnout and worse choices"
+      ],
+      "goodVsBad": {
+        "works": "You swipe deliberately on people who actually fit what you want. Fewer, better matches mean better conversations and less fatigue.",
+        "avoid": "You swipe right on everyone to maximize matches. The flood is unmanageable and nothing gets your real attention.",
+        "leansIn": "You match with intent",
+        "checksOut": "You drown in noise"
+      },
+      "recall": {
+        "question": "What does endless mass-swiping tend to cause?",
+        "options": [
+          "Better odds through volume",
+          "Choice overload that erodes satisfaction and decisiveness",
+          "No effect at all"
+        ],
+        "answerIndex": 1,
+        "explanation": "Too many options makes everyone harder to value — swipe with intent instead."
+      }
+    },
+    {
+      "id": "11.4",
+      "objectives": [
+        "Understand a profile as positioning on warmth and competence",
+        "Deliberately signal both approachability and capability across your photos and bio",
+        "Avoid a profile that's all flex (cold) or all goofball (no substance)"
+      ],
+      "goodVsBad": {
+        "works": "Your profile shows warmth (laughing with friends) and competence (doing something you're good at). The balance reads as a whole, attractive person.",
+        "avoid": "Every shot is a gym mirror flex. It signals competence with zero warmth, and warmth is what makes people reach out.",
+        "leansIn": "You read as well-rounded",
+        "checksOut": "You read as one-note"
+      },
+      "recall": {
+        "question": "What should a profile deliberately position?",
+        "options": [
+          "Pure status and achievement",
+          "Both warmth and competence",
+          "Mystery above all"
+        ],
+        "answerIndex": 1,
+        "explanation": "People judge on warmth plus competence — a strong profile signals both."
+      }
+    },
+    {
+      "id": "11.5",
+      "objectives": [
+        "Recognize the signs of dating-app burnout and fatigue",
+        "Build sustainable habits like time-boxing your app use",
+        "Avoid the doom-swiping that drains you and sours your mood"
+      ],
+      "goodVsBad": {
+        "works": "You check the app in short, focused windows and log off. It stays a tool, not a compulsion, so you bring better energy to matches.",
+        "avoid": "You swipe for hours every night, feeling emptier each session. The burnout leaks into every conversation.",
+        "leansIn": "You stay fresh",
+        "checksOut": "You burn out"
+      },
+      "recall": {
+        "question": "How do you avoid dating-app burnout?",
+        "options": [
+          "Swipe as much as possible to find someone fast",
+          "Use the app in short, intentional windows",
+          "Delete every app permanently"
+        ],
+        "answerIndex": 1,
+        "explanation": "Time-boxed, intentional use keeps the apps a tool instead of a fatigue spiral."
+      }
+    },
+    {
+      "id": "11.6",
+      "objectives": [
+        "Understand how video and voice prompts let your personality stand out",
+        "Use a short prompt that shows genuine warmth and humor",
+        "Avoid stiff, over-produced clips that feel like a performance"
+      ],
+      "goodVsBad": {
+        "works": "Your voice prompt is short, warm, and a little funny. Hearing the real you makes you stand out from a wall of static profiles.",
+        "avoid": "Your video is stiff and rehearsed, like a corporate intro. The performance hides the personality it was meant to show.",
+        "leansIn": "Your personality lands",
+        "checksOut": "It feels staged"
+      },
+      "recall": {
+        "question": "What's the value of video and voice prompts?",
+        "options": [
+          "They prove you own good equipment",
+          "They let your authentic personality come through and stand out",
+          "They replace the need for good photos"
+        ],
+        "answerIndex": 1,
+        "explanation": "Hearing and seeing the real you cuts through a feed of static profiles."
+      }
+    },
+    {
+      "id": "11.7",
+      "objectives": [
+        "Recognize common red flags of scams and catfishing",
+        "Verify and stay cautious before sharing money or personal details",
+        "Avoid being rushed off-platform or pressured into sending anything"
+      ],
+      "goodVsBad": {
+        "works": "A match quickly professes love and asks to move to text and then for a small favor. You recognize the pattern and disengage safely.",
+        "avoid": "The story is intense and flattering, so you ignore the rush and the money ask. The red flags were there the whole time.",
+        "leansIn": "You stay safe",
+        "checksOut": "You get played"
+      },
+      "recall": {
+        "question": "What's a classic scam red flag?",
+        "options": [
+          "Asking about your weekend",
+          "Fast intensity plus pressure to move off-app or send money",
+          "Having a detailed profile"
+        ],
+        "answerIndex": 1,
+        "explanation": "Rushed intimacy plus any money or off-platform pressure is the catfish playbook."
+      }
+    },
+    {
+      "id": "11.8",
+      "objectives": [
+        "Understand why authenticity matters more as AI-assisted messaging spreads",
+        "Let your real voice and specifics show so you stand out as genuine",
+        "Avoid outsourcing your whole personality to AI-generated lines"
+      ],
+      "goodVsBad": {
+        "works": "You write in your own voice with real specifics. In a sea of polished AI openers, your genuine message is what feels refreshingly human.",
+        "avoid": "You paste AI-generated charm for every message. It's smooth, generic, and indistinguishable from everyone else doing the same.",
+        "leansIn": "You feel real",
+        "checksOut": "You feel generic"
+      },
+      "recall": {
+        "question": "Why does authenticity matter more in the AI era?",
+        "options": [
+          "Because AI writing is always bad",
+          "Because genuine, specific voice stands out when everyone sounds polished and generic",
+          "Because apps ban AI use"
+        ],
+        "answerIndex": 1,
+        "explanation": "When everyone has smooth AI lines, being genuinely yourself is the differentiator."
+      }
+    },
+    {
+      "id": "12.1",
+      "objectives": [
+        "Understand why venue choice shapes how a first date feels",
+        "Pick a low-pressure, conversation-friendly setting",
+        "Avoid loud, high-stakes, or movie-style venues that block real talking"
+      ],
+      "goodVsBad": {
+        "works": "You suggest a relaxed coffee or walk where you can actually hear each other. The easy setting lets the conversation carry the date.",
+        "avoid": "You book a loud club for a first date. You can't hear a word, so there's no way to actually connect.",
+        "leansIn": "The talk flows",
+        "checksOut": "You can't connect"
+      },
+      "recall": {
+        "question": "What makes a good first-date venue?",
+        "options": [
+          "Loud and impressive",
+          "Low-pressure and conversation-friendly",
+          "Expensive to show effort"
+        ],
+        "answerIndex": 1,
+        "explanation": "A first date is about talking — pick a place that makes that easy."
+      }
+    },
+    {
+      "id": "12.2",
+      "objectives": [
+        "Lock in plans clearly so the date actually happens",
+        "Confirm with warmth and certainty, not wishy-washy hedging",
+        "Avoid vague non-plans that quietly fall apart"
+      ],
+      "goodVsBad": {
+        "works": "You propose a specific time and place and send a warm confirm the day before. The clarity makes her feel secure and the date holds.",
+        "avoid": "You leave it at let's hang sometime with no details. The vagueness gives the plan nothing to stand on, and it dissolves.",
+        "leansIn": "The plan holds",
+        "checksOut": "It dissolves"
+      },
+      "recall": {
+        "question": "How do you make a date actually happen?",
+        "options": [
+          "Keep plans loose so nobody feels pressured",
+          "Lock specifics and confirm clearly and warmly",
+          "Wait for her to organize it"
+        ],
+        "answerIndex": 1,
+        "explanation": "Clear specifics plus a warm confirm reduce uncertainty and keep the date on."
+      }
+    },
+    {
+      "id": "12.3",
+      "objectives": [
+        "Understand that first-date nerves and excitement are the same arousal",
+        "Reappraise the jitters as excitement to perform better",
+        "Avoid labeling the feeling as dread, which only amplifies it"
+      ],
+      "goodVsBad": {
+        "works": "On the way there you tell yourself I'm excited, not anxious. The reframe channels the energy and you show up loose and warm.",
+        "avoid": "You spend the drive telling yourself how nervous you are. The dread framing tightens you up before you even arrive.",
+        "leansIn": "You show up loose",
+        "checksOut": "You tighten up"
+      },
+      "recall": {
+        "question": "What's the best way to handle first-date nerves?",
+        "options": [
+          "Reappraise them as excitement",
+          "Try to suppress the feeling entirely",
+          "Tell yourself how anxious you are"
+        ],
+        "answerIndex": 0,
+        "explanation": "Nerves and excitement are the same arousal — relabeling it as excitement improves performance."
+      }
+    },
+    {
+      "id": "12.4",
+      "objectives": [
+        "Handle the bill and small logistics smoothly as self-presentation",
+        "Have a relaxed, decided approach to who pays so it isn't awkward",
+        "Avoid the fumbling or the grand gesture that makes money the moment"
+      ],
+      "goodVsBad": {
+        "works": "When the check comes you handle it with an easy, decided grace and no fuss. The smoothness signals you've got this.",
+        "avoid": "You make a long production of paying or freeze up over splitting. The awkwardness becomes the thing she remembers.",
+        "leansIn": "You're smooth",
+        "checksOut": "It gets awkward"
+      },
+      "recall": {
+        "question": "What does handling the bill smoothly signal?",
+        "options": [
+          "That you're wealthy",
+          "Grounded self-presentation — you've got it handled",
+          "That you expect something in return"
+        ],
+        "answerIndex": 1,
+        "explanation": "Graceful logistics are self-presentation — ease beats both fumbling and grand gestures."
+      }
+    },
+    {
+      "id": "12.5",
+      "objectives": [
+        "Understand the peak-end rule: the ending shapes the whole memory",
+        "Close a date warmly and a little memorably",
+        "Avoid the limp, drawn-out, or abrupt ending that flattens a good date"
+      ],
+      "goodVsBad": {
+        "works": "You end on a high note while it's still good, with a warm goodbye and a clear I'd like to do this again. The strong finish defines the memory.",
+        "avoid": "You let the date drag past its peak into awkward dead air, then leave abruptly. The flat ending colors the whole night.",
+        "leansIn": "She remembers it warmly",
+        "checksOut": "It fizzles out"
+      },
+      "recall": {
+        "question": "Why does the end of a date matter so much?",
+        "options": [
+          "People remember the peak and the ending most",
+          "It's the only part she'll mention to friends",
+          "It decides who pays next time"
+        ],
+        "answerIndex": 0,
+        "explanation": "The peak-end rule means a warm, well-timed close defines how she remembers the date."
+      }
+    },
+    {
+      "id": "12.6",
+      "objectives": [
+        "Follow up after a date honestly, without games",
+        "Send a genuine message that reflects how the date actually went",
+        "Avoid the strategic waiting-game rules that manufacture distance"
+      ],
+      "goodVsBad": {
+        "works": "You text the next day saying you had a great time and you'd like to see her again. The honesty is refreshing and keeps momentum.",
+        "avoid": "You force yourself to wait three days to seem aloof. The game manufactures doubt and cools a warm connection.",
+        "leansIn": "Momentum continues",
+        "checksOut": "It cools off"
+      },
+      "recall": {
+        "question": "What's the best post-date follow-up?",
+        "options": [
+          "Wait days to seem less interested",
+          "Reach out honestly and warmly, no games",
+          "Wait for her to message first"
+        ],
+        "answerIndex": 1,
+        "explanation": "Honest, timely follow-up beats waiting-game rules that just create doubt."
+      }
+    },
+    {
+      "id": "12.7",
+      "objectives": [
+        "Plan practical safety for both you and your date",
+        "Choose public settings and share plans, respecting her need to feel safe",
+        "Avoid pressuring for private or isolated settings early on"
+      ],
+      "goodVsBad": {
+        "works": "You suggest a public spot and make it easy for her to feel safe, no pressure to go anywhere private. The respect builds trust.",
+        "avoid": "You push to meet somewhere private or pressure a change of venue. It reads as a red flag, and trust evaporates.",
+        "leansIn": "She feels safe",
+        "checksOut": "She feels unsafe"
+      },
+      "recall": {
+        "question": "What's a basic first-date safety principle?",
+        "options": [
+          "Meet somewhere private to talk freely",
+          "Choose public settings and respect her need to feel safe",
+          "Keep plans secret for spontaneity"
+        ],
+        "answerIndex": 1,
+        "explanation": "Public settings and respecting safety build trust — pressuring for privacy destroys it."
+      }
+    },
+    {
+      "id": "12.8",
+      "objectives": [
+        "Understand how novelty and shared activity boost connection",
+        "Plan a memorable, low-pressure date beyond the default drinks",
+        "Avoid both the boring default and the over-the-top first-date spectacle"
+      ],
+      "goodVsBad": {
+        "works": "You plan a simple but novel activity you can do together. The shared experience gives you things to react to and bonds you faster.",
+        "avoid": "You plan an elaborate, expensive first date. The pressure and stakes make it a performance instead of a connection.",
+        "leansIn": "You bond over it",
+        "checksOut": "It's too much"
+      },
+      "recall": {
+        "question": "Why can a shared activity beat standard drinks?",
+        "options": [
+          "It's cheaper",
+          "Novel shared activity creates connection and things to react to",
+          "It impresses her more"
+        ],
+        "answerIndex": 1,
+        "explanation": "Doing something together creates shared experience that bonds you faster than sitting and talking alone."
+      }
+    },
+    {
+      "id": "13.1",
+      "objectives": [
+        "Understand that mere exposure and reciprocity pull toward a second date",
+        "Convert a good first date into a second with a clear, warm ask",
+        "Avoid leaving a great date on a vague maybe we'll do this again"
+      ],
+      "goodVsBad": {
+        "works": "A day after a good first date you reference a moment you shared and propose a specific second one. The continuity makes yes easy.",
+        "avoid": "The date went well but you never follow up concretely. The warmth fades and the window quietly closes.",
+        "leansIn": "She's in for round two",
+        "checksOut": "The window closes"
+      },
+      "recall": {
+        "question": "What's the key to securing a second date?",
+        "options": [
+          "Playing it cool and waiting",
+          "A clear, warm, specific follow-up that builds on the first",
+          "Assuming she'll reach out"
+        ],
+        "answerIndex": 1,
+        "explanation": "Reciprocity and momentum favor a concrete, warm ask soon after a good date."
+      }
+    },
+    {
+      "id": "13.2",
+      "objectives": [
+        "Deepen mutual disclosure gradually across multiple dates",
+        "Let each date go one layer deeper than the last, both ways",
+        "Avoid staying surface-level or forcing premature intensity"
+      ],
+      "goodVsBad": {
+        "works": "Across a few dates you each share a bit more of your real selves. The escalating, mutual openness turns dating into a bond.",
+        "avoid": "You stay on safe small talk date after date. Without deepening, it never crosses from pleasant into real.",
+        "leansIn": "It becomes real",
+        "checksOut": "It stays surface"
+      },
+      "recall": {
+        "question": "How do dates turn into a real connection?",
+        "options": [
+          "Through escalating, mutual disclosure over time",
+          "By keeping everything light and fun",
+          "By forcing deep talks on date one"
+        ],
+        "answerIndex": 0,
+        "explanation": "Closeness deepens through gradual, two-way sharing across multiple dates."
+      }
+    },
+    {
+      "id": "13.3",
+      "objectives": [
+        "Read and honor enthusiastic, ongoing consent during physical escalation",
+        "Move at a pace she's actively, clearly into — checking in as you go",
+        "Avoid pushing past hesitation or treating one yes as permanent"
+      ],
+      "goodVsBad": {
+        "works": "You move slowly, read her enthusiasm, and check in. Because consent is mutual and ongoing, she feels safe and fully present.",
+        "avoid": "You read one green light as blanket permission and stop paying attention to her signals. The trust breaks instantly.",
+        "leansIn": "She feels safe and present",
+        "checksOut": "Trust breaks"
+      },
+      "recall": {
+        "question": "What governs healthy physical escalation?",
+        "options": [
+          "One yes covers the whole night",
+          "Enthusiastic, ongoing, mutual consent",
+          "How long you've been dating"
+        ],
+        "answerIndex": 1,
+        "explanation": "Consent is enthusiastic and continuous — you keep reading and honoring it throughout."
+      }
+    },
+    {
+      "id": "13.4",
+      "objectives": [
+        "Define the relationship directly and warmly when the time is right",
+        "State what you want clearly instead of hoping it's understood",
+        "Avoid the anxious hinting or indefinite avoidance of the talk"
+      ],
+      "goodVsBad": {
+        "works": "You say plainly that you really like her and want to be exclusive. The directness is warm and secure, and she can meet it honestly.",
+        "avoid": "You drop hints for weeks hoping she'll define it, growing resentful that she hasn't. The ambiguity strains everything.",
+        "leansIn": "You get clarity",
+        "checksOut": "Ambiguity festers"
+      },
+      "recall": {
+        "question": "How do you handle the exclusivity talk?",
+        "options": [
+          "Hint until she brings it up",
+          "State what you want directly and warmly",
+          "Avoid it to keep things easy"
+        ],
+        "answerIndex": 1,
+        "explanation": "Directly naming what you want is secure and lets her respond honestly."
+      }
+    },
+    {
+      "id": "13.5",
+      "objectives": [
+        "Handle early-relationship worries from a secure base",
+        "Self-soothe and communicate a concern calmly instead of protesting or withdrawing",
+        "Avoid letting insecurity drive controlling or distancing behavior"
+      ],
+      "goodVsBad": {
+        "works": "A worry flares, you calm yourself first, then share it without accusation. The secure approach invites reassurance instead of conflict.",
+        "avoid": "The worry hits and you either interrogate her or go cold. The protest or withdrawal creates the rupture you feared.",
+        "leansIn": "You stay secure",
+        "checksOut": "You create a rupture"
+      },
+      "recall": {
+        "question": "How do you handle an early-relationship worry well?",
+        "options": [
+          "Interrogate her until you feel reassured",
+          "Self-soothe first, then share it calmly without blame",
+          "Go cold and wait for her to notice"
+        ],
+        "answerIndex": 1,
+        "explanation": "A secure base means regulating yourself first, then communicating directly and kindly."
+      }
+    },
+    {
+      "id": "13.6",
+      "objectives": [
+        "Navigate a mismatch in pace without pressure or resentment",
+        "Name your own needs while fully respecting her autonomy",
+        "Avoid both pushing her faster and silently swallowing your needs"
+      ],
+      "goodVsBad": {
+        "works": "You want more than she's ready for, so you state your need honestly and give her room to choose. Respect and honesty coexist.",
+        "avoid": "You pressure her to catch up to your pace, framing her caution as a problem. The push backfires into distance.",
+        "leansIn": "You stay respectful",
+        "checksOut": "You apply pressure"
+      },
+      "recall": {
+        "question": "How do you handle mismatched pace?",
+        "options": [
+          "Push her to move at your speed",
+          "Name your needs while respecting her autonomy",
+          "Hide your needs to keep the peace"
+        ],
+        "answerIndex": 1,
+        "explanation": "Honest need expression plus respect for her choice is the secure path through a pace mismatch."
+      }
+    },
+    {
+      "id": "13.7",
+      "objectives": [
+        "Understand boundaries as clarity that protects a relationship",
+        "State and honor boundaries — yours and hers — as things get serious",
+        "Avoid steamrolling her boundaries or abandoning your own to please her"
+      ],
+      "goodVsBad": {
+        "works": "You name a boundary clearly and respect hers in return. The mutual clarity makes the relationship feel safe and honest.",
+        "avoid": "You either ignore a boundary she set or drop all of yours to avoid friction. Either way, resentment grows underneath.",
+        "leansIn": "Trust deepens",
+        "checksOut": "Resentment grows"
+      },
+      "recall": {
+        "question": "What's healthy about boundaries in a new relationship?",
+        "options": [
+          "They push the other person away",
+          "Mutual, clear boundaries build safety and honesty",
+          "They should be kept flexible and unspoken"
+        ],
+        "answerIndex": 1,
+        "explanation": "Stating and respecting boundaries is secure functioning — it protects the bond, not threatens it."
+      }
+    },
+    {
+      "id": "13.8",
+      "objectives": [
+        "Handle a first disagreement without it becoming a wound",
+        "Repair quickly: soften, take responsibility, and reconnect",
+        "Avoid winning the argument at the cost of the relationship"
+      ],
+      "goodVsBad": {
+        "works": "You hit a first conflict, stay soft, own your part, and repair soon after. The skillful repair actually deepens trust.",
+        "avoid": "You dig in to win, score points, and let it fester. The need to be right damages the connection more than the issue did.",
+        "leansIn": "You repair and grow",
+        "checksOut": "You win and lose"
+      },
+      "recall": {
+        "question": "What matters most in a first disagreement?",
+        "options": [
+          "Winning the argument",
+          "Repairing well — softening, owning your part, reconnecting",
+          "Avoiding the conflict entirely"
+        ],
+        "answerIndex": 1,
+        "explanation": "It's not whether you fight — it's how well you repair afterward."
+      }
+    },
+    {
+      "id": "13.9",
+      "objectives": [
+        "Talk about intimacy and sexual health openly and maturely",
+        "Raise the topic directly, with care and zero shaming",
+        "Avoid the avoidance or awkwardness that leaves important things unsaid"
+      ],
+      "goodVsBad": {
+        "works": "You bring up intimacy and safety honestly and without embarrassment. The maturity makes her feel respected and safe to be open too.",
+        "avoid": "You dodge the conversation entirely because it's awkward. Important things go unsaid and risk and tension build.",
+        "leansIn": "She feels respected",
+        "checksOut": "Things go unsaid"
+      },
+      "recall": {
+        "question": "How should you approach intimacy and sexual-health talk?",
+        "options": [
+          "Avoid it to keep things smooth",
+          "Raise it openly, directly, and without shame",
+          "Wait for her to bring it up"
+        ],
+        "answerIndex": 1,
+        "explanation": "Open, direct, shame-free communication about intimacy is itself a sign of maturity and respect."
+      }
+    },
+    {
+      "id": "13.10",
+      "objectives": [
+        "End a connection with honesty and respect when it isn't right",
+        "Be direct and kind rather than fading out or ghosting",
+        "Avoid the slow fade that leaves her confused and disrespected"
+      ],
+      "goodVsBad": {
+        "works": "It's not a fit, so you tell her honestly and kindly rather than disappearing. The respect lets you both move on cleanly.",
+        "avoid": "You slowly stop replying, hoping she gets the hint. The fade leaves her confused and quietly disrespects her.",
+        "leansIn": "You both move on cleanly",
+        "checksOut": "You leave her confused"
+      },
+      "recall": {
+        "question": "What's the respectful way to end things?",
+        "options": [
+          "Slowly fade out so it's less awkward",
+          "Be direct and kind rather than ghosting",
+          "Just stop responding"
+        ],
+        "answerIndex": 1,
+        "explanation": "Honest, compassionate closure respects both people far more than a slow fade."
+      }
+    },
+    {
+      "id": "14.1",
+      "objectives": [
+        "Understand grooming and fit as signals of self-respect and effort",
+        "Dial in basic grooming and clothes that actually fit you",
+        "Avoid both neglect and trying to copy a look that isn't you"
+      ],
+      "goodVsBad": {
+        "works": "You show up well-groomed in clothes that fit. The care signals self-respect, and she reads it as someone who has it together.",
+        "avoid": "You roll in rumpled and unkempt. The lack of effort reads as low self-respect before you say a word.",
+        "leansIn": "You look put-together",
+        "checksOut": "You look careless"
+      },
+      "recall": {
+        "question": "What does good grooming and fit actually signal?",
+        "options": [
+          "That you're wealthy",
+          "Self-respect and effort",
+          "That you're high-maintenance"
+        ],
+        "answerIndex": 1,
+        "explanation": "Grooming and fit read as self-respect and care — the effort itself is the signal."
+      }
+    },
+    {
+      "id": "14.2",
+      "objectives": [
+        "Develop a personal style that fits your identity, not a trend",
+        "Choose clothes that express who you actually are",
+        "Avoid chasing trends that feel like a costume on you"
+      ],
+      "goodVsBad": {
+        "works": "You wear a style that genuinely fits you, and you wear it with ease. The authenticity reads as confidence.",
+        "avoid": "You chase whatever's trending even though it isn't you. The costume feeling undercuts any confidence it was meant to give.",
+        "leansIn": "You wear it with ease",
+        "checksOut": "It feels like a costume"
+      },
+      "recall": {
+        "question": "What's the goal of personal style?",
+        "options": [
+          "Match the latest trends",
+          "Express who you authentically are",
+          "Spend the most money possible"
+        ],
+        "answerIndex": 1,
+        "explanation": "Style that fits your identity reads as confidence; a trendy costume does the opposite."
+      }
+    },
+    {
+      "id": "14.3",
+      "objectives": [
+        "Understand how posture and body language shape perceived confidence",
+        "Carry yourself with open, grounded posture",
+        "Avoid the closed, shrinking body language that signals insecurity"
+      ],
+      "goodVsBad": {
+        "works": "You stand tall and open, taking up your space comfortably. The grounded posture makes you read as confident before you speak.",
+        "avoid": "You hunch and shrink, arms crossed and eyes down. The closed posture broadcasts insecurity no outfit can fix.",
+        "leansIn": "You read as confident",
+        "checksOut": "You read as insecure"
+      },
+      "recall": {
+        "question": "How does posture affect attraction?",
+        "options": [
+          "It doesn't matter if you dress well",
+          "Open, grounded posture reads as confidence",
+          "Only height matters"
+        ],
+        "answerIndex": 1,
+        "explanation": "Body language shapes perceived confidence — open and grounded beats closed and shrinking."
+      }
+    },
+    {
+      "id": "14.4",
+      "objectives": [
+        "Build sustainable self-care habits that support how you feel and show up",
+        "Keep up the basics — sleep, movement, hygiene — that compound over time",
+        "Avoid crash makeovers that don't last"
+      ],
+      "goodVsBad": {
+        "works": "You keep steady habits around sleep, movement, and care. The consistency compounds into genuine, lasting confidence.",
+        "avoid": "You do a frantic makeover right before dating, then drop it all. The crash approach fades fast and nothing sticks.",
+        "leansIn": "It compounds",
+        "checksOut": "It fades fast"
+      },
+      "recall": {
+        "question": "What builds lasting confidence in your appearance?",
+        "options": [
+          "A one-time crash makeover",
+          "Sustainable habits that compound over time",
+          "Buying an expensive new wardrobe"
+        ],
+        "answerIndex": 1,
+        "explanation": "Steady self-care habits compound; crash makeovers fade."
+      }
+    },
+    {
+      "id": "14.5",
+      "objectives": [
+        "Align how you present with who you are so the signal is honest",
+        "Let your outside match your inside for a congruent first impression",
+        "Avoid a polished look that your behavior immediately contradicts"
+      ],
+      "goodVsBad": {
+        "works": "Your style, body language, and how you treat people all line up. The congruence makes you believable and easy to trust.",
+        "avoid": "You look sharp but your behavior contradicts the image. The mismatch reads as fake and erases the polish.",
+        "leansIn": "You're congruent",
+        "checksOut": "You read as fake"
+      },
+      "recall": {
+        "question": "Why does congruence matter in self-presentation?",
+        "options": [
+          "It doesn't — looks are all that count",
+          "When your outside and inside align, you read as believable and trustworthy",
+          "Because it lets you hide who you are"
+        ],
+        "answerIndex": 1,
+        "explanation": "A congruent signal — look matching behavior — is what reads as authentic and earns trust."
+      }
+    },
+    {
+      "id": "15.1",
+      "objectives": [
+        "Understand emotional intelligence as the core of lasting attraction",
+        "Notice and name emotions — yours and hers — accurately",
+        "Avoid steamrolling feelings or pretending you don't have them"
+      ],
+      "goodVsBad": {
+        "works": "You notice what you're feeling and read her state accurately, then respond to it. The attunement makes her feel deeply understood.",
+        "avoid": "You ignore the emotional undercurrent entirely and just push your agenda. She feels unseen, and the connection stalls.",
+        "leansIn": "She feels understood",
+        "checksOut": "She feels unseen"
+      },
+      "recall": {
+        "question": "What's at the core of emotional intelligence in dating?",
+        "options": [
+          "Hiding your emotions to stay in control",
+          "Accurately noticing and responding to emotions, yours and hers",
+          "Always being upbeat"
+        ],
+        "answerIndex": 1,
+        "explanation": "EQ starts with perceiving emotions accurately and responding to them — that attunement builds connection."
+      }
+    },
+    {
+      "id": "15.2",
+      "objectives": [
+        "Regulate your own emotions in charged moments",
+        "Pause and self-soothe before reacting when feelings run high",
+        "Avoid letting a flash of emotion drive a reaction you'll regret"
+      ],
+      "goodVsBad": {
+        "works": "Something stings, and you take a breath before responding. The self-regulation keeps you grounded and the conversation safe.",
+        "avoid": "You fire back the instant you feel hurt. The unregulated reaction escalates a small moment into a real rupture.",
+        "leansIn": "You stay grounded",
+        "checksOut": "You escalate"
+      },
+      "recall": {
+        "question": "What's emotional self-regulation in practice?",
+        "options": [
+          "Suppressing all feelings",
+          "Pausing to self-soothe before reacting",
+          "Reacting honestly in the heat of the moment"
+        ],
+        "answerIndex": 1,
+        "explanation": "Regulation is the pause between feeling and reacting — it keeps charged moments from rupturing."
+      }
+    },
+    {
+      "id": "15.3",
+      "objectives": [
+        "Develop empathy that lets you take her perspective genuinely",
+        "Step into her point of view before responding",
+        "Avoid assuming your read is the only valid one"
+      ],
+      "goodVsBad": {
+        "works": "Before reacting, you genuinely consider how things look from her side. The perspective-taking makes your response land with care.",
+        "avoid": "You assume your interpretation is the truth and respond to that. Missing her perspective makes her feel unheard.",
+        "leansIn": "She feels heard",
+        "checksOut": "She feels dismissed"
+      },
+      "recall": {
+        "question": "What is empathy in a relationship?",
+        "options": [
+          "Agreeing with everything she says",
+          "Genuinely taking her perspective before responding",
+          "Feeling sorry for her"
+        ],
+        "answerIndex": 1,
+        "explanation": "Empathy is perspective-taking — considering her point of view so your response lands with care."
+      }
+    },
+    {
+      "id": "15.4",
+      "objectives": [
+        "Communicate needs and feelings with assertive vulnerability",
+        "Say what you feel and need directly and kindly",
+        "Avoid both aggressive demands and passive hinting"
+      ],
+      "goodVsBad": {
+        "works": "You name a feeling and a need plainly, owning it as yours. The assertive vulnerability invites her to meet you honestly.",
+        "avoid": "You either demand or hint, never just saying it straight. The indirectness leaves her guessing and you unmet.",
+        "leansIn": "She meets you",
+        "checksOut": "She's left guessing"
+      },
+      "recall": {
+        "question": "How do you express needs with emotional intelligence?",
+        "options": [
+          "Demand them firmly",
+          "State feelings and needs directly and kindly",
+          "Hint and hope she notices"
+        ],
+        "answerIndex": 1,
+        "explanation": "Assertive vulnerability — owning and stating your needs kindly — beats both aggression and hinting."
+      }
+    },
+    {
+      "id": "15.5",
+      "objectives": [
+        "Integrate emotional intelligence into how you handle conflict and closeness",
+        "Bring attunement, regulation, and empathy together under pressure",
+        "Avoid letting EQ collapse the moment things get hard"
+      ],
+      "goodVsBad": {
+        "works": "In a hard moment you stay attuned, regulated, and empathetic at once. The integrated EQ turns conflict into closeness.",
+        "avoid": "Your skills evaporate under stress and you revert to old reactions. The collapse undoes the connection you built.",
+        "leansIn": "Conflict becomes closeness",
+        "checksOut": "Old reactions return"
+      },
+      "recall": {
+        "question": "What's the mark of mature emotional intelligence?",
+        "options": [
+          "Never feeling upset",
+          "Holding attunement, regulation, and empathy together even under stress",
+          "Avoiding all conflict"
+        ],
+        "answerIndex": 1,
+        "explanation": "Integrated EQ shows up exactly when things get hard — that's what turns conflict into closeness."
+      }
+    },
+    {
+      "id": "16.1",
+      "objectives": [
+        "Understand that core connection principles apply across all orientations and identities",
+        "Apply warmth, authenticity, and attunement to your own context",
+        "Avoid assuming one rigid script fits every kind of relationship"
+      ],
+      "goodVsBad": {
+        "works": "You apply the same fundamentals — warmth, honesty, attunement — to your own dating context. The principles travel and they work.",
+        "avoid": "You assume there's only one script and force your situation into it. The rigid template fits poorly and feels false.",
+        "leansIn": "The principles travel",
+        "checksOut": "The script doesn't fit"
+      },
+      "recall": {
+        "question": "How universal are connection principles?",
+        "options": [
+          "They only work for one kind of relationship",
+          "Warmth, authenticity, and attunement apply across orientations and identities",
+          "Every situation needs a totally different rulebook"
+        ],
+        "answerIndex": 1,
+        "explanation": "The fundamentals of connection travel across contexts — you adapt them, you don't replace them."
+      }
+    },
+    {
+      "id": "16.2",
+      "objectives": [
+        "Navigate dating within smaller or more connected communities thoughtfully",
+        "Move with discretion and respect for shared social ties",
+        "Avoid burning bridges or creating drama in a tight network"
+      ],
+      "goodVsBad": {
+        "works": "In a tight-knit community you date with discretion and care for shared ties. The respect keeps your social world intact.",
+        "avoid": "You create drama and burn bridges without thinking about the network. The fallout follows you across the whole community.",
+        "leansIn": "Your world stays intact",
+        "checksOut": "The fallout spreads"
+      },
+      "recall": {
+        "question": "What matters when dating in a small, connected community?",
+        "options": [
+          "Acting exactly as you would among strangers",
+          "Discretion and respect for shared social ties",
+          "Keeping everything as public as possible"
+        ],
+        "answerIndex": 1,
+        "explanation": "Tight networks mean your choices ripple — discretion and respect protect your social world."
+      }
+    },
+    {
+      "id": "16.3",
+      "objectives": [
+        "Communicate openly about identity, labels, and what you're looking for",
+        "Share where you're at honestly and ask with genuine curiosity",
+        "Avoid assuming her identity or intentions instead of asking"
+      ],
+      "goodVsBad": {
+        "works": "You share where you're at and ask about hers with real curiosity. The openness builds trust and avoids painful assumptions.",
+        "avoid": "You assume her identity and what she wants without asking. The projection makes her feel boxed in and unseen.",
+        "leansIn": "Trust builds",
+        "checksOut": "She feels boxed in"
+      },
+      "recall": {
+        "question": "How do you handle identity and intentions?",
+        "options": [
+          "Assume based on first impressions",
+          "Communicate openly and ask with genuine curiosity",
+          "Avoid the topic entirely"
+        ],
+        "answerIndex": 1,
+        "explanation": "Open, curious communication about identity and intentions beats assumption every time."
+      }
+    },
+    {
+      "id": "16.4",
+      "objectives": [
+        "Handle being out, private, or somewhere in between with respect for each person's stage",
+        "Honor where she is with visibility without pressure",
+        "Avoid pushing anyone to be more or less open than they're ready for"
+      ],
+      "goodVsBad": {
+        "works": "You respect exactly where she is with being out or private, no pressure either way. The respect makes her feel safe with you.",
+        "avoid": "You push her to be more public than she's ready for. The pressure threatens her safety and her trust in you.",
+        "leansIn": "She feels safe",
+        "checksOut": "You threaten her safety"
+      },
+      "recall": {
+        "question": "How do you handle differing levels of being out?",
+        "options": [
+          "Encourage her to be as public as you are",
+          "Respect where she is, with no pressure",
+          "Keep everything secret to be safe"
+        ],
+        "answerIndex": 1,
+        "explanation": "Each person's visibility is theirs to choose — respecting her stage builds safety and trust."
+      }
+    },
+    {
+      "id": "16.5",
+      "objectives": [
+        "Build a relationship vision that fits your authentic life and values",
+        "Define what a good relationship looks like for you, on your terms",
+        "Avoid measuring your path against a one-size-fits-all template"
+      ],
+      "goodVsBad": {
+        "works": "You define what a fulfilling relationship looks like on your own terms. The clarity lets you build something that actually fits your life.",
+        "avoid": "You measure yourself against a default template that was never yours. The mismatch leaves you chasing the wrong thing.",
+        "leansIn": "You build what fits",
+        "checksOut": "You chase the wrong thing"
+      },
+      "recall": {
+        "question": "What's the foundation of a lasting relationship vision?",
+        "options": [
+          "Following the standard template everyone uses",
+          "Defining what fulfillment looks like on your own authentic terms",
+          "Waiting to see what your partner wants"
+        ],
+        "answerIndex": 1,
+        "explanation": "A relationship that lasts is built on your own values and vision — not a one-size-fits-all script."
+      }
+    }
+  ]
+}

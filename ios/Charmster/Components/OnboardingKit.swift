@@ -55,6 +55,9 @@ struct OnboardingStep<Content: View, Footer: View>: View {
   @ViewBuilder var content: () -> Content
   @ViewBuilder var footer: () -> Footer
 
+  @State private var titleShown = false
+  @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
   var body: some View {
     VStack(spacing: 0) {
       HStack(spacing: 12) {
@@ -81,10 +84,19 @@ struct OnboardingStep<Content: View, Footer: View>: View {
               .font(.system(size: 28, weight: .heavy))
               .foregroundStyle(Theme.text)
               .fixedSize(horizontal: false, vertical: true)
+              .scaleEffect(titleShown ? 1.0 : 0.92, anchor: .leading)
+              .opacity(titleShown ? 1.0 : 0.0)
+              .onAppear {
+                withAnimation(
+                  reduceMotion
+                    ? .easeOut(duration: 0.18)
+                    : .spring(response: 0.42, dampingFraction: 0.6)
+                ) { titleShown = true }
+              }
             if let subtitle {
               Text(subtitle)
                 .font(.system(size: 15))
-                .foregroundStyle(Theme.textMuted)
+                .foregroundStyle(Theme.text.opacity(0.80))
                 .fixedSize(horizontal: false, vertical: true)
             }
           }
@@ -146,7 +158,7 @@ struct OnboardingOptionCard: View {
         Spacer(minLength: 8)
         Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
           .font(.system(size: 20))
-          .foregroundStyle(isSelected ? Theme.accent : Theme.textFaint)
+          .foregroundStyle(isSelected ? Theme.accent : Theme.textMuted)
       }
       .padding(.horizontal, 14)
       .padding(.vertical, 14)
@@ -209,9 +221,9 @@ struct LikertRow: View {
         Spacer()
       }
       HStack {
-        Text("Disagree").font(.system(size: 11)).foregroundStyle(Theme.textFaint)
+        Text("Disagree").font(.system(size: 11)).foregroundStyle(Theme.textMuted)
         Spacer()
-        Text("Agree").font(.system(size: 11)).foregroundStyle(Theme.textFaint)
+        Text("Agree").font(.system(size: 11)).foregroundStyle(Theme.textMuted)
       }
     }
   }

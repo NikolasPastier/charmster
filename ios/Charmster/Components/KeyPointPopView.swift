@@ -22,6 +22,8 @@ struct KeyPointPopView: View {
   /// A token that changes per beat. When it changes the pop replays exactly
   /// once; identical values do NOT replay (pause/return stays calm).
   var replayToken: AnyHashable
+  /// Point size for the phrase. Default 26; pass 34 for the lecture-player hero.
+  var fontSize: CGFloat = 26
 
   @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
@@ -54,7 +56,7 @@ struct KeyPointPopView: View {
     let isSweeping = sweep.indices.contains(i) && sweep[i]
 
     Text(fragment)
-      .font(.system(size: 26, weight: .heavy))
+      .font(.system(size: fontSize, weight: .heavy))
       .multilineTextAlignment(.center)
       .lineLimit(2)
       .minimumScaleFactor(0.7)

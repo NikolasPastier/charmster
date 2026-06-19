@@ -27,6 +27,8 @@ struct PracticeHubView: View {
             personaCard
             premiseCard
             optionsCard
+            coachCard
+            modeCard
             sandboxModeCard
             startCard
           }
@@ -189,6 +191,66 @@ struct PracticeHubView: View {
     }
   }
 
+  private var coachCard: some View {
+    GlassCard {
+      VStack(alignment: .leading, spacing: 12) {
+        SectionHeader(title: "Coach style", systemImage: "person.line.dotted.person.fill")
+        ScrollView(.horizontal, showsIndicators: false) {
+          HStack(spacing: 10) {
+            ForEach(CoachStyle.allCases) { c in
+              Button {
+                coachStyle = c
+              } label: {
+                VStack(alignment: .leading, spacing: 4) {
+                  Text(c.title).font(.system(size: 14, weight: .heavy)).foregroundStyle(Theme.text)
+                  Text(c.blurb).font(.system(size: 11)).foregroundStyle(Theme.textMuted).lineLimit(2)
+                }
+                .frame(width: 160, alignment: .leading)
+                .padding(10)
+                .background(RoundedRectangle(cornerRadius: 12).fill(Theme.surfaceRaised))
+                .overlay(
+                  RoundedRectangle(cornerRadius: 12)
+                    .stroke(coachStyle == c ? Theme.accent : Theme.border,
+                            lineWidth: coachStyle == c ? 2 : 1))
+              }
+              .buttonStyle(.plain)
+            }
+          }
+        }
+      }
+    }
+  }
+
+  private var modeCard: some View {
+    GlassCard {
+      VStack(alignment: .leading, spacing: 12) {
+        SectionHeader(title: "Mode", systemImage: "waveform")
+        ForEach(PracticeMode.allCases) { m in
+          Button {
+            mode = m
+          } label: {
+            HStack(spacing: 12) {
+              Image(systemName: m.icon)
+                .font(.system(size: 16))
+                .foregroundStyle(Theme.accent)
+                .frame(width: 28)
+              VStack(alignment: .leading, spacing: 2) {
+                Text(m.title).font(.system(size: 14, weight: .heavy)).foregroundStyle(Theme.text)
+                Text(m.blurb).font(.system(size: 12)).foregroundStyle(Theme.textMuted)
+              }
+              Spacer()
+              Image(systemName: mode == m ? "largecircle.fill.circle" : "circle")
+                .foregroundStyle(mode == m ? Theme.accent : Theme.textMuted)
+            }
+            .padding(10)
+            .background(RoundedRectangle(cornerRadius: 12).fill(Theme.surfaceRaised))
+          }
+          .buttonStyle(.plain)
+        }
+      }
+    }
+  }
+
   private var sandboxModeCard: some View {
     GlassCard {
       HStack(spacing: 10) {
@@ -219,6 +281,10 @@ struct PracticeHubView: View {
         .stroke(on ? Theme.accent : Theme.border, lineWidth: on ? 2 : 1))
   }
 
+  private var sandboxGatePassed: Bool {
+    app.isPro || app.sandboxFreeUsed < app.sandboxFreeTrialLimit
+  }
+
   private var startCard: some View {
     VStack(spacing: 10) {
       if !app.canStartLivePractice {
@@ -231,6 +297,18 @@ struct PracticeHubView: View {
             Spacer()
           }
         }
+      } else if !app.isPro && app.sandboxFreeUsed < app.sandboxFreeTrialLimit {
+        GlassCard {
+          HStack {
+            Image(systemName: "sparkles").foregroundStyle(Theme.accent)
+            Text(
+              "Free sandbox: \(app.sandboxFreeTrialLimit - app.sandboxFreeUsed) session\(app.sandboxFreeTrialLimit - app.sandboxFreeUsed == 1 ? "" : "s") remaining"
+            )
+            .font(.system(size: 13, weight: .semibold))
+            .foregroundStyle(Theme.text)
+            Spacer()
+          }
+        }
       }
       AuraButton(
         title: "Start session", systemImage: "play.fill",
@@ -240,6 +318,12 @@ struct PracticeHubView: View {
           CharmsterSuperwall.register(.premiumDailyPracticeCap)
           return
         }
+        if !sandboxGatePassed {
+          CharmsterSuperwall.register(.premiumSandbox)
+          return
+        }
+        let focusOrder = ["Opening", "Flow", "Calibration", "Frame", "Closing"]
+        let orderedFocus = focusOrder.filter { focus.contains($0) }
         presentedConfig = SessionConfig(
           persona: persona,
           setting: setting,
@@ -248,7 +332,8 @@ struct PracticeHubView: View {
           mode: mode,
           isSandbox: true,
           sandboxScored: coached,
-          sandboxPremise: useCustom ? customSetting : (premise.isEmpty ? nil : premise)
+          sandboxPremise: useCustom ? customSetting : (premise.isEmpty ? nil : premise),
+          focusSkills: orderedFocus
         )
       }
     }
@@ -265,12 +350,19 @@ private struct SandboxRunner: View {
   var body: some View {
     ZStack {
       if let r = result {
-        ResultsView(
-          result: r, lecture: nil, onQuiz: {},
-          onDone: {
-            dismiss()
-            onClose(r)
-          })
+        if config.sandboxScored {
+          ResultsView(
+            result: r, lecture: nil, onQuiz: {},
+            onDone: {
+              dismiss()
+              onClose(r)
+            })
+        } else {
+          JustVibeRecapView(
+            result: r,
+            onAgain: { dismiss(); onClose(r) },
+            onDone: { dismiss(); onClose(r) })
+        }
       } else {
         LivePracticeView(
           lecture: nil, config: config,

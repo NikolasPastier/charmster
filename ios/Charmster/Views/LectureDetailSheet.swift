@@ -146,6 +146,9 @@ struct LectureDetailSheet: View {
     var cfg = SessionConfig.recommended(from: app, lecture: lecture)
     if let coach = sessionCoach { cfg.coach = coach.style }
     if let tier = sessionTier { cfg.tier = tier }
+    if let cap = CapstoneContentStore.shared.content(for: lecture) {
+      cfg.sandboxPremise = cap.premise
+    }
     return cfg
   }
 

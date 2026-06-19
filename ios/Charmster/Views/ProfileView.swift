@@ -92,7 +92,7 @@ struct ProfileView: View {
               .foregroundStyle(Theme.textMuted)
           }
           Spacer()
-          Image(systemName: "chevron.right").foregroundStyle(Theme.textFaint)
+          Image(systemName: "chevron.right").foregroundStyle(Theme.textMuted)
         }
       }
     }
@@ -164,7 +164,7 @@ struct ProfileView: View {
                 .foregroundStyle(Theme.textMuted)
             }
             Spacer()
-            Image(systemName: "chevron.right").foregroundStyle(Theme.textFaint)
+            Image(systemName: "chevron.right").foregroundStyle(Theme.textMuted)
           }
         }
         .buttonStyle(.plain)

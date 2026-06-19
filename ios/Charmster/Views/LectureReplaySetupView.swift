@@ -116,7 +116,7 @@ struct LectureReplaySetupView: View {
           .foregroundStyle(selected ? Theme.text : Theme.textMuted)
         Text(c.roleTag)
           .font(.system(size: 10, weight: .bold))
-          .foregroundStyle(Theme.textFaint)
+          .foregroundStyle(Theme.textMuted)
       }
       .frame(width: 84)
     }

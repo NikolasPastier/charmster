@@ -6,11 +6,7 @@ import SwiftUI
 struct SplashView: View {
   var body: some View {
     ZStack {
-      Theme.bg.ignoresSafeArea()
-      AuraGlowLayer(intensity: 0.5, partnerSpeaking: false)
-        .opacity(0.85)
-        .ignoresSafeArea()
-
+      AuraBackground()
       CharmsterLogo(height: 86, fadeIn: true)
         .padding(.horizontal, 40)
     }

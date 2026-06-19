@@ -65,7 +65,6 @@ struct LectureStoryPlayerView: View {
           profileMicroLabel
         }
       }
-      .background { CoachBackdrop(coach: coach) }
       .background { AuraBackground() }
       .onAppear {
         talkingTake = CoachClipCatalog.shared.randomTalkingTake()
@@ -219,7 +218,7 @@ struct LectureStoryPlayerView: View {
               .lineLimit(1)
             Image(systemName: "forward.fill").font(.system(size: 10, weight: .bold))
           }
-          .foregroundStyle(Theme.textFaint)
+          .foregroundStyle(Theme.textMuted)
         }
         .buttonStyle(.plain)
       }
@@ -281,18 +280,13 @@ struct LectureStoryPlayerView: View {
   @ViewBuilder
   private func beatCard(beat: LectureBeat, mode: ConversationMode) -> some View {
     VStack(spacing: 0) {
-      // LXFIX7.1/7.6 — mini-title pinned at top; clean drop shadow, no glow halo.
-      Text(beat.signalPhrase)
-        .font(.system(size: 17, weight: .heavy))
-        .foregroundStyle(Theme.text)
-        .shadow(color: .black.opacity(0.55), radius: 5, y: 1)
-        .multilineTextAlignment(.center)
-        .lineLimit(2)
-        .minimumScaleFactor(0.82)
-        .padding(.horizontal, hMargin)
-        .padding(.top, 4)
-        .padding(.bottom, 10)
-        .frame(maxWidth: .infinity)
+      KeyPointPopView(
+        text: beat.signalPhrase,
+        replayToken: "\(lecture.id)|\(index)",
+        fontSize: 34
+      )
+      .padding(.top, 4)
+      .padding(.bottom, 4)
 
       // LXFIX7.2 — media zone
       beatVisual(beat: beat, mode: mode)
@@ -392,7 +386,7 @@ struct LectureStoryPlayerView: View {
     if big {
       AuraCoachStage(coach: coach, speaking: speaking, talkingTake: talkingTake)
         .frame(maxWidth: .infinity)
-        .frame(height: 380)
+        .frame(height: 340)
     } else {
       // Small feathered IDLE picture-in-picture.
       AuraCoachStage(coach: coach, speaking: false, talkingTake: talkingTake, compact: true)
@@ -533,7 +527,7 @@ struct LectureStoryPlayerView: View {
           Spacer()
           Text("Tap to continue")
             .font(.system(size: 13, weight: .semibold))
-            .foregroundStyle(Theme.textFaint)
+            .foregroundStyle(Theme.textMuted)
           Spacer()
           Button {
             advanceFromTap()

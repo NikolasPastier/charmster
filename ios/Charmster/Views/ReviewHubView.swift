@@ -68,7 +68,7 @@ struct ReviewHubView: View {
             }
           }
           Spacer()
-          Image(systemName: "chevron.right").foregroundStyle(Theme.textFaint)
+          Image(systemName: "chevron.right").foregroundStyle(Theme.textMuted)
         }
       }
     }
@@ -112,7 +112,7 @@ struct ReviewHubView: View {
                   .foregroundStyle(Theme.text)
               }
               Spacer()
-              Image(systemName: "chevron.right").foregroundStyle(Theme.textFaint)
+              Image(systemName: "chevron.right").foregroundStyle(Theme.textMuted)
             }
           }
         }

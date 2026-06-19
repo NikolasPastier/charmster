@@ -98,7 +98,7 @@ struct OnboardingFlowView: View {
           go(.plan)
         })
     case .plan:
-      PersonalizedPlanStep { go(.taster) }
+      PersonalizedPlanStep(onStart: { go(.taster) }, onSkip: { finish() })
     case .taster:
       TasterStep { finish() }
     }
@@ -122,57 +122,62 @@ struct OnboardingFlowView: View {
 private struct HeroStep: View {
   let onContinue: () -> Void
 
+  @State private var headlineShown = false
+  @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
   var body: some View {
-    ZStack {
-      AuraGlowLayer(intensity: 0.55, partnerSpeaking: false)
-        .opacity(0.9)
-      GeometryReader { geo in
-        VStack(spacing: 0) {
-          Spacer(minLength: geo.size.height * 0.08)
+    VStack(spacing: 0) {
+      Spacer()
 
-          CharmsterLogo(height: 240)
-            .frame(maxWidth: .infinity)
-            .padding(.bottom, 28)
-
+      VStack(spacing: 20) {
+        VStack(spacing: 14) {
           Text("Practice love.\nBuild real confidence.")
-            .font(.system(size: 34, weight: .heavy))
+            .font(.system(size: 38, weight: .heavy))
             .multilineTextAlignment(.center)
             .foregroundStyle(Theme.text)
             .padding(.horizontal, 16)
+            .scaleEffect(headlineShown ? 1.0 : 0.92)
+            .opacity(headlineShown ? 1.0 : 0.0)
+            .onAppear {
+              withAnimation(
+                reduceMotion
+                  ? .easeOut(duration: 0.18)
+                  : .spring(response: 0.42, dampingFraction: 0.6)
+              ) { headlineShown = true }
+            }
 
           Text("Your private coach for real conversations — judgment-free.")
-            .font(.system(size: 16))
+            .font(.system(size: 17))
             .multilineTextAlignment(.center)
-            .foregroundStyle(Theme.textMuted)
-            .padding(.horizontal, 32)
-            .padding(.top, 10)
-
-          VStack(spacing: 14) {
-            OnboardingBenefitRow(
-              systemImage: "waveform",
-              title: "Live AI practice",
-              subtitle: "Talk to a realistic partner and get real-time feedback.")
-            OnboardingBenefitRow(
-              systemImage: "map.fill",
-              title: "A science-based path",
-              subtitle: "Built around how attraction and connection actually work.")
-            OnboardingBenefitRow(
-              systemImage: "person.crop.circle.badge.checkmark",
-              title: "Your coach, your pace",
-              subtitle: "Pick a voice and difficulty that fit you.")
-          }
-          .padding(.horizontal, 26)
-          .padding(.top, 30)
-
-          Spacer(minLength: 0)
-
-          AuraButton(title: "Get started", systemImage: "arrow.right", action: onContinue)
-            .padding(.horizontal, 22)
-            .padding(.bottom, 30)
+            .foregroundStyle(Theme.text.opacity(0.80))
+            .padding(.horizontal, 28)
         }
-        .frame(width: geo.size.width, height: geo.size.height)
+
+        VStack(spacing: 14) {
+          OnboardingBenefitRow(
+            systemImage: "waveform",
+            title: "Live AI practice",
+            subtitle: "Talk to a realistic partner and get real-time feedback.")
+          OnboardingBenefitRow(
+            systemImage: "map.fill",
+            title: "A science-based path",
+            subtitle: "Built around how attraction and connection actually work.")
+          OnboardingBenefitRow(
+            systemImage: "person.crop.circle.badge.checkmark",
+            title: "Your coach, your pace",
+            subtitle: "Pick a voice and difficulty that fit you.")
+        }
+        .padding(.top, 6)
       }
+      .padding(.horizontal, 26)
+
+      Spacer()
+
+      AuraButton(title: "Get started", systemImage: "arrow.right", action: onContinue)
+        .padding(.horizontal, 22)
+        .padding(.bottom, 30)
     }
+    .padding(.top, 50)
   }
 }
 
@@ -586,7 +591,7 @@ private struct NameAvatarStep: View {
             .background(RoundedRectangle(cornerRadius: 14).fill(Theme.surface))
             .overlay(RoundedRectangle(cornerRadius: 14).stroke(Theme.border, lineWidth: 1))
           Text("This is just your practice partner's name — you'll pick your own on the next step.")
-            .font(.system(size: 12)).foregroundStyle(Theme.textFaint)
+            .font(.system(size: 12)).foregroundStyle(Theme.textMuted)
         }
 
         VStack(alignment: .leading, spacing: 8) {
@@ -802,7 +807,7 @@ private struct AccountStep: View {
           HStack(spacing: 12) {
             Image(systemName: ageConfirmed ? "checkmark.square.fill" : "square")
               .font(.system(size: 22))
-              .foregroundStyle(ageConfirmed ? Theme.accent : Theme.textFaint)
+              .foregroundStyle(ageConfirmed ? Theme.accent : Theme.textMuted)
             Text("I confirm I'm 17 or older.")
               .font(.system(size: 15, weight: .semibold))
               .foregroundStyle(Theme.text)
@@ -817,7 +822,7 @@ private struct AccountStep: View {
         Text(
           "A default avatar is used if you skip a profile photo. You can add one later in Settings."
         )
-        .font(.system(size: 12)).foregroundStyle(Theme.textFaint)
+        .font(.system(size: 12)).foregroundStyle(Theme.textMuted)
       }
     } footer: {
       AuraButton(title: "Create account", systemImage: "checkmark", enabled: canContinue) {
@@ -849,14 +854,10 @@ private struct AccountStep: View {
 private struct PersonalizedPlanStep: View {
   @Environment(AppState.self) private var app
   let onStart: () -> Void
+  let onSkip: () -> Void
 
   var body: some View {
     ZStack {
-      AuraGlowLayer(
-        intensity: 0.4 + Double(app.profile.confidence) / 25.0, partnerSpeaking: false
-      )
-      .opacity(0.85)
-
       ScrollView {
         VStack(spacing: 18) {
           Text("Your plan is ready")
@@ -875,7 +876,7 @@ private struct PersonalizedPlanStep: View {
           Text(strengthLine)
             .font(.system(size: 15))
             .multilineTextAlignment(.center)
-            .foregroundStyle(Theme.textMuted)
+            .foregroundStyle(Theme.text.opacity(0.80))
             .padding(.horizontal, 30)
 
           startTrackCard
@@ -884,26 +885,31 @@ private struct PersonalizedPlanStep: View {
           Text("This is your starting point, not a verdict. It moves as you do.")
             .font(.system(size: 12))
             .multilineTextAlignment(.center)
-            .foregroundStyle(Theme.textFaint)
+            .foregroundStyle(Theme.textMuted)
             .padding(.horizontal, 30)
             .padding(.top, 4)
         }
         .padding(.horizontal, 18)
-        .padding(.bottom, 16)
+        .padding(.bottom, 160)
       }
 
       VStack {
         Spacer()
-        AuraButton(
-          title: "Start your first lesson — free", systemImage: "play.fill", action: onStart
-        )
+        VStack(spacing: 10) {
+          AuraButton(
+            title: "Start your first lesson — free", systemImage: "play.fill", action: onStart
+          )
+          Button("Skip for now") { onSkip() }
+            .font(.system(size: 15, weight: .semibold))
+            .foregroundStyle(Theme.textMuted)
+        }
         .padding(.horizontal, 22)
         .padding(.bottom, 28)
         .background(
           LinearGradient(
             colors: [Theme.bg.opacity(0), Theme.bg], startPoint: .top, endPoint: .bottom
           )
-          .frame(height: 120)
+          .frame(height: 140)
           .allowsHitTesting(false),
           alignment: .bottom
         )
@@ -991,43 +997,39 @@ private struct PersonalizedPlanStep: View {
 }
 
 // MARK: - 13 · Free taster session → paywall
+// OV5: intro screen removed — plan CTA routes directly to running phase.
 
 private struct TasterStep: View {
   @Environment(AppState.self) private var app
   let onComplete: () -> Void
 
-  @State private var phase: Phase = .intro
+  @State private var phase: Phase = .running
   @State private var result: SessionResult?
 
-  private enum Phase { case intro, running, results }
+  private enum Phase { case running, results }
 
   var body: some View {
-    ZStack {
-      AuraBackground()
-      switch phase {
-      case .intro:
-        intro
-      case .running:
-        if let cfg = tasterConfig {
-          LivePracticeView(
-            lecture: app.tasterLecture, config: cfg,
-            onFinish: { r in
-              app.completeSandbox(result: r, scored: true)
-              result = r
-              withAnimation(.smooth) { phase = .results }
-            },
-            onClose: { onComplete() }
-          )
-          .environment(app)
-        } else {
-          intro
-        }
-      case .results:
-        if let r = result {
-          ResultsView(
-            result: r, lecture: app.tasterLecture, onQuiz: {},
-            onDone: { onComplete() })
-        }
+    switch phase {
+    case .running:
+      if let cfg = tasterConfig, app.canStartLivePractice {
+        LivePracticeView(
+          lecture: app.tasterLecture, config: cfg,
+          onFinish: { r in
+            app.completeSandbox(result: r, scored: true)
+            result = r
+            withAnimation(.smooth) { phase = .results }
+          },
+          onClose: { onComplete() }
+        )
+        .environment(app)
+      } else {
+        Color.clear.onAppear { onComplete() }
+      }
+    case .results:
+      if let r = result {
+        ResultsView(
+          result: r, lecture: app.tasterLecture, onQuiz: {},
+          onDone: { onComplete() })
       }
     }
   }
@@ -1044,42 +1046,6 @@ private struct TasterStep: View {
       sandboxScored: true,
       sandboxPremise: nil
     )
-  }
-
-  private var intro: some View {
-    ZStack {
-      AuraGlowLayer(intensity: 0.6, partnerSpeaking: false).opacity(0.85)
-      VStack(spacing: 18) {
-        Spacer()
-        Image(systemName: "sparkles")
-          .font(.system(size: 44, weight: .bold))
-          .foregroundStyle(Theme.text)
-          .auraGlow(color: Theme.pink, radius: 24, intensity: 0.5)
-        Text("Try one on the house")
-          .font(.system(size: 28, weight: .heavy))
-          .foregroundStyle(Theme.text)
-        Text(
-          "A short, real practice session with \(app.profile.avatarName). You'll get a live feedback card at the end — no pressure, totally free."
-        )
-        .font(.system(size: 15))
-        .multilineTextAlignment(.center)
-        .foregroundStyle(Theme.textMuted)
-        .padding(.horizontal, 34)
-        Spacer()
-        AuraButton(title: "Start free session", systemImage: "play.fill") {
-          if app.canStartLivePractice {
-            withAnimation(.smooth) { phase = .running }
-          } else {
-            onComplete()
-          }
-        }
-        .padding(.horizontal, 22)
-        Button("Skip for now") { onComplete() }
-          .font(.system(size: 14, weight: .semibold))
-          .foregroundStyle(Theme.textMuted)
-          .padding(.bottom, 28)
-      }
-    }
   }
 }
 

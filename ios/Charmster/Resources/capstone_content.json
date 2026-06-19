@@ -1,0 +1,324 @@
+{
+  "capstones": [
+    {
+      "id": "capstone-1",
+      "track": 1,
+      "title": "The Warm-Up",
+      "type": "date",
+      "premise": "A relaxed Saturday at an outdoor coffee market. You spot someone easy to talk to and decide to act on the calm, grounded mindset the path taught you.",
+      "persona": "Maya — warm, unhurried, a little shy at first but opens up fast when you're genuine. She rewards calm presence and punishes neediness.",
+      "setting": "An outdoor weekend coffee-and-flowers market, mid-morning, low pressure.",
+      "scoringEmphasis": ["calm mindset", "approachability", "first calm approach"],
+      "passThreshold": 65,
+      "coachIntro": "This is your graduation rep for Foundations. No tricks — just show up grounded, present, and warm. Approach before you overthink it.",
+      "coachRecap": "Foundations is about the inner game before the words. Watch where nerves pulled you out of the moment, and revisit that lecture.",
+      "stages": [
+        { "key": "open", "label": "Open", "goal": "Approach calmly and start without a script", "situation": "She's choosing between two coffee blends and glances up. You have a natural three-second window.", "successCue": "You open relaxed and present, reacting to the real moment instead of a canned line.", "failCue": "You hesitate, over-rehearse, or open with high-pressure energy that makes her brace." },
+        { "key": "smalltalk", "label": "Small talk", "goal": "Establish easy flow and comfort", "situation": "She responds politely. The conversation could die here or warm up.", "successCue": "You keep it light and curious, matching her pace so it feels effortless.", "failCue": "You interview her, run out of thread, or fill silence with nervous chatter." },
+        { "key": "deepen", "label": "Deepen", "goal": "Move one layer past surface", "situation": "She mentions she's here every weekend to reset from a busy job.", "successCue": "You pick up the thread and share a little of yourself, making it a real exchange.", "failCue": "You stay transactional and miss the opening to connect." },
+        { "key": "flirt", "label": "Flirt", "goal": "Add light warmth without forcing it", "situation": "There's an easy rapport now and a natural lull.", "successCue": "You let a little playful warmth in, calibrated to her comfort.", "failCue": "You either go cold and businesslike or push intensity she didn't signal." },
+        { "key": "close", "label": "Close", "goal": "Land a low-pressure next step", "situation": "She's clearly enjoyed this but her coffee's ready.", "successCue": "You suggest a simple, specific next step with zero neediness.", "failCue": "You let her walk off with a vague 'maybe see you around' or over-ask." }
+      ]
+    },
+    {
+      "id": "capstone-2",
+      "track": 2,
+      "title": "The Approach",
+      "type": "date",
+      "premise": "A quiet bookstore on a weekday evening. Everything rides on your opening and the first sixty seconds of presence.",
+      "persona": "Elena — sharp and observant, reads body language instantly. A strong, congruent open earns her attention; a weak one loses it fast.",
+      "setting": "An independent bookstore, soft light, near the fiction shelves.",
+      "scoringEmphasis": ["opening", "presence", "first 60 seconds"],
+      "passThreshold": 65,
+      "coachIntro": "First Impressions live or die in the first minute. Open with intent, hold your presence, and make the first sixty seconds count.",
+      "coachRecap": "If she cooled off, look at your open and your body language in the first minute — that's where impressions lock in.",
+      "stages": [
+        { "key": "open", "label": "Open", "goal": "Deliver a strong, congruent opener", "situation": "She's reading a back cover near you. You have one clean opening.", "successCue": "You open with relaxed intent and a natural reason, voice and posture aligned.", "failCue": "You mumble, hover, or lead with an apology that signals low status." },
+        { "key": "presence", "label": "Hold presence", "goal": "Anchor the first 60 seconds with composure", "situation": "She looks up, mildly curious, waiting to see who you are.", "successCue": "You hold steady eye contact and grounded posture, unrushed.", "failCue": "You fidget, speed up, or break away nervously and deflate the moment." },
+        { "key": "smalltalk", "label": "Small talk", "goal": "Convert the open into a real conversation", "situation": "The opener landed. Now it needs to become a conversation.", "successCue": "You bridge smoothly from the opener into genuine curiosity about her.", "failCue": "You stall after the opener with nothing to follow it." },
+        { "key": "deepen", "label": "Deepen", "goal": "Find one point of real connection", "situation": "She mentions the book is a comfort re-read from a hard year.", "successCue": "You meet that with warmth and a bit of your own truth.", "failCue": "You skip past it back to surface chatter." },
+        { "key": "close", "label": "Close", "goal": "Secure a next step while the spark is fresh", "situation": "She's about to head to the register.", "successCue": "You make a confident, specific ask before the window closes.", "failCue": "You wait too long and lose the moment to hesitation." }
+      ]
+    },
+    {
+      "id": "capstone-3",
+      "track": 3,
+      "title": "The Flowing Chat",
+      "type": "date",
+      "premise": "A friend's low-key house party. The whole test is sustaining a conversation that flows — questions, listening, stories, rhythm.",
+      "persona": "Priya — talkative and expressive, loves a good back-and-forth. She lights up when you actually listen and build on what she says.",
+      "setting": "A friend's kitchen at a relaxed house party, drink in hand.",
+      "scoringEmphasis": ["questions", "listening", "storytelling", "flow"],
+      "passThreshold": 65,
+      "coachIntro": "This is pure conversation craft. Keep the ball moving — ask, listen, share, and let it breathe. No dead air, no interrogation.",
+      "coachRecap": "Where the chat stalled tells you what to revisit — question quality, active listening, or your own storytelling.",
+      "stages": [
+        { "key": "open", "label": "Open", "goal": "Start a conversation in a group setting", "situation": "You end up next to her by the snacks during a lull.", "successCue": "You open naturally off the shared context with easy energy.", "failCue": "You force a line that ignores the setting or freeze up." },
+        { "key": "flow", "label": "Build flow", "goal": "Create rhythm with questions and listening", "situation": "She answers and tosses a question back.", "successCue": "You listen actively, build on her answers, and keep the rally going.", "failCue": "You fire rapid questions or wait for your turn instead of listening." },
+        { "key": "story", "label": "Storytelling", "goal": "Land a short, engaging story", "situation": "She shares something funny and looks to you.", "successCue": "You match with a tight, vivid story that invites her in.", "failCue": "You ramble, over-explain, or one-up her instead of connecting." },
+        { "key": "deepen", "label": "Deepen", "goal": "Shift from fun to a bit more real", "situation": "The banter opens a door to something more genuine.", "successCue": "You take it one notch deeper while keeping the warmth.", "failCue": "You keep it all surface and the connection plateaus." },
+        { "key": "close", "label": "Close", "goal": "Move it off the party", "situation": "People start leaving and she's gathering her things.", "successCue": "You suggest continuing the conversation another time, specifically.", "failCue": "You let a great chat end with no next step." }
+      ]
+    },
+    {
+      "id": "capstone-4",
+      "track": 4,
+      "title": "The Playful Exchange",
+      "type": "date",
+      "premise": "An arcade bar on a first date. The path's whole point — banter, teasing, callbacks — gets put to the test in a playful setting.",
+      "persona": "Sofia — quick-witted and competitive, gives as good as she gets. She's drawn to playful confidence and bored by safe, flat replies.",
+      "setting": "A retro arcade bar, neon and pinball, first date.",
+      "scoringEmphasis": ["banter", "teasing", "callbacks"],
+      "passThreshold": 65,
+      "coachIntro": "Bring the play. Tease lightly, riff on her, and plant callbacks you can return to. Keep it warm — playful, never cutting.",
+      "coachRecap": "If the spark dimmed, check your calibration — teasing that lands stays warm. Revisit callbacks and banter timing.",
+      "stages": [
+        { "key": "open", "label": "Open", "goal": "Set a playful tone from the start", "situation": "She challenges you to pick the first game.", "successCue": "You set a fun, slightly competitive frame right away.", "failCue": "You play it overly safe and kill the playful energy." },
+        { "key": "banter", "label": "Banter", "goal": "Trade light teasing", "situation": "She gloats after beating you at air hockey.", "successCue": "You tease back with warmth and roll with hers.", "failCue": "You get defensive, go flat, or push the teasing too hard." },
+        { "key": "callback", "label": "Callback", "goal": "Plant and reuse an inside joke", "situation": "Earlier she made a joke about being 'basically a pro.'", "successCue": "You callback to it at the perfect moment for an easy laugh.", "failCue": "You let good material die or force a callback that falls flat." },
+        { "key": "flirt", "label": "Flirt", "goal": "Turn play into spark", "situation": "The teasing has real chemistry under it now.", "successCue": "You let the banter tip into genuine flirtation.", "failCue": "You stay in joke-mode and never let it get real." },
+        { "key": "close", "label": "Close", "goal": "Cash in the chemistry", "situation": "The night's winding down on a high note.", "successCue": "You close playfully and confidently for a second date.", "failCue": "You undercut the moment with a joke instead of a real ask." }
+      ]
+    },
+    {
+      "id": "capstone-5",
+      "track": 5,
+      "title": "The Read",
+      "type": "date",
+      "premise": "A gallery opening. This capstone is about reading her — interest cues, calibration, and timing your escalation to her signals.",
+      "persona": "Nadia — subtle and composed; her interest shows in small cues, not big declarations. Misreading her costs you; reading her well opens everything.",
+      "setting": "A small art gallery opening, wine in hand, quiet crowd.",
+      "scoringEmphasis": ["interest cues", "calibration", "escalation timing"],
+      "passThreshold": 70,
+      "coachIntro": "Tonight is about calibration. Read her cues before you move. Escalate when she's giving green lights — pull back when she isn't.",
+      "coachRecap": "Mistimed moves point straight to the signals you missed. Revisit the cue-reading and escalation-timing lectures.",
+      "stages": [
+        { "key": "open", "label": "Open", "goal": "Open and start gauging interest", "situation": "You comment on a piece she's been studying.", "successCue": "You open and immediately start reading her response level.", "failCue": "You barrel in without noticing how she's receiving you." },
+        { "key": "read", "label": "Read signals", "goal": "Identify her real interest cues", "situation": "She gives mixed signals — polite words, but open body language.", "successCue": "You weight the genuine cues over the polite ones and read her accurately.", "failCue": "You misread politeness as disinterest or vice versa." },
+        { "key": "calibrate", "label": "Calibrate", "goal": "Match your energy to her signals", "situation": "Her engagement rises as you find a shared interest.", "successCue": "You dial your energy up to match hers precisely.", "failCue": "You stay flat when she's warming, or overshoot her level." },
+        { "key": "escalate", "label": "Escalate", "goal": "Time the escalation to a green light", "situation": "She lingers and her cues turn clearly warm.", "successCue": "You escalate right as the green light appears.", "failCue": "You escalate too early on a yellow, or miss the window entirely." },
+        { "key": "close", "label": "Close", "goal": "Close on a clear signal", "situation": "Her interest is unmistakable now.", "successCue": "You close confidently, riding the clear signal.", "failCue": "You second-guess the obvious green light and stall." }
+      ]
+    },
+    {
+      "id": "capstone-6",
+      "track": 6,
+      "title": "The Grounded Date",
+      "type": "date",
+      "premise": "A rooftop bar. The test is presence itself — body language, vocal delivery, and composure under a little social pressure.",
+      "persona": "Camila — grounded and self-assured; she mirrors the energy she's given. Calm, embodied presence draws her in; jitter pushes her back.",
+      "setting": "A buzzy rooftop bar at golden hour, slightly loud.",
+      "scoringEmphasis": ["body language", "vocal delivery", "composure"],
+      "passThreshold": 70,
+      "coachIntro": "This one's about how you carry yourself. Slow your voice, ground your body, and stay composed even when it gets a little intense.",
+      "coachRecap": "Where composure slipped is your revision target — posture, pacing, or vocal delivery under pressure.",
+      "stages": [
+        { "key": "open", "label": "Open", "goal": "Open with grounded presence", "situation": "You reach the bar at the same time and order beside her.", "successCue": "You open with steady posture, relaxed pace, and a grounded voice.", "failCue": "You rush your words or telegraph nerves in your body." },
+        { "key": "compose", "label": "Composure", "goal": "Stay composed when it gets loud and busy", "situation": "A rowdy group crowds in beside you.", "successCue": "You hold your calm and keep your attention on her.", "failCue": "You get flustered or visibly thrown by the chaos." },
+        { "key": "voice", "label": "Vocal delivery", "goal": "Use pacing and tone to hold attention", "situation": "It's loud and she leans in to hear you.", "successCue": "You slow down, lower and steady your voice, and draw her in.", "failCue": "You speed up and raise your pitch, sounding anxious." },
+        { "key": "deepen", "label": "Deepen", "goal": "Create an intimate pocket in a loud room", "situation": "You find a quieter corner of the rooftop.", "successCue": "You use the calm to deepen the connection with full presence.", "failCue": "You stay scattered and never settle into the moment." },
+        { "key": "close", "label": "Close", "goal": "Close with calm confidence", "situation": "The sun's down and the night could end or extend.", "successCue": "You make a grounded, unhurried close.", "failCue": "You let nerves rush or fumble the ask." }
+      ]
+    },
+    {
+      "id": "capstone-7",
+      "track": 7,
+      "title": "The Real Conversation",
+      "type": "date",
+      "premise": "A quiet wine bar, second date. This is about depth — vulnerability, catching her bids, and building real emotional connection.",
+      "persona": "Hannah — thoughtful and emotionally present; she opens up when you do and notices when you dodge depth. Bids for connection are everywhere if you catch them.",
+      "setting": "A dim, quiet wine bar, second date, no time pressure.",
+      "scoringEmphasis": ["vulnerability", "bids", "emotional depth"],
+      "passThreshold": 70,
+      "coachIntro": "Tonight you go deep. Share something real, catch her bids for connection, and let the conversation matter. No deflecting.",
+      "coachRecap": "Missed bids or dodged vulnerability are your revision targets — that's where depth broke down.",
+      "stages": [
+        { "key": "open", "label": "Open", "goal": "Set a warm, present tone", "situation": "You settle in and she asks how your week really was.", "successCue": "You answer honestly instead of with a reflexive 'fine.'", "failCue": "You keep it surface and signal the night will stay shallow." },
+        { "key": "bid", "label": "Catch a bid", "goal": "Notice and turn toward her bid", "situation": "She mentions, almost in passing, that she's been homesick lately.", "successCue": "You catch the bid and turn toward it with genuine attention.", "failCue": "You miss it or turn away to a lighter topic." },
+        { "key": "vulnerable", "label": "Be vulnerable", "goal": "Share something real of your own", "situation": "The moment invites you to reciprocate her openness.", "successCue": "You share something genuine and a little vulnerable.", "failCue": "You stay guarded and break the reciprocity." },
+        { "key": "deepen", "label": "Deepen", "goal": "Build the emotional connection", "situation": "You're both being real now and it's landing.", "successCue": "You stay in it and let the closeness build naturally.", "failCue": "You get uncomfortable and pull back to safety." },
+        { "key": "close", "label": "Close", "goal": "Close on the deepened connection", "situation": "The night feels like it meant something.", "successCue": "You name that it was a real evening and lock in the next.", "failCue": "You undercut the depth with a flippant goodbye." }
+      ]
+    },
+    {
+      "id": "capstone-8",
+      "track": 8,
+      "title": "The Cool Head",
+      "type": "date",
+      "premise": "A first date that throws curveballs. The whole test is nerve management, non-neediness, and recovering smoothly when things go sideways.",
+      "persona": "Jordan — friendly but unpredictable; she runs late, shifts plans, and watches how you handle it. Composure and non-neediness win; reactivity loses.",
+      "setting": "A casual cocktail spot — except things don't go to plan.",
+      "scoringEmphasis": ["nerve management", "non-neediness", "recovery"],
+      "passThreshold": 70,
+      "coachIntro": "Expect curveballs tonight. Manage your nerves, stay non-needy, and recover gracefully when something goes wrong. Unflappable is the goal.",
+      "coachRecap": "Wherever you got reactive or needy is the lecture to revisit — that's where your cool head slipped.",
+      "stages": [
+        { "key": "open", "label": "Open (she's late)", "goal": "Handle a rocky start without leaking nerves", "situation": "She arrives 20 minutes late and a little frazzled.", "successCue": "You stay warm and unbothered, putting her at ease.", "failCue": "You sulk, over-reassure, or make her feel guilty." },
+        { "key": "nerves", "label": "Manage nerves", "goal": "Regulate your own state", "situation": "The rocky start spikes your nerves mid-conversation.", "successCue": "You self-regulate and stay present instead of spiraling.", "failCue": "You get in your head and go quiet or overcompensate." },
+        { "key": "nonneedy", "label": "Non-neediness", "goal": "Hold your frame without seeking approval", "situation": "She gives a noncommittal answer about whether she's enjoying herself.", "successCue": "You stay secure and don't chase her validation.", "failCue": "You start performing and fishing for reassurance." },
+        { "key": "recover", "label": "Recover", "goal": "Bounce back from an awkward moment", "situation": "A joke lands flat and the energy dips.", "successCue": "You recover smoothly and reset the mood with ease.", "failCue": "You dwell on it and let it sink the date." },
+        { "key": "close", "label": "Close", "goal": "Close confidently despite the bumps", "situation": "Despite the rough patches, there's real warmth now.", "successCue": "You close with calm confidence, unfazed by the bumps.", "failCue": "You let the earlier chaos make you tentative." }
+      ]
+    },
+    {
+      "id": "capstone-9",
+      "track": 9,
+      "title": "Your Secure Self",
+      "type": "date",
+      "premise": "A few weeks into seeing someone, a moment of uncertainty hits. This capstone tests attachment-aware, secure communication under emotional pressure.",
+      "persona": "Rebecca — warm but independent; she occasionally needs space, which can trigger an anxious or avoidant reaction in you. Secure responses deepen trust.",
+      "setting": "A walk in the park after she's been a little distant over text this week.",
+      "scoringEmphasis": ["attachment-aware communication", "secure responding", "self-regulation"],
+      "passThreshold": 70,
+      "coachIntro": "This rep tests your secure self. When her behavior pings your attachment system, regulate first, then communicate from security — not protest, not withdrawal.",
+      "coachRecap": "Wherever anxiety or avoidance hijacked you is your revision target. Revisit the attachment-aware communication lectures.",
+      "stages": [
+        { "key": "open", "label": "Open", "goal": "Reconnect warmly despite the distance", "situation": "She greets you a little reserved after a quiet week.", "successCue": "You reconnect with warmth and zero accusation.", "failCue": "You open cold, testy, or visibly wounded." },
+        { "key": "trigger", "label": "Notice the trigger", "goal": "Catch your own attachment reaction", "situation": "She mentions she needed space this week, and you feel the pang.", "successCue": "You notice the reaction in yourself before it drives you.", "failCue": "You react on autopilot — protest or shut down." },
+        { "key": "regulate", "label": "Self-regulate", "goal": "Soothe yourself before responding", "situation": "The urge to either cling or punish is right there.", "successCue": "You self-soothe and choose a secure response.", "failCue": "You let the urge run the conversation." },
+        { "key": "communicate", "label": "Communicate securely", "goal": "Share your need without blame", "situation": "It's time to say how the distance felt.", "successCue": "You name your need calmly and respect her autonomy.", "failCue": "You accuse, guilt-trip, or bury the need entirely." },
+        { "key": "close", "label": "Close", "goal": "Leave the moment more connected", "situation": "The talk could bring you closer or create distance.", "successCue": "You close with mutual understanding and warmth.", "failCue": "You leave it tense or falsely smoothed over." }
+      ]
+    },
+    {
+      "id": "capstone-10",
+      "track": 10,
+      "title": "The Full Thread",
+      "type": "text",
+      "premise": "A text-only capstone. You match with someone and must run the entire thread — open, build rapport, flirt, and ask her out — over messages.",
+      "persona": "Ava — busy and a little hard to pin down over text; she replies to messages that have energy and personality, and goes quiet on boring ones.",
+      "setting": "A messaging thread after matching on a dating app.",
+      "scoringEmphasis": ["text opener", "rapport over text", "flirting", "asking out"],
+      "passThreshold": 70,
+      "coachIntro": "Text-only tonight. Every message has to earn the next reply. Open with personality, build rapport, flirt, then ask her out cleanly.",
+      "coachRecap": "Wherever the thread went cold points to the lecture to revisit — opener, rapport, flirting, or the ask.",
+      "stages": [
+        { "key": "open", "label": "Opener", "goal": "Send an opener that earns a reply", "situation": "You just matched. Her profile mentions she's training for a half-marathon.", "successCue": "You open with specific, playful personality tied to her profile.", "failCue": "You send 'hey' or a generic line that's easy to ignore." },
+        { "key": "rapport", "label": "Build rapport", "goal": "Create a real back-and-forth", "situation": "She replies with interest and a question.", "successCue": "You build a genuine rhythm and keep it light and engaging.", "failCue": "You go dry, interview her, or take hours of low-effort replies." },
+        { "key": "flirt", "label": "Flirt", "goal": "Add playful tension over text", "situation": "The rapport is good and there's room to flirt.", "successCue": "You introduce light, calibrated flirtation.", "failCue": "You stay flat and friend-zone the thread, or get crude." },
+        { "key": "ask", "label": "Ask out", "goal": "Propose a specific date", "situation": "The energy is high — time to move it offline.", "successCue": "You ask her out with a specific, low-friction plan.", "failCue": "You stall, over-text, or ask vaguely and lose momentum." },
+        { "key": "logistics", "label": "Lock logistics", "goal": "Confirm the plan cleanly", "situation": "She says yes and asks about details.", "successCue": "You lock day, time, and place without flakiness.", "failCue": "You leave it loose and let the plan drift toward a flake." }
+      ]
+    },
+    {
+      "id": "capstone-11",
+      "track": 11,
+      "title": "The Profile Audit",
+      "type": "audit",
+      "premise": "A presentation-forward capstone. Instead of a date, you build and defend an end-to-end dating-app presence — photos, bio, prompts, and opener strategy — scored on congruence and positioning.",
+      "persona": "Coach review panel — evaluates your profile the way a sharp, busy woman swiping would: in seconds, on signal and congruence.",
+      "setting": "A profile-builder review session, swipe's-eye view.",
+      "scoringEmphasis": ["photo selection", "bio", "positioning", "congruence"],
+      "passThreshold": 70,
+      "coachIntro": "No date here — this is your profile under the microscope. Make every photo, line, and prompt pull its weight and stay congruent with who you actually are.",
+      "coachRecap": "Whichever element scored weak — photos, bio, prompts, or strategy — is the lecture to revisit.",
+      "stages": [
+        { "key": "photos", "label": "Photo lineup", "goal": "Sequence photos that tell a clear story", "situation": "You have six photos to order into a lineup.", "successCue": "You lead with a strong, clear shot and build a varied, honest story.", "failCue": "You lead weak, repeat the same look, or include red-flag shots." },
+        { "key": "bio", "label": "Bio", "goal": "Write a bio with signal and personality", "situation": "You have a few lines to land who you are.", "successCue": "You write something specific, confident, and inviting.", "failCue": "You go generic, negative, or try-hard." },
+        { "key": "prompts", "label": "Prompts", "goal": "Answer prompts that invite a reply", "situation": "Three prompts need answers.", "successCue": "You give hooks that are easy and fun to respond to.", "failCue": "You give closed, bland, or bragging answers." },
+        { "key": "positioning", "label": "Positioning", "goal": "Make the whole profile congruent", "situation": "The pieces need to add up to one coherent person.", "successCue": "Every element reinforces the same authentic positioning.", "failCue": "The pieces contradict each other and read as inauthentic." },
+        { "key": "opener", "label": "Opener strategy", "goal": "Plan how you'll open matches", "situation": "You define your first-message approach.", "successCue": "You commit to specific, personalized opener tactics.", "failCue": "You default to copy-paste openers that get ignored." }
+      ]
+    },
+    {
+      "id": "capstone-12",
+      "track": 12,
+      "title": "The Whole Date",
+      "type": "date",
+      "premise": "End-to-end first-date logistics: plan it, manage pre-date nerves, run the date, close, and follow up the next day. The full arc in one rep.",
+      "persona": "Grace — easygoing but observant; she notices when a date is well-planned and when follow-through is thoughtful. Logistics signal effort to her.",
+      "setting": "From planning through the day after a first date at a wine-and-tapas spot.",
+      "scoringEmphasis": ["date planning", "pre-date nerves", "the date", "close & follow-up"],
+      "passThreshold": 70,
+      "coachIntro": "This is the whole arc — plan, nerves, date, close, follow-up. Logistics are part of the impression, so handle every phase with intention.",
+      "coachRecap": "Whichever phase dragged — planning, nerves, the date, or follow-up — is your revision target.",
+      "stages": [
+        { "key": "plan", "label": "Plan the date", "goal": "Choose a smart, low-pressure plan", "situation": "You're picking where and when to meet.", "successCue": "You propose a well-judged plan that's easy to say yes to.", "failCue": "You pick something high-pressure, vague, or low-effort." },
+        { "key": "nerves", "label": "Pre-date nerves", "goal": "Arrive regulated and present", "situation": "An hour before, the nerves are building.", "successCue": "You manage your state and arrive grounded.", "failCue": "You show up frazzled or numbed-out." },
+        { "key": "date", "label": "The date", "goal": "Run a connected, flowing date", "situation": "You're at the table and it's underway.", "successCue": "You apply your conversation and presence skills throughout.", "failCue": "You let logistics anxiety crowd out real connection." },
+        { "key": "close", "label": "Close", "goal": "End the date with a clear next step", "situation": "The check comes and the night's ending.", "successCue": "You close warmly with a specific second-date seed.", "failCue": "You end on a vague note with no momentum." },
+        { "key": "followup", "label": "Follow-up", "goal": "Send a strong next-day message", "situation": "It's the next morning.", "successCue": "You follow up with warmth and a concrete next step.", "failCue": "You go silent, over-text, or send something flat." }
+      ]
+    },
+    {
+      "id": "capstone-13",
+      "track": 13,
+      "title": "The Next Chapter",
+      "type": "date",
+      "premise": "Turning dating into a relationship: second-date momentum, deepening disclosure, navigating pace, and the exclusivity talk — with secure repair if it gets bumpy.",
+      "persona": "Lauren — genuinely interested but careful; she wants honesty about where things are going and moves at her own considered pace.",
+      "setting": "A series of moments across a deepening connection, culminating in the exclusivity talk.",
+      "scoringEmphasis": ["second date", "deepening", "pace", "exclusivity talk"],
+      "passThreshold": 72,
+      "coachIntro": "This rep takes you from second date to defining the relationship. Deepen honestly, respect her pace, and have the exclusivity talk directly and warmly.",
+      "coachRecap": "Wherever it wobbled — deepening, pace, or the talk — points to the lecture to revisit.",
+      "stages": [
+        { "key": "second", "label": "Second date", "goal": "Build on the first with momentum", "situation": "You're on date two, referencing a moment from date one.", "successCue": "You build continuity and warmth from the first date.", "failCue": "You treat it like a cold restart with no callback." },
+        { "key": "deepen", "label": "Deepen", "goal": "Escalate mutual disclosure", "situation": "There's room to go a layer deeper than last time.", "successCue": "You share more and invite her to as well.", "failCue": "You stay in the same surface register as date one." },
+        { "key": "pace", "label": "Navigate pace", "goal": "Honor a possible pace mismatch", "situation": "You want more than she seems ready for right now.", "successCue": "You state your need while respecting her autonomy.", "failCue": "You pressure her or silently swallow the need." },
+        { "key": "exclusivity", "label": "Exclusivity talk", "goal": "Define the relationship directly", "situation": "The moment to name what you want has arrived.", "successCue": "You say it clearly and warmly, inviting an honest answer.", "failCue": "You hint anxiously or dodge the talk entirely." },
+        { "key": "repair", "label": "Secure repair", "goal": "Repair if the talk gets tense", "situation": "A small friction surfaces during the talk.", "successCue": "You soften, own your part, and reconnect.", "failCue": "You get defensive and let it harden into distance." }
+      ]
+    },
+    {
+      "id": "capstone-14",
+      "track": 14,
+      "title": "The Put-Together Debut",
+      "type": "audit",
+      "premise": "A presentation-forward capstone on self-presentation: grooming, dressing for context, fit, and a signature look — scored on enclothed confidence and congruence, not a date.",
+      "persona": "Coach styling review — assesses your presentation the way a first impression reads it: head-to-toe, in seconds, for self-respect and congruence.",
+      "setting": "A get-ready review before a real date, mirror's-eye view.",
+      "scoringEmphasis": ["grooming", "context-dressing", "enclothed confidence", "signature look"],
+      "passThreshold": 70,
+      "coachIntro": "No conversation here — this is your presentation graded. Grooming, fit, and a look that's authentically yours. Make the outside match the inside.",
+      "coachRecap": "Whichever element fell short — grooming, context-dressing, fit, or signature look — is the lecture to revisit.",
+      "stages": [
+        { "key": "grooming", "label": "Grooming check", "goal": "Nail the grooming basics", "situation": "You're prepping the fundamentals before getting dressed.", "successCue": "Your grooming is clean, deliberate, and self-respecting.", "failCue": "You skip basics or over-do it into try-hard." },
+        { "key": "context", "label": "Dress for context", "goal": "Match the outfit to the occasion", "situation": "The date is a casual-but-nice dinner.", "successCue": "You read the context and dress appropriately for it.", "failCue": "You over- or under-dress for the setting." },
+        { "key": "fit", "label": "Fit", "goal": "Choose clothes that actually fit", "situation": "You're choosing between a few options.", "successCue": "You pick pieces that fit your body well.", "failCue": "You go baggy, tight, or ill-fitting." },
+        { "key": "signature", "label": "Signature look", "goal": "Express an authentic signature", "situation": "You add the details that make it yours.", "successCue": "You add a signature touch that's genuinely you.", "failCue": "You copy a trend that feels like a costume." },
+        { "key": "congruence", "label": "Congruence", "goal": "Make the look match the man", "situation": "Final mirror check before heading out.", "successCue": "Your look and your demeanor line up and read as confident.", "failCue": "The polish contradicts how you carry yourself." }
+      ]
+    },
+    {
+      "id": "capstone-15",
+      "track": 15,
+      "title": "The Attuned Date",
+      "type": "date",
+      "premise": "An emotional-intelligence capstone: read her state, regulate yourself when something stings, respond with empathy, catch a bid, and repair a misstep — scored on attunement, not lines.",
+      "persona": "Isabel — emotionally expressive and perceptive; she responds to being truly seen and notices instantly when you're reactive or tuned out.",
+      "setting": "A dinner date that moves through real emotional terrain.",
+      "scoringEmphasis": ["self-regulation", "reading her state", "empathic responding", "bids & repair"],
+      "passThreshold": 72,
+      "coachIntro": "This rep grades attunement. Read her, regulate yourself when it stings, respond with empathy, catch her bids, and repair cleanly if you slip.",
+      "coachRecap": "Wherever attunement broke — reading, regulating, empathizing, or repairing — is your revision target.",
+      "stages": [
+        { "key": "read", "label": "Read her state", "goal": "Accurately perceive how she's feeling", "situation": "She arrives upbeat but with something clearly on her mind.", "successCue": "You notice the undercurrent and gently make room for it.", "failCue": "You miss it entirely and barrel into your own agenda." },
+        { "key": "regulate", "label": "Self-regulate", "goal": "Stay grounded when something stings", "situation": "She says something that lands a little sharp.", "successCue": "You pause and self-regulate before responding.", "failCue": "You react defensively in the heat of it." },
+        { "key": "empathy", "label": "Empathic response", "goal": "Respond from her perspective", "situation": "She opens up about a stressful situation at work.", "successCue": "You take her perspective and respond with genuine empathy.", "failCue": "You jump to fixing or make it about you." },
+        { "key": "bid", "label": "Catch a bid", "goal": "Turn toward her bid for connection", "situation": "She makes a small, hopeful bid for closeness.", "successCue": "You catch it and turn toward her warmly.", "failCue": "You turn away or miss it." },
+        { "key": "repair", "label": "Repair", "goal": "Repair a small misstep", "situation": "You realize one response landed wrong earlier.", "successCue": "You name it, own it, and reconnect.", "failCue": "You let it sit and the distance lingers." }
+      ]
+    },
+    {
+      "id": "capstone-16",
+      "track": 16,
+      "title": "Your Authentic Date",
+      "type": "date",
+      "premise": "The inclusive-paths capstone: run a date inside your own dating context, adapting the core skills — warmth, authenticity, attunement — confidently to who you are and who you're dating.",
+      "persona": "Adaptive — the persona reflects the user's own stated dating context; warm and real, responding to authenticity and respect for where each person is.",
+      "setting": "A date set in the user's own chosen context and terms.",
+      "scoringEmphasis": ["authenticity", "identity & intentions", "respecting visibility", "connection on your terms"],
+      "passThreshold": 70,
+      "coachIntro": "This is your date, your context. Apply everything you've learned authentically — open as yourself, communicate openly, respect where each person is, and build a connection that fits your life.",
+      "coachRecap": "Wherever it felt forced or scripted, revisit how to adapt the core skills to your own authentic context.",
+      "stages": [
+        { "key": "open", "label": "Open authentically", "goal": "Start as your genuine self", "situation": "The date begins in your own setting and terms.", "successCue": "You open warm and authentic, not from a borrowed script.", "failCue": "You force a template that doesn't fit you." },
+        { "key": "identity", "label": "Identity & intentions", "goal": "Communicate openly and ask with curiosity", "situation": "The conversation reaches identity and what you're each looking for.", "successCue": "You share where you're at and ask with genuine curiosity.", "failCue": "You assume her identity or intentions instead of asking." },
+        { "key": "visibility", "label": "Respect visibility", "goal": "Honor where each person is", "situation": "Comfort with being public differs between you.", "successCue": "You respect her stage with zero pressure.", "failCue": "You push her to be more or less open than she's ready for." },
+        { "key": "connect", "label": "Build connection", "goal": "Apply the core skills authentically", "situation": "The date is flowing and real.", "successCue": "You bring warmth, attunement, and presence in your own voice.", "failCue": "You disappear behind a persona that isn't you." },
+        { "key": "close", "label": "Close on your terms", "goal": "Define a next step that fits your life", "situation": "The date is ending on a genuine note.", "successCue": "You close toward a connection shaped by your own values.", "failCue": "You default to a script that doesn't match what you actually want." }
+      ]
+    }
+  ]
+}

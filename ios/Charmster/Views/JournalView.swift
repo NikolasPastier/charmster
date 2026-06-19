@@ -21,7 +21,7 @@ struct JournalView: View {
       }
       .padding(18)
     }
-    .background(Theme.bg.ignoresSafeArea())
+    .background(AuraBackground())
     .navigationTitle("Progress Journal")
     .navigationBarTitleDisplayMode(.inline)
     .trackView("JournalView")
@@ -153,7 +153,7 @@ struct JournalView: View {
             }
             Text(e.feltLine).font(.system(size: 12)).foregroundStyle(Theme.textMuted)
             Text(e.timestamp.formatted(.relative(presentation: .named)))
-              .font(.system(size: 11)).foregroundStyle(Theme.textFaint)
+              .font(.system(size: 11)).foregroundStyle(Theme.textMuted)
           }
           .padding(.vertical, 4)
           if e.id != app.journal.suffix(6).reversed().last?.id {

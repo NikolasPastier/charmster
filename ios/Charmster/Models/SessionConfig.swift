@@ -10,6 +10,7 @@ struct SessionConfig: Hashable {
   var isSandbox: Bool
   var sandboxScored: Bool  // "Coached" vs "Just Vibe"
   var sandboxPremise: String?
+  var focusSkills: [String] = []
 
   static func recommended(from app: AppState, lecture: Lecture?) -> SessionConfig {
     SessionConfig(

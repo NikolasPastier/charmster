@@ -201,11 +201,10 @@ struct InsightSignalCard: View {
 
 // MARK: - Core Insight teaching visual (full-card background + lower-third copy)
 
-/// The Core Insight beat's primary visual: a cached teaching image fills the
-/// card as its background, with the headline + caption pinned to the lower
-/// third over a dark scrim. When no image key is available it falls back to a
-/// neutral Aura card so the beat still reads cleanly. The coach is NOT rendered
-/// here (handled separately as an optional tiny PiP by the player).
+/// The Core Insight beat's primary visual: an in-app vector motif drawn via
+/// InsightMotifView fills the card background — always renders with zero
+/// network. The headline + caption are pinned to the lower third over a dark
+/// scrim. The coach is NOT rendered here.
 struct CoreInsightVisualCard: View {
   let lecture: Lecture
   let headline: String
@@ -213,18 +212,13 @@ struct CoreInsightVisualCard: View {
   /// Pass false when the headline is shown as the top mini-title by the scaffold.
   var showHeadline: Bool = true
 
-  @Environment(\.accessibilityReduceMotion) private var reduceMotion
-  @State private var kbPhase = false
-
-  private var imageURL: URL? { InsightVisualURL.url(for: lecture) }
-
   var body: some View {
     ZStack(alignment: .bottomLeading) {
-      background
-      // Bottom scrim so the copy stays legible over any image.
+      InsightMotifView(theme: motifTheme)
+      // Bottom scrim so the copy stays legible over the motif.
       LinearGradient(
         colors: [
-          .clear, .clear, Color(hex: 0x0B0910).opacity(0.6), Color(hex: 0x0B0910).opacity(0.92),
+          .clear, .clear, Color(hex: 0x0B0910).opacity(0.55), Color(hex: 0x0B0910).opacity(0.88),
         ],
         startPoint: .top,
         endPoint: .bottom
@@ -259,66 +253,15 @@ struct CoreInsightVisualCard: View {
     )
   }
 
-  @ViewBuilder
-  private var background: some View {
-    if let imageURL {
-      AsyncImage(url: imageURL, transaction: Transaction(animation: .easeInOut(duration: 0.3))) {
-        phase in
-        switch phase {
-        case .success(let image):
-          // LXFIX7.2 — Ken Burns: slow scale+pan drift, restarted on each load.
-          image.resizable().scaledToFill()
-            .scaleEffect(kbPhase ? 1.06 : 1.0)
-            .offset(x: kbPhase ? -7 : 7, y: kbPhase ? -4 : 4)
-            .animation(
-              reduceMotion ? nil : .linear(duration: 9).repeatForever(autoreverses: true),
-              value: kbPhase
-            )
-            .onAppear {
-              guard !reduceMotion else { return }
-              kbPhase = false
-              DispatchQueue.main.async { kbPhase = true }
-            }
-        case .empty:
-          ZStack {
-            auraFallback
-            ProgressView().tint(Theme.accent)
-          }
-        case .failure:
-          auraFallback
-        @unknown default:
-          auraFallback
-        }
-      }
-    } else {
-      auraFallback
-    }
-  }
-
-  /// Neutral Aura card used while loading, on failure, or when no key exists.
-  /// LXFIX7.2 — gentle opacity pulse so the fallback feels alive, not static.
-  private var auraFallback: some View {
-    ZStack {
-      Theme.surface
-      RadialGradient(
-        colors: [Theme.pink.opacity(0.28), Theme.gold.opacity(0.16), .clear],
-        center: UnitPoint(x: 0.7, y: 0.28),
-        startRadius: 20,
-        endRadius: 320
-      )
-      .blur(radius: 40)
-      .scaleEffect(kbPhase ? 1.1 : 0.95)
-      .opacity(kbPhase ? 0.65 : 0.45)
-      .animation(
-        reduceMotion ? nil : .easeInOut(duration: 4).repeatForever(autoreverses: true),
-        value: kbPhase
-      )
-    }
-    .onAppear {
-      guard !reduceMotion else { return }
-      kbPhase = false
-      DispatchQueue.main.async { kbPhase = true }
-    }
+  /// Derive the motif from the lecture's insightVisual key; fall back to a
+  /// per-track selection so every lecture gets a consistent, distinct motif.
+  private var motifTheme: String {
+    if let key = InsightVisualURL.insightVisual(for: lecture) { return key }
+    let all = [
+      "firstImpressions", "presence", "conversationFlow", "confidence",
+      "bodyLanguage", "vulnerability", "readingSignals", "abundance",
+    ]
+    return all[abs(lecture.trackId - 1) % all.count]
   }
 }
 

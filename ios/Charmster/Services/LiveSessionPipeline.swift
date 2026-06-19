@@ -77,7 +77,10 @@ final class LiveSessionPipeline: NSObject {
     coach: CoachStyle,
     lecture: Lecture?,
     setting: PracticeSetting,
-    userId: String
+    userId: String,
+    capstonePersonaBlurb: String? = nil,
+    capstoneSettingDescription: String? = nil,
+    focusSkills: [String] = []
   ) async {
     self.userId = userId
     self.lectureId = lecture?.id
@@ -110,10 +113,12 @@ final class LiveSessionPipeline: NSObject {
       roadmap_node: lecture?.id,
       persona: .init(
         id: persona.id, displayName: persona.displayName,
-        pronouns: persona.pronouns, blurb: persona.blurb),
+        pronouns: persona.pronouns,
+        blurb: capstonePersonaBlurb ?? persona.blurb),
       coach_style: coach.rawValue,
-      setting: setting.title,
-      realtime_voice: AvatarVoice.resolve(from: voiceId).realtimeVoice
+      setting: capstoneSettingDescription ?? setting.title,
+      realtime_voice: AvatarVoice.resolve(from: voiceId).realtimeVoice,
+      focus_skills: focusSkills.isEmpty ? nil : focusSkills
     )
     if let token = await RealtimeSessionService.mint(req) {
       await realtime.connect(token: token)

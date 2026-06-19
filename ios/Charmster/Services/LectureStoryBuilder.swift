@@ -11,7 +11,42 @@ enum LectureStoryBuilder {
   static func build(for lecture: Lecture, coach: CoachPersona) -> LectureStory {
     let content = LectureContentStore.shared.teaching(for: lecture, coach: coach.style)
     let mode = conversationMode(for: lecture)
-    let recall = recallCheck(for: lecture, coach: coach.style)
+
+    let plc = PerLectureContentStore.shared.content(for: lecture.id)
+    let capContent = CapstoneContentStore.shared.content(for: lecture)
+
+    // Objectives: per-lecture content takes priority; skill template is fallback.
+    let objectives: [String]
+    if let authored = plc?.objectives {
+      objectives = authored
+    } else {
+      objectives = learningObjectives(for: lecture, content: content, mode: mode)
+    }
+
+    // Good vs Bad: per-lecture content takes priority; skill template is fallback.
+    let goodEx: ContrastExample
+    let badEx: ContrastExample
+    if let gvb = plc?.goodVsBad {
+      let inPersonTag = mode == .inPerson
+      goodEx = ContrastExample(line: gvb.works, reactionTag: inPersonTag ? gvb.leansIn : nil)
+      badEx = ContrastExample(line: gvb.avoid, reactionTag: inPersonTag ? gvb.checksOut : nil)
+    } else {
+      goodEx = example(from: content.goodExample, mode: mode, isGood: true)
+      badEx = example(from: content.badExample, mode: mode, isGood: false)
+    }
+
+    // Recall: per-lecture content takes priority; quiz template is fallback.
+    let recall: RecallCheck
+    if let rc = plc?.recall {
+      recall = RecallCheck(
+        question: rc.question,
+        options: Array(rc.options.prefix(4)),
+        correctIndex: min(rc.answerIndex, max(0, rc.options.count - 1)),
+        why: rc.explanation
+      )
+    } else {
+      recall = recallCheck(for: lecture, coach: coach.style)
+    }
 
     let beats: [LectureBeat] = [
       // 1 — HOOK (avatar speaks, emotional)
@@ -39,8 +74,8 @@ enum LectureStoryBuilder {
         narrationText: goodVsBadNarration(content: content, mode: mode),
         signalPhrase: mode == .texting ? "What you send back" : "What you say out loud",
         visual: mode == .texting ? .chatMockup : .spokenLineCards,
-        goodExample: example(from: content.goodExample, mode: mode, isGood: true),
-        badExample: example(from: content.badExample, mode: mode, isGood: false)
+        goodExample: goodEx,
+        badExample: badEx
       ),
       // 4 — RECALL CHECK — no key points: question IS the content
       LectureBeat(
@@ -55,7 +90,7 @@ enum LectureStoryBuilder {
       LectureBeat(
         id: "\(lecture.id).takeaway",
         kind: .takeawayHandoff,
-        narrationText: "\(content.practicalTakeaway) \(content.practiceHandoff)",
+        narrationText: capContent?.coachIntro ?? "\(content.practicalTakeaway) \(content.practiceHandoff)",
         signalPhrase: takeawaySignal(for: lecture),
         visual: .avatar,
         keyPoints: takeawayKeyPoints(for: lecture)
@@ -64,7 +99,7 @@ enum LectureStoryBuilder {
 
     return LectureStory(
       lectureId: lecture.id, coachId: coach.id, conversationMode: mode, beats: beats,
-      learningObjectives: learningObjectives(for: lecture, content: content, mode: mode))
+      learningObjectives: objectives)
   }
 
   // MARK: - Learning objectives (UX5 — Card 0 "What you'll learn")

@@ -312,6 +312,7 @@ struct LivePracticeView: View {
       return
     }
     await AvatarClipCatalog.shared.preload(persona: avatarPersona)
+    let capContent = lecture.flatMap { CapstoneContentStore.shared.content(for: $0) }
     await pipeline.start(
       prefersCamera: config.mode == .videoVoice,
       persona: config.persona,
@@ -320,7 +321,10 @@ struct LivePracticeView: View {
       coach: config.coach,
       lecture: lecture,
       setting: config.setting,
-      userId: app.userId
+      userId: app.userId,
+      capstonePersonaBlurb: capContent?.persona,
+      capstoneSettingDescription: capContent?.setting,
+      focusSkills: config.focusSkills
     )
   }
 
@@ -345,7 +349,7 @@ struct LivePracticeView: View {
       recentContext: [],
       avatarFeeling: pipeline.lastMoodTag,
       feelingIntensity: pipeline.liveFeel,
-      skillTarget: lecture?.skill,
+      skillTarget: config.focusSkills.first ?? lecture?.skill,
       coach: nudgeCoach,
       turnIndex: pipeline.userTurnCount)
     if shown, app.profile.soundAndHaptics, !reduceMotion {

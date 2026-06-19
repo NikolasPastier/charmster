@@ -119,7 +119,8 @@ final class AppState {
   var chargeCap: Int = 3
   var chargeMinutes: Int = 0
   var dailyLiveSessionsUsed: Int = 0
-  var sandboxUsedToday: Bool = false
+  var sandboxFreeUsed: Int = 0
+  let sandboxFreeTrialLimit: Int = 2
   var dailyResetAt: Date = .now
 
   // Streak freezes (monthly allowance of "rest day" protections)
@@ -189,6 +190,7 @@ final class AppState {
     if let tier = SettingsStore.loadTier() { difficultyTier = tier }
     if let n = SettingsStore.loadStreakFreezes() { streakFreezesRemaining = n }
     if let d = SettingsStore.loadLastFreezeRefill() { lastStreakFreezeRefill = d }
+    if let n = SettingsStore.loadSandboxFreeUsed() { sandboxFreeUsed = n }
     journal = JournalStore.loadEntries()
     dimensionBests = JournalStore.loadBests()
   }
@@ -404,7 +406,10 @@ final class AppState {
     applyRewards(result)
     recentResults.insert(result, at: 0)
     recordJournalEntry(result, lecture: nil)
-    sandboxUsedToday = true
+    if !isPro {
+      sandboxFreeUsed += 1
+      SettingsStore.saveSandboxFreeUsed(sandboxFreeUsed)
+    }
     if scored { dailyLiveSessionsUsed += 1 }
   }
 
@@ -748,7 +753,6 @@ final class AppState {
     if !cal.isDateInToday(dailyResetAt) {
       dailyResetAt = cal.startOfDay(for: .now)
       dailyLiveSessionsUsed = 0
-      sandboxUsedToday = false
       chargeMinutes = profile.dailyGoalMinutes
       return true
     }
@@ -767,7 +771,8 @@ final class AppState {
     aura = 0
     streakDays = 0
     dailyLiveSessionsUsed = 0
-    sandboxUsedToday = false
+    sandboxFreeUsed = 0
+    SettingsStore.saveSandboxFreeUsed(0)
     Task { await bootstrap() }
   }
 

@@ -53,7 +53,7 @@ struct AvatarVoicePicker: View {
               systemName: failed ? "speaker.slash.fill" : (playing ? "pause.fill" : "play.fill")
             )
             .font(.system(size: 15, weight: .bold))
-            .foregroundStyle(playing ? Theme.bg : (failed ? Theme.textFaint : Theme.text))
+            .foregroundStyle(playing ? Theme.bg : (failed ? Theme.textMuted : Theme.text))
           }
           .overlay(
             Circle().strokeBorder(Theme.border, lineWidth: playing ? 0 : 1)
@@ -68,14 +68,14 @@ struct AvatarVoicePicker: View {
             .foregroundStyle(Theme.text)
           Text(failed ? "Preview unavailable" : (playing ? "Playing preview…" : "Tap play to hear"))
             .font(.system(size: 12))
-            .foregroundStyle(Theme.textFaint)
+            .foregroundStyle(Theme.textMuted)
         }
 
         Spacer()
 
         Image(systemName: selected ? "checkmark.circle.fill" : "circle")
           .font(.system(size: 22))
-          .foregroundStyle(selected ? Theme.accent : Theme.textFaint)
+          .foregroundStyle(selected ? Theme.accent : Theme.textMuted)
       }
       .padding(14)
       .background(
@@ -99,7 +99,7 @@ struct AvatarVoicePicker: View {
       Text("This is an AI voice for practice — not a real person.")
         .font(.system(size: 12))
     }
-    .foregroundStyle(Theme.textFaint)
+    .foregroundStyle(Theme.textMuted)
     .frame(maxWidth: .infinity, alignment: .leading)
     .padding(.top, 2)
   }
