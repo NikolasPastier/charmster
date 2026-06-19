@@ -23,7 +23,7 @@ struct CoachGalleryView: View {
 
   var body: some View {
     content
-      .background(Theme.bg.ignoresSafeArea())
+      .background { if !embedded { Theme.bg.ignoresSafeArea() } }
       .overlay(alignment: .center) {
         if let coach = justJoined {
           JoinConfirmation(coach: coach)

@@ -83,8 +83,11 @@ struct LoopingVideoPlayer: UIViewRepresentable {
         primaryPlayer?.isMuted = muted
         return
       }
+      // Don't commit currentClipID until we have a real URL to mount.
+      // If url is nil (still downloading), the next call with the resolved URL
+      // must not be deduped — so we leave currentClipID unchanged here.
+      guard let url else { return }
       currentClipID = id
-      guard let url else { return }  // keep current frame / placeholder
       Task { @MainActor in self.mount(url: url, muted: muted) }
     }
 

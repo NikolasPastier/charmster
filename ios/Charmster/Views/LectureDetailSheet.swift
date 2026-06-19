@@ -39,7 +39,6 @@ struct LectureDetailSheet: View {
     Group {
       NavigationStack {
         ZStack {
-          AuraBackground()
           switch route {
           case .replaySetup: replaySetupScreen
           case .lecture: lecturePlayer
@@ -50,6 +49,7 @@ struct LectureDetailSheet: View {
           case nil: Color.clear
           }
         }
+        .background { AuraBackground() }
         .toolbar { toolbarContent }
         .toolbarVisibility(showsChrome ? .automatic : .hidden, for: .navigationBar)
       }

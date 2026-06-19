@@ -44,7 +44,7 @@ struct AvatarPersona: Identifiable, Hashable, Codable {
     .init(
       id: "ava", displayName: "Ava", gender: .feminine,
       lookBlurb: "Fair, blonde",
-      thumbnailPath: "Ava/stills/Ava neutral scene.jpeg"),
+      thumbnailPath: "ava/stills/Ava neutral scene.jpeg"),
     .init(
       id: "sofia", displayName: "Sofia", gender: .feminine,
       lookBlurb: "Olive/tan, dark wavy",

@@ -210,6 +210,11 @@ struct CoreInsightVisualCard: View {
   let lecture: Lecture
   let headline: String
   let caption: String
+  /// Pass false when the headline is shown as the top mini-title by the scaffold.
+  var showHeadline: Bool = true
+
+  @Environment(\.accessibilityReduceMotion) private var reduceMotion
+  @State private var kbPhase = false
 
   private var imageURL: URL? { InsightVisualURL.url(for: lecture) }
 
@@ -225,16 +230,18 @@ struct CoreInsightVisualCard: View {
         endPoint: .bottom
       )
       VStack(alignment: .leading, spacing: 8) {
-        Text(headline)
-          .font(.system(size: 28, weight: .heavy))
-          .foregroundStyle(Theme.text)
-          .overlay(alignment: .bottomLeading) {
-            Rectangle()
-              .fill(Theme.accentGradient)
-              .frame(width: 56, height: 4)
-              .offset(y: 9)
-              .opacity(0.85)
-          }
+        if showHeadline {
+          Text(headline)
+            .font(.system(size: 28, weight: .heavy))
+            .foregroundStyle(Theme.text)
+            .overlay(alignment: .bottomLeading) {
+              Rectangle()
+                .fill(Theme.accentGradient)
+                .frame(width: 56, height: 4)
+                .offset(y: 9)
+                .opacity(0.85)
+            }
+        }
         Text(caption)
           .font(.system(size: 14, weight: .semibold))
           .foregroundStyle(Theme.textMuted)
@@ -259,7 +266,19 @@ struct CoreInsightVisualCard: View {
         phase in
         switch phase {
         case .success(let image):
+          // LXFIX7.2 — Ken Burns: slow scale+pan drift, restarted on each load.
           image.resizable().scaledToFill()
+            .scaleEffect(kbPhase ? 1.06 : 1.0)
+            .offset(x: kbPhase ? -7 : 7, y: kbPhase ? -4 : 4)
+            .animation(
+              reduceMotion ? nil : .linear(duration: 9).repeatForever(autoreverses: true),
+              value: kbPhase
+            )
+            .onAppear {
+              guard !reduceMotion else { return }
+              kbPhase = false
+              DispatchQueue.main.async { kbPhase = true }
+            }
         case .empty:
           ZStack {
             auraFallback
@@ -277,6 +296,7 @@ struct CoreInsightVisualCard: View {
   }
 
   /// Neutral Aura card used while loading, on failure, or when no key exists.
+  /// LXFIX7.2 — gentle opacity pulse so the fallback feels alive, not static.
   private var auraFallback: some View {
     ZStack {
       Theme.surface
@@ -287,6 +307,17 @@ struct CoreInsightVisualCard: View {
         endRadius: 320
       )
       .blur(radius: 40)
+      .scaleEffect(kbPhase ? 1.1 : 0.95)
+      .opacity(kbPhase ? 0.65 : 0.45)
+      .animation(
+        reduceMotion ? nil : .easeInOut(duration: 4).repeatForever(autoreverses: true),
+        value: kbPhase
+      )
+    }
+    .onAppear {
+      guard !reduceMotion else { return }
+      kbPhase = false
+      DispatchQueue.main.async { kbPhase = true }
     }
   }
 }

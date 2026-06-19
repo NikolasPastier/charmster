@@ -20,7 +20,8 @@ enum LectureStoryBuilder {
         kind: .hook,
         narrationText: content.hook,
         signalPhrase: hookSignal(for: lecture),
-        visual: .avatar
+        visual: .avatar,
+        keyPoints: hookKeyPoints(for: lecture)
       ),
       // 2 — CORE INSIGHT (voiceover + emphasis visual)
       LectureBeat(
@@ -28,9 +29,10 @@ enum LectureStoryBuilder {
         kind: .coreInsight,
         narrationText: content.coreInsight,
         signalPhrase: insightSignal(for: lecture),
-        visual: .contrastCards
+        visual: .contrastCards,
+        keyPoints: insightKeyPoints(for: lecture)
       ),
-      // 3 — GOOD vs BAD (mode-driven visual)
+      // 3 — GOOD vs BAD (mode-driven visual) — no key points: cards ARE the content
       LectureBeat(
         id: "\(lecture.id).goodbad",
         kind: .goodVsBad,
@@ -40,7 +42,7 @@ enum LectureStoryBuilder {
         goodExample: example(from: content.goodExample, mode: mode, isGood: true),
         badExample: example(from: content.badExample, mode: mode, isGood: false)
       ),
-      // 4 — RECALL CHECK (one quick active-recall tap)
+      // 4 — RECALL CHECK — no key points: question IS the content
       LectureBeat(
         id: "\(lecture.id).recall",
         kind: .recallCheck,
@@ -55,7 +57,8 @@ enum LectureStoryBuilder {
         kind: .takeawayHandoff,
         narrationText: "\(content.practicalTakeaway) \(content.practiceHandoff)",
         signalPhrase: takeawaySignal(for: lecture),
-        visual: .avatar
+        visual: .avatar,
+        keyPoints: takeawayKeyPoints(for: lecture)
       ),
     ]
 
@@ -285,5 +288,128 @@ enum LectureStoryBuilder {
 
   private static func takeawaySignal(for lecture: Lecture) -> String {
     "You're up"
+  }
+
+  // MARK: - Key points (KP1 — highlight-reel captions, ≤ 6 words each)
+  //
+  // Hook = why this moment matters; Insight = the mechanism; Takeaway = the action.
+  // GoodVsBad and Recall are intentionally absent — their on-screen content IS
+  // the beat. No timing offsets: LXFIX7 staggers them on a timer client-side.
+
+  static func hookKeyPoints(for lecture: Lecture) -> [String] {
+    switch lecture.skill {
+    case "Opening":
+      return ["Don't overthink it", "One true line", "Timing beats content"]
+    case "Presence":
+      return ["Armor down first", "Room reads you before you speak", "Calm over flawless"]
+    case "Flow":
+      return ["Catch the threads she leaves", "Callbacks signal you listened", "Don't fill her silence"]
+    case "Confidence":
+      return ["Confidence is behavioral", "Shorter, slower, quieter", "Not born — built"]
+    case "Banter":
+      return ["Ease is the signal", "Light, not clever", "Back-and-forth opens doors"]
+    case "Calibration":
+      return ["Don't mirror all the way", "Meet her halfway", "Hold your own level"]
+    case "Connection":
+      return ["Go first — go deeper", "Depth invites depth", "One person has to start"]
+    case "Texting":
+      return ["Less is more", "Restraint reads as confidence", "Volume kills engagement"]
+    case "Dates":
+      return ["Lead — don't ask", "Remove her decision fatigue", "A plan is attractive"]
+    case "Style":
+      return ["You're read in 250ms", "Coherence signals identity", "Your look speaks first"]
+    case "Attachment":
+      return ["Hold your own pace", "Don't mirror her distance", "Consistency reduces fear"]
+    case "EQ":
+      return ["She needs to be heard", "Don't rush to fix", "Name what's happening"]
+    case "Context":
+      return ["Venue primes the mood", "Choose it like your opener", "Environment works for you"]
+    case "Apps":
+      return ["Specific beats generic", "Stand out in the stack", "One real observation"]
+    case "Relationship":
+      return ["Stable pace builds trust", "Don't rush — don't disappear", "Be the consistent one"]
+    case "Foundations":
+      return ["Attraction is modular", "Multiple levers in parallel", "Learn the system first"]
+    default:
+      return ["Why this works", "One clean move"]
+    }
+  }
+
+  static func insightKeyPoints(for lecture: Lecture) -> [String] {
+    switch lecture.skill {
+    case "Opening":
+      return ["Voice, eyes, turn-taking", "Hit two — don't chase three", "Ratio beats perfection"]
+    case "Presence":
+      return ["Natural eye contact intervals", "Chosen calm, not nervous scanning", "Presence is a proximity signal"]
+    case "Flow":
+      return ["Under 1.5s reply = engaged", "One callback holds the thread", "Warmth: listen and respond"]
+    case "Confidence":
+      return ["Shorter sentences, slower tempo", "Fewer qualifiers = confident signal", "Behave it — feel it later"]
+    case "Banter":
+      return ["Back-and-forth signals openness", "Ease, not volume or wit", "Playfulness = openness signal"]
+    case "Calibration":
+      return ["70% match — not 100%", "Full match reads as mimicry", "Meet halfway, hold there"]
+    case "Connection":
+      return ["Disclosure is reciprocal", "Go slightly deeper first", "You set the depth ceiling"]
+    case "Texting":
+      return ["Reply time is a signal", "Short messages hold more tension", "Restraint predicts engagement"]
+    case "Dates":
+      return ["Specific plan removes friction", "Removes her decision fatigue", "Your confidence signal rises"]
+    case "Style":
+      return ["First impressions form in 250ms", "Coherence signals identity", "She reads you before words"]
+    case "Attachment":
+      return ["Hold a consistent rate", "Don't match her distance swings", "Stability breaks the anxious loop"]
+    case "EQ":
+      return ["Name the emotion aloud", "Being heard lowers the alarm", "Advice raises it — listen first"]
+    case "Context":
+      return ["Venue primes emotional set points", "Choose it before choosing words", "Environment shifts the baseline"]
+    case "Apps":
+      return ["Specific openers beat generic ones", "Reference her — don't compliment her", "Signal-to-noise over volume"]
+    case "Relationship":
+      return ["Stable rate = trust over time", "Don't calibrate to her anxiety", "Be consistent, not reactive"]
+    case "Foundations":
+      return ["Multiple mechanisms work in parallel", "Learn the architecture first", "Target the right lever"]
+    default:
+      return ["The core mechanism", "Pick one variable"]
+    }
+  }
+
+  static func takeawayKeyPoints(for lecture: Lecture) -> [String] {
+    switch lecture.skill {
+    case "Opening":
+      return ["Shorten your first sentence", "Hold one beat longer", "Let the signal land"]
+    case "Presence":
+      return ["One exhale before speaking", "Name what's real", "Real beats smooth"]
+    case "Flow":
+      return ["One sentence, one question", "Exit cleanly", "Don't fill every gap"]
+    case "Confidence":
+      return ["Square shoulders, drop the voice", "Shorten everything", "Be interested, not interesting"]
+    case "Banter":
+      return ["One line, no explanation", "Match her tempo", "Let it breathe"]
+    case "Calibration":
+      return ["Match halfway — hold there", "She'll find your level", "Don't chase her energy"]
+    case "Connection":
+      return ["Ask one real question", "Actually wait for the answer", "Don't pivot to yourself"]
+    case "Texting":
+      return ["Wait before you reply", "One specific observation", "Don't follow up unprompted"]
+    case "Dates":
+      return ["Name place, time, backup", "Don't ask what she wants", "Lead — don't check in"]
+    case "Style":
+      return ["Let the detail land first", "Don't explain your look", "Open on your terms"]
+    case "Attachment":
+      return ["Give space on purpose", "Don't disappear — don't chase", "She'll come back fuller"]
+    case "EQ":
+      return ["Don't push when she's off", "Give her room to breathe", "Witness before advising"]
+    case "Context":
+      return ["Comfortable, specific, easy to extend", "Let the room do half", "Pick the low-pressure spot"]
+    case "Apps":
+      return ["One thing from her profile", "An observation, not praise", "What only you'd notice"]
+    case "Relationship":
+      return ["Hold your rate — don't rush", "Let her find the speed", "Consistency is the move"]
+    case "Foundations":
+      return ["Show up curious, not performing", "Ask what actually interests you", "Weight over polish"]
+    default:
+      return ["One rep, run it clean", "Stay present"]
+    }
   }
 }

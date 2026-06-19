@@ -78,6 +78,12 @@ struct LectureBeat: Identifiable, Hashable, Codable {
   var badExample: ContrastExample? = nil
   var recall: RecallCheck? = nil
 
+  /// Highlight-reel phrases revealed as the coach narrates (Hook / Core Insight /
+  /// Takeaway beats). 2–3 short phrases (≤ 6 words each) — a caption highlight,
+  /// not a transcript. Empty for GoodVsBad and Recall, whose on-screen content
+  /// already IS the beat. Defaulted so older decoded LectureStory values stay valid.
+  var keyPoints: [String] = []
+
   /// Whether this beat leads with the coach's face (talking loop under audio).
   var isAvatarBeat: Bool { visual == .avatar }
 }

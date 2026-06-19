@@ -56,10 +56,6 @@ struct LectureStoryPlayerView: View {
   var body: some View {
     Group {
       ZStack {
-        AuraBackground()
-        // FX9.6 — soft blurred coach STILL glowing behind the content. Static,
-        // GPU-cheap, tinted into the Aura palette; foreground stays sharp.
-        CoachBackdrop(coach: coach)
         if let story {
           content(story: story)
         } else {
@@ -69,6 +65,8 @@ struct LectureStoryPlayerView: View {
           profileMicroLabel
         }
       }
+      .background { CoachBackdrop(coach: coach) }
+      .background { AuraBackground() }
       .onAppear {
         talkingTake = CoachClipCatalog.shared.randomTalkingTake()
         Task { await CoachClipCatalog.shared.preload(persona: coach, talkingTake: talkingTake) }
@@ -282,22 +280,26 @@ struct LectureStoryPlayerView: View {
 
   @ViewBuilder
   private func beatCard(beat: LectureBeat, mode: ConversationMode) -> some View {
-    VStack(spacing: 18) {
+    VStack(spacing: 0) {
+      // LXFIX7.1/7.6 — mini-title pinned at top; clean drop shadow, no glow halo.
+      Text(beat.signalPhrase)
+        .font(.system(size: 17, weight: .heavy))
+        .foregroundStyle(Theme.text)
+        .shadow(color: .black.opacity(0.55), radius: 5, y: 1)
+        .multilineTextAlignment(.center)
+        .lineLimit(2)
+        .minimumScaleFactor(0.82)
+        .padding(.horizontal, hMargin)
+        .padding(.top, 4)
+        .padding(.bottom, 10)
+        .frame(maxWidth: .infinity)
+
+      // LXFIX7.2 — media zone
       beatVisual(beat: beat, mode: mode)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
 
-      // Signal phrase — shown ONLY for beats whose visual doesn't already own a
-      // primary headline. Core Insight (visual carries its own headline) and
-      // Recall (question is the headline) suppress it to avoid a duplicate title.
-      if showsBottomSignal(beat) {
-        // FX9.6 / UX4 — Duolingo-style key-point pop. Keyed on the beat id so it
-        // animates once per beat and replays only on a real beat change.
-        KeyPointPopView(
-          text: beat.signalPhrase,
-          emphasisLevel: beat.kind == .takeawayHandoff ? 1.0 : 0.85,
-          replayToken: beat.id
-        )
-      }
+      // LXFIX7.3 — key-point captions (Hook/CoreInsight/Takeaway only)
+      beatKeyPoints(for: beat)
 
       if captionsOn {
         Text(beat.narrationText)
@@ -305,47 +307,27 @@ struct LectureStoryPlayerView: View {
           .foregroundStyle(Theme.textMuted)
           .multilineTextAlignment(.center)
           .padding(.horizontal, hMargin)
+          .padding(.top, 6)
           .transition(.opacity)
       }
     }
-    .padding(.vertical, 10)
-  }
-
-  /// The bottom signal title is shown for emotional/contrast beats that don't
-  /// already render their own headline. Core Insight's visual card owns its
-  /// headline, and the recall beat uses the question itself — both suppress it.
-  private func showsBottomSignal(_ beat: LectureBeat) -> Bool {
-    switch beat.kind {
-    case .coreInsight, .recallCheck: return false
-    default: return true
-    }
+    .padding(.bottom, 10)
   }
 
   @ViewBuilder
   private func beatVisual(beat: LectureBeat, mode: ConversationMode) -> some View {
     switch beat.visual {
     case .avatar:
-      // Beats 1 (hook) + 5 (takeaway): coach TALKING, full face-on, feathered.
-      // FX9.6 / UX4 — a sparing coach "pop-in" bubble slides in for flavor.
+      // Hook (Beat 1) + Takeaway (Beat 5): coach talking loop, full-bleed, feathered.
       auraStage(big: true)
-        .overlay(alignment: .bottomLeading) {
-          CoachPopInOverlay(
-            coach: coach,
-            placement: .bottomLeading,
-            message: coachPopInMessage(for: beat),
-            talkingTake: talkingTake,
-            replayToken: beat.id
-          )
-        }
     case .contrastCards:
-      // CORE INSIGHT: the teaching visual fills the card as its background and
-      // owns the headline. NO full/framed coach — at most a tiny corner PiP.
+      // Core Insight: teaching visual in the media zone. Headline shown at top.
       CoreInsightVisualCard(
         lecture: lecture,
         headline: beat.signalPhrase,
-        caption: insightChips(mode: mode).joined(separator: " · ")
+        caption: insightChips(mode: mode).joined(separator: " · "),
+        showHeadline: false
       )
-      .overlay(alignment: .bottomTrailing) { coachPiP }
       .padding(.horizontal, hMargin)
     case .spokenLineCards, .chatMockup:
       // GOOD vs BAD: two side-by-side cards. Voiceover narrates — NO coach.
@@ -361,27 +343,6 @@ struct LectureStoryPlayerView: View {
     }
   }
 
-  /// A small circular coach picture-in-picture for the Core Insight beat — the
-  /// only place a face appears outside the Hook/Takeaway avatar beats.
-  private var coachPiP: some View {
-    AuraCoachStage(coach: coach, speaking: false, talkingTake: talkingTake, compact: true)
-      .frame(width: 64, height: 64)
-      .clipShape(Circle())
-      .overlay(Circle().stroke(Theme.border, lineWidth: 1))
-      .padding(12)
-  }
-
-  /// Optional 1-line flavor micro-text for the coach pop-in (3–7 words). It must
-  /// NOT duplicate narration — purely character flavor. Hook welcomes; takeaway
-  /// hands off to practice. Returns nil for any non-avatar beat.
-  private func coachPopInMessage(for beat: LectureBeat) -> String? {
-    switch beat.kind {
-    case .hook: return "Quick one — stay with me"
-    case .takeawayHandoff: return "Your turn now"
-    default: return nil
-    }
-  }
-
   private func insightChips(mode: ConversationMode) -> [String] {
     switch lecture.skill {
     case "Opening": return ["Voice", "Eyes", "Timing"]
@@ -390,6 +351,37 @@ struct LectureStoryPlayerView: View {
     case "Flow": return ["Listen", "Callback", "Space"]
     default: return mode == .texting ? ["Send", "Wait", "Read"] : ["Be present"]
     }
+  }
+
+  // MARK: - Key-point captions (LXFIX7.3)
+
+  @ViewBuilder
+  private func beatKeyPoints(for beat: LectureBeat) -> some View {
+    let pts = Array(beat.keyPoints.prefix(3))
+    if !pts.isEmpty {
+      let revealed = revealedCount(pts.count)
+      VStack(spacing: 6) {
+        ForEach(Array(pts.enumerated()), id: \.offset) { i, pt in
+          let active = i == revealed - 1
+          Text(pt)
+            .font(.system(size: 15, weight: .semibold))
+            .foregroundStyle(active ? Theme.text : Theme.textMuted)
+            .padding(.horizontal, 14).padding(.vertical, 8)
+            .background(Capsule().fill(Theme.surfaceRaised.opacity(active ? 0.72 : 0.42)))
+            .scaleEffect(active ? 1.03 : 1.0, anchor: .center)
+            .opacity(i < revealed ? 1 : 0)
+            .animation(.easeOut(duration: 0.3), value: revealed)
+        }
+      }
+      .padding(.horizontal, hMargin)
+      .padding(.top, 14)
+    }
+  }
+
+  private func revealedCount(_ total: Int) -> Int {
+    if narrator.progress >= 0.70 { return min(3, total) }
+    if narrator.progress >= 0.35 { return min(2, total) }
+    return min(1, total)
   }
 
   // MARK: - Aura coach stage (feathered full-bleed for avatar beats, PiP else)
@@ -533,7 +525,8 @@ struct LectureStoryPlayerView: View {
           } label: {
             Image(systemName: "chevron.left")
               .font(.system(size: 15, weight: .bold))
-              .foregroundStyle(index == 0 ? Theme.textFaint : Theme.textMuted)
+              .foregroundStyle(Theme.textMuted)
+              .opacity(index == 0 ? 0.3 : 1.0)
           }
           .buttonStyle(.plain)
           .disabled(index == 0)
@@ -547,7 +540,7 @@ struct LectureStoryPlayerView: View {
           } label: {
             Image(systemName: "chevron.right")
               .font(.system(size: 15, weight: .bold))
-              .foregroundStyle(Theme.accent)
+              .foregroundStyle(Theme.textMuted)
           }
           .buttonStyle(.plain)
         }

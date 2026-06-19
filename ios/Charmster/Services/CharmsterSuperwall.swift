@@ -29,6 +29,11 @@ enum CharmsterSuperwall {
   }
 
   static func identify(userId: String) {
+    let key =
+      ProcessInfo.processInfo.environment["SUPERWALL_PUBLIC_API_KEY"]
+      ?? (Bundle.main.object(forInfoDictionaryKey: "SUPERWALL_PUBLIC_API_KEY") as? String)
+      ?? ""
+    guard !key.isEmpty else { return }
     #if DEBUG
       Superwall.shared.identify(userId: userId)
       Superwall.shared.setUserAttributes(["tenx_preview": true])
@@ -40,6 +45,11 @@ enum CharmsterSuperwall {
   static func register(
     _ placement: Placement, params: [String: Any]? = nil, feature: (() -> Void)? = nil
   ) {
+    let key =
+      ProcessInfo.processInfo.environment["SUPERWALL_PUBLIC_API_KEY"]
+      ?? (Bundle.main.object(forInfoDictionaryKey: "SUPERWALL_PUBLIC_API_KEY") as? String)
+      ?? ""
+    guard !key.isEmpty else { feature?(); return }
     Superwall.shared.register(placement: placement.rawValue, params: params) {
       feature?()
     }
