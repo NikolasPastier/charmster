@@ -99,6 +99,9 @@ final class CurriculumService {
       } else {
         canonicalId = "\(row.track_id).\(row.lecture_number)"
       }
+      // Fall back to the bundle curriculum's skill when Supabase returns null,
+      // so switch-on-skill in LectureStoryBuilder still resolves correctly.
+      let bundleSkill = Curriculum.lecture(id: canonicalId)?.skill ?? ""
       return Lecture(
         id: canonicalId,
         trackId: row.track_id,
@@ -106,7 +109,7 @@ final class CurriculumService {
         title: row.title,
         scenario: row.scenario ?? row.title,
         minutes: row.minutes ?? 5,
-        skill: row.skill ?? "Practice",
+        skill: row.skill ?? bundleSkill,
         isCapstone: row.is_capstone ?? false,
         access: access,
         format: format
