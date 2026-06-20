@@ -69,6 +69,7 @@ struct LectureStoryPlayerView: View {
       .onAppear {
         talkingTake = CoachClipCatalog.shared.randomTalkingTake()
         Task { await CoachClipCatalog.shared.preload(persona: coach, talkingTake: talkingTake) }
+        CoachExpressionStore.shared.prefetch(coachId: coach.id)
         buildStoryIfNeeded()
         captionsOn = false  // default OFF (redundancy principle)
         // UX5 — start on the silent Card 0; audio Hook begins when the user
@@ -313,7 +314,7 @@ struct LectureStoryPlayerView: View {
     switch beat.visual {
     case .avatar:
       // Hook (Beat 1) + Takeaway (Beat 5): coach talking loop, full-bleed, feathered.
-      auraStage(big: true)
+      auraStage(big: true, expression: ExpressionPose.pose(for: beat.kind))
     case .contrastCards:
       // Core Insight: teaching visual in the media zone. Headline shown at top.
       CoreInsightVisualCard(
@@ -381,16 +382,20 @@ struct LectureStoryPlayerView: View {
   // MARK: - Aura coach stage (feathered full-bleed for avatar beats, PiP else)
 
   @ViewBuilder
-  private func auraStage(big: Bool) -> some View {
+  private func auraStage(big: Bool, expression: ExpressionPose = .neutral) -> some View {
     let speaking = narrator.isSpeaking && !isPaused
     if big {
-      AuraCoachStage(coach: coach, speaking: speaking, talkingTake: talkingTake)
-        .frame(maxWidth: .infinity)
-        .frame(height: 340)
+      AuraCoachStage(
+        coach: coach, speaking: speaking, talkingTake: talkingTake, expression: expression
+      )
+      .frame(maxWidth: .infinity)
+      .frame(height: 340)
     } else {
       // Small feathered IDLE picture-in-picture.
-      AuraCoachStage(coach: coach, speaking: false, talkingTake: talkingTake, compact: true)
-        .frame(width: 132, height: 132)
+      AuraCoachStage(
+        coach: coach, speaking: false, talkingTake: talkingTake, compact: true, expression: expression
+      )
+      .frame(width: 132, height: 132)
     }
   }
 
