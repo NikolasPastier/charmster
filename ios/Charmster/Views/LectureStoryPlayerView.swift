@@ -34,7 +34,7 @@ struct LectureStoryPlayerView: View {
   @State private var story: LectureStory?
   @State private var index: Int = 0
   @State private var narrator = LectureBeatNarrator()
-  @State private var captionsOn: Bool = false
+  @State private var captionsOn: Bool = true
   @State private var isPaused: Bool = false
   @State private var showProfileLabel: Bool = false
   /// UX5 — the lecture opens on Card 0 ("What you'll learn"), a silent prelude
@@ -71,7 +71,6 @@ struct LectureStoryPlayerView: View {
         Task { await CoachClipCatalog.shared.preload(persona: coach, talkingTake: talkingTake) }
         CoachExpressionStore.shared.prefetch(coachId: coach.id)
         buildStoryIfNeeded()
-        captionsOn = false  // default OFF (redundancy principle)
         // UX5 — start on the silent Card 0; audio Hook begins when the user
         // advances past the prelude.
         showProfileMicroLabelIfNeeded()
@@ -219,7 +218,7 @@ struct LectureStoryPlayerView: View {
               .lineLimit(1)
             Image(systemName: "forward.fill").font(.system(size: 10, weight: .bold))
           }
-          .foregroundStyle(Theme.textMuted)
+          .foregroundStyle(Theme.text.opacity(0.65))
         }
         .buttonStyle(.plain)
       }
@@ -281,30 +280,10 @@ struct LectureStoryPlayerView: View {
   @ViewBuilder
   private func beatCard(beat: LectureBeat, mode: ConversationMode) -> some View {
     VStack(spacing: 0) {
-      KeyPointPopView(
-        text: beat.signalPhrase,
-        replayToken: "\(lecture.id)|\(index)",
-        fontSize: 34
-      )
-      .padding(.top, 4)
-      .padding(.bottom, 4)
-
-      // LXFIX7.2 — media zone
+      beatHeader(beat: beat)
       beatVisual(beat: beat, mode: mode)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-
-      // LXFIX7.3 — key-point captions (Hook/CoreInsight/Takeaway only)
-      beatKeyPoints(for: beat)
-
-      if captionsOn {
-        Text(beat.narrationText)
-          .font(.system(size: 13))
-          .foregroundStyle(Theme.textMuted)
-          .multilineTextAlignment(.center)
-          .padding(.horizontal, hMargin)
-          .padding(.top, 6)
-          .transition(.opacity)
-      }
+      subtitleView(for: beat)
     }
     .padding(.bottom, 10)
   }
@@ -348,37 +327,6 @@ struct LectureStoryPlayerView: View {
     }
   }
 
-  // MARK: - Key-point captions (LXFIX7.3)
-
-  @ViewBuilder
-  private func beatKeyPoints(for beat: LectureBeat) -> some View {
-    let pts = Array(beat.keyPoints.prefix(3))
-    if !pts.isEmpty {
-      let revealed = revealedCount(pts.count)
-      VStack(spacing: 6) {
-        ForEach(Array(pts.enumerated()), id: \.offset) { i, pt in
-          let active = i == revealed - 1
-          Text(pt)
-            .font(.system(size: 15, weight: .semibold))
-            .foregroundStyle(active ? Theme.text : Theme.textMuted)
-            .padding(.horizontal, 14).padding(.vertical, 8)
-            .background(Capsule().fill(Theme.surfaceRaised.opacity(active ? 0.72 : 0.42)))
-            .scaleEffect(active ? 1.03 : 1.0, anchor: .center)
-            .opacity(i < revealed ? 1 : 0)
-            .animation(.easeOut(duration: 0.3), value: revealed)
-        }
-      }
-      .padding(.horizontal, hMargin)
-      .padding(.top, 14)
-    }
-  }
-
-  private func revealedCount(_ total: Int) -> Int {
-    if narrator.progress >= 0.70 { return min(3, total) }
-    if narrator.progress >= 0.35 { return min(2, total) }
-    return min(1, total)
-  }
-
   // MARK: - Aura coach stage (feathered full-bleed for avatar beats, PiP else)
 
   @ViewBuilder
@@ -403,6 +351,9 @@ struct LectureStoryPlayerView: View {
 
   @ViewBuilder
   private func recallView(_ recall: RecallCheck) -> some View {
+    let opts = shuffledOptions(for: recall)
+    let correctText = recall.correctIndex < recall.options.count
+      ? recall.options[recall.correctIndex] : ""
     VStack(spacing: 16) {
       Text(recall.question)
         .font(.system(size: 22, weight: .heavy))
@@ -411,14 +362,14 @@ struct LectureStoryPlayerView: View {
         .padding(.horizontal, hMargin)
 
       VStack(spacing: 10) {
-        ForEach(recall.options.indices, id: \.self) { i in
-          recallOption(recall, i)
+        ForEach(opts.indices, id: \.self) { i in
+          recallOption(recall, i, opts: opts, correctText: correctText)
         }
       }
       .padding(.horizontal, hMargin)
 
       if let choice = recallChoice {
-        let correct = choice == recall.correctIndex
+        let correct = choice < opts.count && opts[choice] == correctText
         VStack(spacing: 6) {
           HStack(spacing: 6) {
             Image(systemName: correct ? "checkmark.seal.fill" : "info.circle.fill")
@@ -449,10 +400,12 @@ struct LectureStoryPlayerView: View {
   }
 
   @ViewBuilder
-  private func recallOption(_ recall: RecallCheck, _ i: Int) -> some View {
+  private func recallOption(
+    _ recall: RecallCheck, _ i: Int, opts: [String], correctText: String
+  ) -> some View {
     let answered = recallChoice != nil
     let isChosen = recallChoice == i
-    let isCorrect = i == recall.correctIndex
+    let isCorrect = opts[i] == correctText
     let tone: Color = {
       guard answered else { return Theme.border }
       if isCorrect { return Theme.good }
@@ -468,7 +421,7 @@ struct LectureStoryPlayerView: View {
       }
     } label: {
       HStack {
-        Text(recall.options[i])
+        Text(opts[i])
           .font(.system(size: 15, weight: .semibold))
           .foregroundStyle(Theme.text)
           .multilineTextAlignment(.leading)
@@ -532,7 +485,7 @@ struct LectureStoryPlayerView: View {
           Spacer()
           Text("Tap to continue")
             .font(.system(size: 13, weight: .semibold))
-            .foregroundStyle(Theme.textMuted)
+            .foregroundStyle(Theme.text.opacity(0.7))
           Spacer()
           Button {
             advanceFromTap()
@@ -612,6 +565,104 @@ struct LectureStoryPlayerView: View {
     guard isPaused else { return }
     isPaused = false
     narrator.resume()
+  }
+
+  // MARK: - Quiet beat header (LX10.3)
+
+  private func beatHeader(beat: LectureBeat) -> some View {
+    VStack(spacing: 2) {
+      Text(lecture.title)
+        .font(.system(size: 13, weight: .semibold))
+        .foregroundStyle(Color(hex: 0xF5F0F7))
+        .lineLimit(1)
+        .truncationMode(.tail)
+      Text(beatLabel(for: beat.kind))
+        .font(.system(size: 11))
+        .foregroundStyle(Color(hex: 0xF5F0F7).opacity(0.55))
+    }
+    .padding(.top, 4)
+    .padding(.bottom, 6)
+  }
+
+  private func beatLabel(for kind: LectureBeatKind) -> String {
+    switch kind {
+    case .hook:            return "Hook"
+    case .coreInsight:     return "Core insight"
+    case .goodVsBad:       return "Good vs bad"
+    case .recallCheck:     return "Your call"
+    case .takeawayHandoff: return "Takeaway"
+    }
+  }
+
+  // MARK: - Bottom subtitles (LX10.4)
+
+  @ViewBuilder
+  private func subtitleView(for beat: LectureBeat) -> some View {
+    if captionsOn {
+      let chunks = subtitleChunks(beat.narrationText)
+      let idx = max(0, min(chunks.count - 1, Int(narrator.progress * Double(chunks.count))))
+      let text = chunks.isEmpty ? "" : chunks[idx]
+      if !text.isEmpty {
+        Text(text)
+          .font(.system(size: 15))
+          .foregroundStyle(.white.opacity(0.85))
+          .multilineTextAlignment(.center)
+          .lineLimit(2)
+          .padding(.horizontal, 18)
+          .padding(.vertical, 9)
+          .background(RoundedRectangle(cornerRadius: 8).fill(.black.opacity(0.38)))
+          .padding(.horizontal, hMargin)
+          .padding(.top, 8)
+          .animation(.easeInOut(duration: 0.18), value: idx)
+      }
+    }
+  }
+
+  private func subtitleChunks(_ text: String) -> [String] {
+    var chunks: [String] = []
+    var current = ""
+    for sentence in text.components(separatedBy: ". ") {
+      let s = sentence.trimmingCharacters(in: .whitespaces)
+      guard !s.isEmpty else { continue }
+      let candidate = current.isEmpty ? s : "\(current). \(s)"
+      if candidate.split(separator: " ").count > 12 && !current.isEmpty {
+        chunks.append("\(current).")
+        current = s
+      } else {
+        current = candidate
+      }
+    }
+    if !current.isEmpty {
+      let end = current.hasSuffix(".") || current.hasSuffix("?") || current.hasSuffix("!")
+      chunks.append(end ? current : "\(current).")
+    }
+    return chunks.isEmpty ? [text] : chunks
+  }
+
+  // MARK: - Seeded recall shuffle (LX10.1)
+
+  private func shuffledOptions(for recall: RecallCheck) -> [String] {
+    var opts = recall.options
+    var rng = SeededRNG(seed: stableHash(lecture.id))
+    opts.shuffle(using: &rng)
+    return opts
+  }
+
+  private func stableHash(_ s: String) -> UInt64 {
+    var h: UInt64 = 5381
+    for byte in s.utf8 { h = (h &<< 5) &+ h &+ UInt64(byte) }
+    return h == 0 ? 1 : h
+  }
+
+  private struct SeededRNG: RandomNumberGenerator {
+    private var state: UInt64
+    init(seed: UInt64) { state = seed == 0 ? 1 : seed }
+    mutating func next() -> UInt64 {
+      state ^= state << 13
+      state ^= state >> 7
+      state ^= state << 17
+      return state
+    }
   }
 }
 
