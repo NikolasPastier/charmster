@@ -1,34 +1,22 @@
 import SwiftUI
 
-/// Audio-first, swipeable story-card lecture player — restyled to the approved
-/// **Aura** mockups: a deep Charmster base with a soft pink→gold radial glow
-/// halo behind the coach, a slim segmented progress bar with an X exit + beat
-/// timer up top, and the coach clip feathered full-bleed into the scene.
+/// Type-led lecture card player — redesigned to the approved Aura mockups.
 ///
-/// One beat per card. Narration plays as AUDIO in the selected coach's voice
-/// (the ONLY audio); the coach VIDEO clips are purely visual and force-muted.
-/// On screen we show only the beat's single signal phrase (never the full
-/// script). Tap/swipe to advance, hold to pause. Captions OFF by default.
-///
-/// Avatar beats (hook + takeaway) show the coach TALKING loop full-bleed +
-/// feathered + glow. Insight/GoodVsBad/Recall beats show the teaching visual /
-/// question UI with coach voiceover and a small feathered IDLE picture-in-
-/// picture. One talking take is chosen when the lecture opens and held for the
-/// whole lecture. Reduced-motion / load / offline shows the coach still.
+/// Six-card flow: Intro (coach icon + objectives) → Hook → Core Insight →
+/// Works vs Avoid → Quick Check (quiz) → Verdict (coach icon + takeaway).
+/// Teaching cards are pure typography over the Aura gradient; coach clips are
+/// NOT shown mid-lecture — only a small circular coach icon on Intro + Verdict.
+/// Narration plays as audio; subtitles advance from narrator.progress.
+/// Quiz logic, scoring, and audio are UNCHANGED — presentation only.
 struct LectureStoryPlayerView: View {
   @Environment(AppState.self) private var app
   @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
   let lecture: Lecture
-  /// Per-session coach override (from the replay setup sheet). When nil the
-  /// player uses the user's default `app.selectedCoach`.
   var coachOverride: CoachPersona? = nil
-  /// Show a brief "playing with your profile settings" micro-label on first
-  /// play, when the session was auto-configured from the onboarding profile.
   var showAutoConfigLabel: Bool = false
   let onPractice: () -> Void
   let onSkipToPractice: () -> Void
-  /// Exit the lecture (wired to the X). Defaults to no-op for previews.
   var onExit: () -> Void = {}
 
   @State private var story: LectureStory?
@@ -37,18 +25,10 @@ struct LectureStoryPlayerView: View {
   @State private var captionsOn: Bool = true
   @State private var isPaused: Bool = false
   @State private var showProfileLabel: Bool = false
-  /// UX5 — the lecture opens on Card 0 ("What you'll learn"), a silent prelude
-  /// shown before Beat 1. It's skippable like any card; advancing starts the
-  /// audio Hook. Going back from Beat 1 returns here.
   @State private var inPrelude: Bool = true
-
-  /// Talking take chosen ONCE per lecture, held for the whole session.
   @State private var talkingTake: Int = 1
-
-  // Recall beat state
   @State private var recallChoice: Int?
 
-  /// Single horizontal margin token used by every beat, top bar, and bottom bar.
   private let hMargin: CGFloat = 20
 
   private var coach: CoachPersona { coachOverride ?? app.selectedCoach }
@@ -61,9 +41,7 @@ struct LectureStoryPlayerView: View {
         } else {
           ProgressView().tint(Theme.accent)
         }
-        if showProfileLabel {
-          profileMicroLabel
-        }
+        if showProfileLabel { profileMicroLabel }
       }
       .background { AuraBackground() }
       .onAppear {
@@ -71,8 +49,6 @@ struct LectureStoryPlayerView: View {
         Task { await CoachClipCatalog.shared.preload(persona: coach, talkingTake: talkingTake) }
         CoachExpressionStore.shared.prefetch(coachId: coach.id)
         buildStoryIfNeeded()
-        // UX5 — start on the silent Card 0; audio Hook begins when the user
-        // advances past the prelude.
         showProfileMicroLabelIfNeeded()
       }
       .onDisappear { narrator.stop() }
@@ -80,7 +56,7 @@ struct LectureStoryPlayerView: View {
     .trackView("LectureStoryPlayerView")
   }
 
-  // MARK: - Profile micro-label (first-play personalization cue)
+  // MARK: - Profile micro-label
 
   private var profileMicroLabel: some View {
     VStack {
@@ -103,7 +79,6 @@ struct LectureStoryPlayerView: View {
     .allowsHitTesting(false)
   }
 
-  /// Briefly surface the personalization cue on a first play, then fade it.
   private func showProfileMicroLabelIfNeeded() {
     guard showAutoConfigLabel else { return }
     withAnimation(.easeOut(duration: 0.35)) { showProfileLabel = true }
@@ -132,11 +107,8 @@ struct LectureStoryPlayerView: View {
       topBar
       ZStack {
         if inPrelude {
-          LectureObjectivesCard(
-            objectives: story.learningObjectives,
-            replayToken: "\(story.id)#prelude"
-          )
-          .transition(.opacity)
+          introCard(story: story)
+            .transition(.opacity)
         } else {
           ForEach(Array(beats.enumerated()), id: \.element.id) { i, beat in
             if i == index {
@@ -152,11 +124,8 @@ struct LectureStoryPlayerView: View {
       .gesture(
         DragGesture(minimumDistance: 24)
           .onEnded { value in
-            if value.translation.width < -40 {
-              advanceFromTap()
-            } else if value.translation.width > 40 {
-              goBack()
-            }
+            if value.translation.width < -40 { advanceFromTap() }
+            else if value.translation.width > 40 { goBack() }
           }
       )
       .simultaneousGesture(
@@ -169,7 +138,7 @@ struct LectureStoryPlayerView: View {
     .frame(maxWidth: .infinity, maxHeight: .infinity)
   }
 
-  // MARK: - Top bar (X exit + segmented progress + timer + captions)
+  // MARK: - Top bar
 
   private var topBar: some View {
     VStack(spacing: 10) {
@@ -189,12 +158,6 @@ struct LectureStoryPlayerView: View {
 
         progressBar
 
-        Text(beatTimerLabel)
-          .font(.system(size: 12, weight: .bold).monospacedDigit())
-          .foregroundStyle(Theme.textMuted)
-          .frame(minWidth: 34, alignment: .trailing)
-          .opacity(inPrelude ? 0 : 1)
-
         Button {
           captionsOn.toggle()
         } label: {
@@ -206,21 +169,23 @@ struct LectureStoryPlayerView: View {
         .accessibilityLabel("Toggle captions")
       }
 
-      HStack {
-        Spacer()
-        Button {
-          narrator.stop()
-          onSkipToPractice()
-        } label: {
-          HStack(spacing: 5) {
-            Text("Skip to practice")
-              .font(.system(size: 12, weight: .bold))
-              .lineLimit(1)
-            Image(systemName: "forward.fill").font(.system(size: 10, weight: .bold))
+      if !inPrelude {
+        HStack {
+          Spacer()
+          Button {
+            narrator.stop()
+            onSkipToPractice()
+          } label: {
+            HStack(spacing: 5) {
+              Text("Skip to practice")
+                .font(.system(size: 12, weight: .bold))
+                .lineLimit(1)
+              Image(systemName: "forward.fill").font(.system(size: 10, weight: .bold))
+            }
+            .foregroundStyle(Theme.text.opacity(0.65))
           }
-          .foregroundStyle(Theme.text.opacity(0.65))
+          .buttonStyle(.plain)
         }
-        .buttonStyle(.plain)
       }
     }
     .padding(.horizontal, hMargin)
@@ -228,19 +193,10 @@ struct LectureStoryPlayerView: View {
     .padding(.bottom, 8)
   }
 
-  /// Approximate per-beat time remaining derived from narration progress.
-  private var beatTimerLabel: String {
-    let remaining = max(0, 1 - narrator.progress)
-    let est = 18.0  // nominal beat seconds for a readable countdown
-    let secs = Int((remaining * est).rounded())
-    return String(format: "0:%02d", secs)
-  }
-
-  // MARK: - Progress bar (one segment per beat, Aura gradient)
+  // MARK: - Progress bar
 
   private var progressBar: some View {
     HStack(spacing: 5) {
-      // UX5 — a distinct, smaller "prelude" segment for Card 0.
       GeometryReader { geo in
         ZStack(alignment: .leading) {
           Capsule().fill(Theme.surfaceRaised)
@@ -275,79 +231,352 @@ struct LectureStoryPlayerView: View {
     return CGFloat(max(0.04, narrator.progress))
   }
 
-  // MARK: - Beat card
+  // MARK: - Card 1 · Intro (prelude)
+
+  @ViewBuilder
+  private func introCard(story: LectureStory) -> some View {
+    ScrollView(showsIndicators: false) {
+      VStack(spacing: 0) {
+        Spacer(minLength: 24).frame(height: 24)
+
+        coachIcon(size: 84)
+          .padding(.bottom, 20)
+
+        gradientKicker("WITH \(coach.humanName.uppercased()) · \(coach.roleTag.uppercased())")
+          .padding(.bottom, 16)
+
+        Text(lecture.title)
+          .font(.system(size: 30, weight: .heavy))
+          .foregroundStyle(Color(hex: 0xF5F0F7))
+          .multilineTextAlignment(.center)
+          .lineLimit(3)
+          .padding(.horizontal, hMargin)
+
+        auraRule
+          .padding(.top, 14)
+          .padding(.bottom, 24)
+
+        VStack(alignment: .leading, spacing: 14) {
+          Text("BY THE END YOU'LL")
+            .font(.system(size: 11, weight: .heavy))
+            .tracking(2.5)
+            .foregroundStyle(Color(hex: 0xF5F0F7).opacity(0.45))
+            .frame(maxWidth: .infinity, alignment: .leading)
+
+          ForEach(Array(story.learningObjectives.prefix(3).enumerated()), id: \.offset) { _, obj in
+            HStack(alignment: .top, spacing: 10) {
+              Text("·")
+                .font(.system(size: 18, weight: .heavy))
+                .foregroundStyle(Theme.pink)
+                .frame(width: 12, alignment: .center)
+              Text(obj)
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundStyle(Color(hex: 0xF5F0F7))
+                .lineLimit(2)
+                .fixedSize(horizontal: false, vertical: true)
+            }
+          }
+        }
+        .padding(.horizontal, hMargin)
+        .frame(maxWidth: .infinity, alignment: .leading)
+
+        Spacer(minLength: 24).frame(height: 24)
+      }
+      .frame(maxWidth: .infinity)
+    }
+    .frame(maxWidth: .infinity, maxHeight: .infinity)
+  }
+
+  // MARK: - Beat card (dispatch by kind)
 
   @ViewBuilder
   private func beatCard(beat: LectureBeat, mode: ConversationMode) -> some View {
     VStack(spacing: 0) {
       beatHeader(beat: beat)
-      beatVisual(beat: beat, mode: mode)
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-      subtitleView(for: beat)
+      switch beat.kind {
+      case .hook:
+        teachingCard(beat: beat, kicker: "THE HOOK", showCoachChip: false)
+      case .coreInsight:
+        teachingCard(beat: beat, kicker: "THE BIG IDEA", showCoachChip: true)
+      case .goodVsBad:
+        worksAvoidCard(beat: beat)
+      case .recallCheck:
+        quizCard(beat: beat)
+      case .takeawayHandoff:
+        verdictCard(beat: beat)
+      }
     }
     .padding(.bottom, 10)
   }
 
+  // MARK: - Card 2 & 3 · Teaching card (Hook + Core Insight)
+
   @ViewBuilder
-  private func beatVisual(beat: LectureBeat, mode: ConversationMode) -> some View {
-    switch beat.visual {
-    case .avatar:
-      // Hook (Beat 1) + Takeaway (Beat 5): coach talking loop, full-bleed, feathered.
-      auraStage(big: true, expression: ExpressionPose.pose(for: beat.kind))
-    case .contrastCards:
-      // Core Insight: teaching visual in the media zone. Headline shown at top.
-      CoreInsightVisualCard(
-        lecture: lecture,
-        headline: beat.signalPhrase,
-        caption: insightChips(mode: mode).joined(separator: " · "),
-        showHeadline: false
-      )
-      .padding(.horizontal, hMargin)
-    case .spokenLineCards, .chatMockup:
-      // GOOD vs BAD: two side-by-side cards. Voiceover narrates — NO coach.
-      if let good = beat.goodExample, let bad = beat.badExample {
-        GoodBadContrastFrame(mode: mode, good: good, bad: bad)
-          .padding(.horizontal, hMargin)
+  private func teachingCard(beat: LectureBeat, kicker: String, showCoachChip: Bool) -> some View {
+    VStack(spacing: 0) {
+      Spacer(minLength: 12)
+
+      if showCoachChip {
+        coachIcon(size: 64)
+          .padding(.bottom, 16)
       }
-    case .recallQuestion:
-      // RECALL: question + tappable options. Voice only — NO coach.
+
+      gradientKicker(kicker)
+        .padding(.bottom, 14)
+
+      heroText(phrase: beat.signalPhrase)
+        .multilineTextAlignment(.center)
+        .lineSpacing(2)
+        .lineLimit(4)
+        .padding(.horizontal, hMargin)
+
+      auraRule
+        .padding(.top, 14)
+        .padding(.bottom, 20)
+
+      Text(supportLine(beat.narrationText))
+        .font(.system(size: 16, weight: .medium))
+        .foregroundStyle(Color(hex: 0xF5F0F7).opacity(0.58))
+        .multilineTextAlignment(.center)
+        .lineLimit(3)
+        .fixedSize(horizontal: false, vertical: true)
+        .padding(.horizontal, hMargin)
+
+      Spacer(minLength: 8)
+
+      subtitleView(for: beat)
+    }
+    .frame(maxWidth: .infinity, maxHeight: .infinity)
+  }
+
+  // MARK: - Card 4 · Works vs Avoid
+
+  @ViewBuilder
+  private func worksAvoidCard(beat: LectureBeat) -> some View {
+    VStack(spacing: 0) {
+      Spacer(minLength: 12)
+
+      gradientKicker("IN PRACTICE")
+        .padding(.bottom, 18)
+
+      VStack(spacing: 12) {
+        if let good = beat.goodExample {
+          contrastCard(label: "✓  WORKS", line: good.line, tag: good.reactionTag, isGood: true)
+        }
+        if let bad = beat.badExample {
+          contrastCard(label: "✗  AVOID", line: bad.line, tag: bad.reactionTag, isGood: false)
+        }
+      }
+      .padding(.horizontal, hMargin)
+
+      Spacer(minLength: 8)
+
+      subtitleView(for: beat)
+    }
+    .frame(maxWidth: .infinity, maxHeight: .infinity)
+  }
+
+  @ViewBuilder
+  private func contrastCard(label: String, line: String, tag: String?, isGood: Bool) -> some View {
+    let accent: Color = isGood ? Theme.good : Theme.bad
+    VStack(alignment: .leading, spacing: 8) {
+      Text(label)
+        .font(.system(size: 13, weight: .heavy))
+        .tracking(0.5)
+        .foregroundStyle(accent)
+      Text("\"\(line)\"")
+        .font(.system(size: 16, weight: .semibold))
+        .foregroundStyle(Color(hex: 0xF5F0F7))
+        .lineLimit(5)
+        .fixedSize(horizontal: false, vertical: true)
+      if let tag {
+        Text(tag)
+          .font(.system(size: 13, weight: .medium))
+          .foregroundStyle(Color(hex: 0xF5F0F7).opacity(0.48))
+          .lineLimit(2)
+      }
+    }
+    .padding(16)
+    .frame(maxWidth: .infinity, alignment: .leading)
+    .background(
+      RoundedRectangle(cornerRadius: 16, style: .continuous)
+        .fill(accent.opacity(0.07))
+    )
+    .overlay(
+      RoundedRectangle(cornerRadius: 16, style: .continuous)
+        .stroke(accent.opacity(0.35), lineWidth: 1.5)
+    )
+  }
+
+  // MARK: - Card 5 · Quiz (recall — logic unchanged, kicker added)
+
+  @ViewBuilder
+  private func quizCard(beat: LectureBeat) -> some View {
+    VStack(spacing: 0) {
+      Spacer(minLength: 12)
+
+      gradientKicker("QUICK CHECK")
+        .padding(.bottom, 20)
+
       if let recall = beat.recall {
         recallView(recall)
       }
+
+      Spacer(minLength: 8)
     }
+    .frame(maxWidth: .infinity, maxHeight: .infinity)
   }
 
-  private func insightChips(mode: ConversationMode) -> [String] {
-    switch lecture.skill {
-    case "Opening": return ["Voice", "Eyes", "Timing"]
-    case "Presence": return ["Notice", "Breathe", "Stay"]
-    case "Frame": return ["Tone", "Hold", "Half-smile"]
-    case "Flow": return ["Listen", "Callback", "Space"]
-    default: return mode == .texting ? ["Send", "Wait", "Read"] : ["Be present"]
-    }
-  }
-
-  // MARK: - Aura coach stage (feathered full-bleed for avatar beats, PiP else)
+  // MARK: - Card 6 · Verdict (Takeaway)
 
   @ViewBuilder
-  private func auraStage(big: Bool, expression: ExpressionPose = .neutral) -> some View {
-    let speaking = narrator.isSpeaking && !isPaused
-    if big {
-      AuraCoachStage(
-        coach: coach, speaking: speaking, talkingTake: talkingTake, expression: expression
-      )
-      .frame(maxWidth: .infinity)
-      .frame(height: 340)
-    } else {
-      // Small feathered IDLE picture-in-picture.
-      AuraCoachStage(
-        coach: coach, speaking: false, talkingTake: talkingTake, compact: true, expression: expression
-      )
-      .frame(width: 132, height: 132)
+  private func verdictCard(beat: LectureBeat) -> some View {
+    VStack(spacing: 0) {
+      Spacer(minLength: 12)
+
+      coachIcon(size: 84)
+        .padding(.bottom, 20)
+
+      gradientKicker("YOUR TAKEAWAY")
+        .padding(.bottom, 14)
+
+      heroText(phrase: beat.signalPhrase)
+        .multilineTextAlignment(.center)
+        .lineSpacing(2)
+        .lineLimit(4)
+        .padding(.horizontal, hMargin)
+
+      auraRule
+        .padding(.top, 14)
+        .padding(.bottom, 20)
+
+      Text(supportLine(beat.narrationText))
+        .font(.system(size: 16, weight: .medium))
+        .foregroundStyle(Color(hex: 0xF5F0F7).opacity(0.58))
+        .multilineTextAlignment(.center)
+        .lineLimit(3)
+        .fixedSize(horizontal: false, vertical: true)
+        .padding(.horizontal, hMargin)
+
+      Spacer(minLength: 8)
+
+      subtitleView(for: beat)
+    }
+    .frame(maxWidth: .infinity, maxHeight: .infinity)
+  }
+
+  // MARK: - Shared card atoms
+
+  private func gradientKicker(_ label: String) -> some View {
+    Text(label)
+      .font(.system(size: 12, weight: .heavy))
+      .tracking(3)
+      .foregroundStyle(Theme.auraGradient)
+  }
+
+  private func heroText(phrase: String) -> Text {
+    let (plain, grad) = splitHero(phrase)
+    if plain.isEmpty {
+      return Text(phrase)
+        .font(.system(size: 33, weight: .heavy))
+        .foregroundStyle(Theme.auraGradient)
+    }
+    return (
+      Text(plain)
+        .font(.system(size: 33, weight: .heavy))
+        .foregroundStyle(Color(hex: 0xF5F0F7))
+      + Text(grad)
+        .font(.system(size: 33, weight: .heavy))
+        .foregroundStyle(Theme.auraGradient)
+    )
+  }
+
+  private var auraRule: some View {
+    RoundedRectangle(cornerRadius: 2)
+      .fill(Theme.auraGradient)
+      .frame(width: 44, height: 3)
+  }
+
+  private func coachIcon(size: CGFloat) -> some View {
+    CoachAvatarView(coach: coach, baseState: .idle)
+      .frame(width: size, height: size)
+      .clipShape(Circle())
+      .overlay(Circle().stroke(Theme.auraGradient, lineWidth: 2.5))
+  }
+
+  // MARK: - Beat header (lecture title + beat label, shown on all beats)
+
+  private func beatHeader(beat: LectureBeat) -> some View {
+    VStack(spacing: 2) {
+      Text(lecture.title)
+        .font(.system(size: 13, weight: .semibold))
+        .foregroundStyle(Color(hex: 0xF5F0F7))
+        .lineLimit(1)
+        .truncationMode(.tail)
+      Text(beatLabel(for: beat.kind))
+        .font(.system(size: 11))
+        .foregroundStyle(Color(hex: 0xF5F0F7).opacity(0.55))
+    }
+    .padding(.top, 4)
+    .padding(.bottom, 6)
+  }
+
+  private func beatLabel(for kind: LectureBeatKind) -> String {
+    switch kind {
+    case .hook:            return "Hook"
+    case .coreInsight:     return "Core insight"
+    case .goodVsBad:       return "Works vs Avoid"
+    case .recallCheck:     return "Quick check"
+    case .takeawayHandoff: return "Takeaway"
     }
   }
 
-  // MARK: - Recall view (active-recall tap)
+  // MARK: - Subtitles (LX10.4)
+
+  @ViewBuilder
+  private func subtitleView(for beat: LectureBeat) -> some View {
+    if captionsOn {
+      let chunks = subtitleChunks(beat.narrationText)
+      let idx = max(0, min(chunks.count - 1, Int(narrator.progress * Double(chunks.count))))
+      let text = chunks.isEmpty ? "" : chunks[idx]
+      if !text.isEmpty {
+        Text(text)
+          .font(.system(size: 15))
+          .foregroundStyle(.white.opacity(0.85))
+          .multilineTextAlignment(.center)
+          .lineLimit(2)
+          .padding(.horizontal, 18)
+          .padding(.vertical, 9)
+          .background(RoundedRectangle(cornerRadius: 8).fill(.black.opacity(0.38)))
+          .padding(.horizontal, hMargin)
+          .padding(.top, 8)
+          .animation(.easeInOut(duration: 0.18), value: idx)
+      }
+    }
+  }
+
+  private func subtitleChunks(_ text: String) -> [String] {
+    var chunks: [String] = []
+    var current = ""
+    for sentence in text.components(separatedBy: ". ") {
+      let s = sentence.trimmingCharacters(in: .whitespaces)
+      guard !s.isEmpty else { continue }
+      let candidate = current.isEmpty ? s : "\(current). \(s)"
+      if candidate.split(separator: " ").count > 12 && !current.isEmpty {
+        chunks.append("\(current).")
+        current = s
+      } else {
+        current = candidate
+      }
+    }
+    if !current.isEmpty {
+      let end = current.hasSuffix(".") || current.hasSuffix("?") || current.hasSuffix("!")
+      chunks.append(end ? current : "\(current).")
+    }
+    return chunks.isEmpty ? [text] : chunks
+  }
+
+  // MARK: - Recall view (UNCHANGED LOGIC)
 
   @ViewBuilder
   private func recallView(_ recall: RecallCheck) -> some View {
@@ -437,7 +666,8 @@ struct LectureStoryPlayerView: View {
       .background(
         RoundedRectangle(cornerRadius: 14, style: .continuous)
           .fill(
-            answered && (isCorrect || isChosen) ? tone.opacity(0.10) : Theme.surface.opacity(0.7))
+            answered && (isCorrect || isChosen)
+              ? tone.opacity(0.10) : Theme.surface.opacity(0.7))
       )
       .overlay(
         RoundedRectangle(cornerRadius: 14, style: .continuous)
@@ -448,19 +678,24 @@ struct LectureStoryPlayerView: View {
     .disabled(answered)
   }
 
-  // MARK: - Bottom bar (handoff CTA on last beat)
+  // MARK: - Bottom bar
 
   @ViewBuilder
   private func bottomBar(beat: LectureBeat?) -> some View {
     VStack(spacing: 10) {
       if inPrelude {
-        AuraButton(title: "Start lecture", systemImage: "play.fill") {
+        AuraButton(title: "Begin", systemImage: "play.fill") {
           advanceFromTap()
         }
       } else if isLast {
-        AuraButton(title: "Start practice", systemImage: "waveform") {
-          narrator.stop()
-          onPractice()
+        VStack(spacing: 8) {
+          AuraButton(title: "Start practice", systemImage: "waveform") {
+            narrator.stop()
+            onPractice()
+          }
+          Text("\(coach.humanName) will run the scenario with you")
+            .font(.system(size: 12, weight: .medium))
+            .foregroundStyle(Color(hex: 0xF5F0F7).opacity(0.42))
         }
       } else if beat?.kind == .recallCheck {
         AuraButton(
@@ -472,9 +707,7 @@ struct LectureStoryPlayerView: View {
         }
       } else {
         HStack {
-          Button {
-            goBack()
-          } label: {
+          Button { goBack() } label: {
             Image(systemName: "chevron.left")
               .font(.system(size: 15, weight: .bold))
               .foregroundStyle(Theme.textMuted)
@@ -487,9 +720,7 @@ struct LectureStoryPlayerView: View {
             .font(.system(size: 13, weight: .semibold))
             .foregroundStyle(Theme.text.opacity(0.7))
           Spacer()
-          Button {
-            advanceFromTap()
-          } label: {
+          Button { advanceFromTap() } label: {
             Image(systemName: "chevron.right")
               .font(.system(size: 15, weight: .bold))
               .foregroundStyle(Theme.textMuted)
@@ -503,33 +734,25 @@ struct LectureStoryPlayerView: View {
     .padding(.bottom, 18)
   }
 
-  // MARK: - Playback control
+  // MARK: - Playback control (UNCHANGED)
 
   private func startBeat() {
     guard let beat = currentBeat else { return }
     isPaused = false
     narrator.speak(beat, coach: coach, lecture: lecture) {
-      // Auto-advance after audio ends — except the recall beat, which waits
-      // for a tap so the user actually answers.
       if beat.kind == .recallCheck { return }
       if !isLast { advance() }
     }
   }
 
   private func advanceFromTap() {
-    // UX5 — leaving Card 0 starts the audio Hook.
     if inPrelude {
       withAnimation(.easeInOut(duration: 0.3)) { inPrelude = false }
       startBeat()
       return
     }
-    // On the recall beat, a tap should not skip past an unanswered question.
     if currentBeat?.kind == .recallCheck, recallChoice == nil { return }
-    if isLast {
-      narrator.stop()
-      onPractice()
-      return
-    }
+    if isLast { narrator.stop(); onPractice(); return }
     advance()
   }
 
@@ -542,7 +765,6 @@ struct LectureStoryPlayerView: View {
   }
 
   private func goBack() {
-    // UX5 — from Beat 1, going back returns to the silent Card 0.
     if !inPrelude, index == 0 {
       narrator.stop()
       withAnimation(.easeInOut(duration: 0.3)) { inPrelude = true }
@@ -567,76 +789,38 @@ struct LectureStoryPlayerView: View {
     narrator.resume()
   }
 
-  // MARK: - Quiet beat header (LX10.3)
+  // MARK: - Hero text split
 
-  private func beatHeader(beat: LectureBeat) -> some View {
-    VStack(spacing: 2) {
-      Text(lecture.title)
-        .font(.system(size: 13, weight: .semibold))
-        .foregroundStyle(Color(hex: 0xF5F0F7))
-        .lineLimit(1)
-        .truncationMode(.tail)
-      Text(beatLabel(for: beat.kind))
-        .font(.system(size: 11))
-        .foregroundStyle(Color(hex: 0xF5F0F7).opacity(0.55))
-    }
-    .padding(.top, 4)
-    .padding(.bottom, 6)
-  }
-
-  private func beatLabel(for kind: LectureBeatKind) -> String {
-    switch kind {
-    case .hook:            return "Hook"
-    case .coreInsight:     return "Core insight"
-    case .goodVsBad:       return "Good vs bad"
-    case .recallCheck:     return "Your call"
-    case .takeawayHandoff: return "Takeaway"
-    }
-  }
-
-  // MARK: - Bottom subtitles (LX10.4)
-
-  @ViewBuilder
-  private func subtitleView(for beat: LectureBeat) -> some View {
-    if captionsOn {
-      let chunks = subtitleChunks(beat.narrationText)
-      let idx = max(0, min(chunks.count - 1, Int(narrator.progress * Double(chunks.count))))
-      let text = chunks.isEmpty ? "" : chunks[idx]
-      if !text.isEmpty {
-        Text(text)
-          .font(.system(size: 15))
-          .foregroundStyle(.white.opacity(0.85))
-          .multilineTextAlignment(.center)
-          .lineLimit(2)
-          .padding(.horizontal, 18)
-          .padding(.vertical, 9)
-          .background(RoundedRectangle(cornerRadius: 8).fill(.black.opacity(0.38)))
-          .padding(.horizontal, hMargin)
-          .padding(.top, 8)
-          .animation(.easeInOut(duration: 0.18), value: idx)
+  private func splitHero(_ phrase: String) -> (prefix: String, gradient: String) {
+    // Find the last ". " or ", " — the clause after it becomes the gradient punch phrase.
+    // Only use the split if the gradient part is ≤ 5 words (a real emphasis fragment).
+    for sep in [". ", ", "] {
+      if let range = phrase.range(of: sep, options: .backwards) {
+        let after = String(phrase[range.upperBound...])
+        let wordCount = after.split(separator: " ").count
+        if wordCount >= 1 && wordCount <= 5 {
+          let before = String(phrase[..<range.upperBound])
+          return (before, after)
+        }
       }
     }
+    // Fallback: last 2 words in gradient
+    let words = phrase.split(separator: " ").map(String.init)
+    guard words.count > 2 else { return ("", phrase) }
+    return (words.dropLast(2).joined(separator: " ") + " ", words.suffix(2).joined(separator: " "))
   }
 
-  private func subtitleChunks(_ text: String) -> [String] {
-    var chunks: [String] = []
-    var current = ""
-    for sentence in text.components(separatedBy: ". ") {
-      let s = sentence.trimmingCharacters(in: .whitespaces)
-      guard !s.isEmpty else { continue }
-      let candidate = current.isEmpty ? s : "\(current). \(s)"
-      if candidate.split(separator: " ").count > 12 && !current.isEmpty {
-        chunks.append("\(current).")
-        current = s
-      } else {
-        current = candidate
-      }
+  // MARK: - Support line
+
+  private func supportLine(_ narration: String) -> String {
+    let first = narration.components(separatedBy: ". ").first ?? narration
+    let trimmed = first.trimmingCharacters(in: .whitespacesAndNewlines)
+    let words = trimmed.split(separator: " ")
+    if words.count <= 18 {
+      return (trimmed.hasSuffix(".") || trimmed.hasSuffix("?") || trimmed.hasSuffix("!"))
+        ? trimmed : "\(trimmed)."
     }
-    if !current.isEmpty {
-      let end = current.hasSuffix(".") || current.hasSuffix("?") || current.hasSuffix("!")
-      chunks.append(end ? current : "\(current).")
-    }
-    return chunks.isEmpty ? [text] : chunks
+    return words.prefix(18).joined(separator: " ") + "…"
   }
 
   // MARK: - Seeded recall shuffle (LX10.1)
@@ -658,9 +842,7 @@ struct LectureStoryPlayerView: View {
     private var state: UInt64
     init(seed: UInt64) { state = seed == 0 ? 1 : seed }
     mutating func next() -> UInt64 {
-      state ^= state << 13
-      state ^= state >> 7
-      state ^= state << 17
+      state ^= state << 13; state ^= state >> 7; state ^= state << 17
       return state
     }
   }
