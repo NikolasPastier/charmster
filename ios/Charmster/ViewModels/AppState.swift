@@ -661,14 +661,24 @@ final class AppState {
         0.4 + (profile.attachmentAnxiety - 0.4) * 0.7
       ))
     // Coach style suggestion (only if the user hasn't explicitly picked one in
-    // onboarding — the Coach Style step sets `coachMode` directly, which we
-    // respect here by only nudging on high-signal extremes).
-    if profile.attachmentAnxiety > 0.65 {
-      coachMode = .therapist
-    } else if profile.confidence >= 8 {
-      coachMode = .alphaMentor
-    } else if profile.flirtingStyle.localizedCaseInsensitiveContains("playful") {
-      coachMode = .wingman
+    // onboarding — the Coach Style step sets both coachMode AND selectedCoachId
+    // via joinCoach(), leaving selectedCoachId != default. Only nudge when the
+    // user is still on the app default so we don't override an explicit pick).
+    if selectedCoachId == CoachPersona.default.id {
+      let suggested: CoachStyle?
+      if profile.attachmentAnxiety > 0.65 {
+        suggested = .therapist
+      } else if profile.confidence >= 8 {
+        suggested = .alphaMentor
+      } else if profile.flirtingStyle.localizedCaseInsensitiveContains("playful") {
+        suggested = .wingman
+      } else {
+        suggested = nil
+      }
+      if let s = suggested {
+        coachMode = s
+        selectedCoachId = CoachPersona.forStyle(s).id
+      }
     }
   }
 

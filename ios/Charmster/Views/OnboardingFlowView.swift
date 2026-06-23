@@ -1003,34 +1003,19 @@ private struct TasterStep: View {
   @Environment(AppState.self) private var app
   let onComplete: () -> Void
 
-  @State private var phase: Phase = .running
-  @State private var result: SessionResult?
-
-  private enum Phase { case running, results }
-
   var body: some View {
-    switch phase {
-    case .running:
-      if let cfg = tasterConfig, app.canStartLivePractice {
-        LivePracticeView(
-          lecture: app.tasterLecture, config: cfg,
-          onFinish: { r in
-            app.completeSandbox(result: r, scored: true)
-            result = r
-            withAnimation(.smooth) { phase = .results }
-          },
-          onClose: { onComplete() }
-        )
-        .environment(app)
-      } else {
-        Color.clear.onAppear { onComplete() }
-      }
-    case .results:
-      if let r = result {
-        ResultsView(
-          result: r, lecture: app.tasterLecture, onQuiz: {},
-          onDone: { onComplete() })
-      }
+    if let cfg = tasterConfig, app.canStartLivePractice {
+      LivePracticeView(
+        lecture: app.tasterLecture, config: cfg,
+        onFinish: { r in
+          app.completeSandbox(result: r, scored: true)
+          onComplete()
+        },
+        onClose: { onComplete() }
+      )
+      .environment(app)
+    } else {
+      Color.clear.onAppear { onComplete() }
     }
   }
 

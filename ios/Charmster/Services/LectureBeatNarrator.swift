@@ -202,7 +202,12 @@ final class LectureBeatNarrator: NSObject, AVSpeechSynthesizerDelegate {
 
   private func speakWithTTS(text: String, style: CoachStyle) {
     let utterance = AVSpeechUtterance(string: text)
-    utterance.voice = AVSpeechSynthesisVoice(language: style.ttsVoiceLocale)
+    let requestedVoice = AVSpeechSynthesisVoice(language: style.ttsVoiceLocale)
+    if requestedVoice == nil {
+      TenXPreviewSupport.log(
+        "[LectureTTS] voice for '\(style.ttsVoiceLocale)' not installed — using en-US")
+    }
+    utterance.voice = requestedVoice ?? AVSpeechSynthesisVoice(language: "en-US")
     utterance.rate = style.ttsRate
     utterance.pitchMultiplier = style.ttsPitch
     utterance.postUtteranceDelay = 0.05

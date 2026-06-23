@@ -23,15 +23,15 @@ struct RoadmapView: View {
           .padding(.vertical, 18)
         }
         .background(AuraBackground())
-        .navigationTitle("")
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-          ToolbarItem(placement: .topBarLeading) {
+        .toolbarVisibility(.hidden, for: .navigationBar)
+        .safeAreaInset(edge: .top, spacing: 0) {
+          HStack {
             StatPill(systemImage: "flame.fill", value: app.streakDays, tint: Theme.coral)
-          }
-          ToolbarItem(placement: .topBarTrailing) {
+            Spacer()
             StatPill(systemImage: "sparkles", value: app.aura, tint: Theme.aura)
           }
+          .padding(.horizontal, 18)
+          .padding(.vertical, 8)
         }
       }
       .sheet(item: $presentedLecture) { lec in
@@ -84,7 +84,7 @@ struct RoadmapView: View {
   @ViewBuilder
   private var todayHero: some View {
     if let rx = DailyRouter.prescribe(for: app) {
-      TodayHeroCard(prescription: rx, streak: app.streakDays, coach: app.selectedCoach) {
+      TodayHeroCard(prescription: rx, coach: app.selectedCoach) {
         if rx.kind == .weeklyDrop, let drop = WeeklyDrop.current(for: app) {
           WeeklyDrop.markSeen(drop)
         }
@@ -183,7 +183,6 @@ private struct StatPill: View {
 
 struct TodayHeroCard: View {
   let prescription: DailyRouter.Prescription
-  let streak: Int
   let coach: CoachPersona
   let onStart: () -> Void
 
@@ -213,7 +212,6 @@ struct TodayHeroCard: View {
 
         HStack(spacing: 8) {
           TagPill(label: prescription.tier.title, systemImage: "flame.fill", tone: .accent)
-          TagPill(label: "🔥 \(streak)-day streak", tone: .coral)
           Spacer()
         }
 

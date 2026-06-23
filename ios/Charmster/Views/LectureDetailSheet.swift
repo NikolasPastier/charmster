@@ -160,7 +160,7 @@ struct LectureDetailSheet: View {
       config: cfg,
       onFinish: { result in
         app.completePractice(lecture, result: result)
-        route = .results(result)
+        withAnimation(.none) { route = .results(result) }
       },
       onClose: { route = .lecture }
     )

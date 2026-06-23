@@ -58,40 +58,37 @@ final class AvatarClipCatalog {
   /// bucket). Returns `nil` when no clip exists for that state (caller may then
   /// try `baseFallback`).
   ///
-  /// TODO(clips): only Mia's photoreal clip set is uploaded today. Matteo (and
-  /// any new persona) just needs a folder + filename rows added here once the
-  /// .mp4 files land in the `Avatars` bucket.
+  /// New naming convention (all 5 avatars — Mia, Ava, Sofia, Mei, Nia):
+  ///   {DisplayName}/clips/{id} {state name}.mp4
+  /// e.g. "Mia/clips/mia talking loop.mp4", "Ava/clips/ava smile reaction.mp4"
+  /// `.thinking` has no dedicated loop clip — falls back to `.idle` via
+  /// `baseFallbackState`. One-shot reactions map to "{id} {name} reaction.mp4".
   private func objectPath(for persona: AvatarPersona, state: AvatarState) -> String? {
-    switch persona.id {
-    case "mia":
-      let folder = "Mia photorealistic"
-      let file: String?
-      switch state {
-      // Looping base states.
-      case .talking: file = "TALKING LOOP.mp4"
-      case .listening: file = "LISTENING LOOP.mp4"
-      case .idle: file = "LISTENING LOOP.mp4"  // no dedicated idle clip yet → calm listening loop
-      case .thinking: file = "LISTENING LOOP.mp4"  // no dedicated thinking clip yet
-      // One-shot reactions.
-      case .smile: file = "SMILE REACTION.mp4"
-      case .laugh: file = "LAUGH REACTION.mp4"
-      case .flirty: file = "FLIRTY REACTION.mp4"
-      case .surprised: file = "SURPRISED REACTION.mp4"
-      case .cool: file = nil  // no clip yet → caller falls back / no-op
-      case .reassure: file = "SMILE REACTION.mp4"  // warm reassuring smile stand-in
-      }
-      return file.map { "\(folder)/\($0)" }
-    default:
-      // No photoreal clip set uploaded for this persona yet.
-      return nil
+    let folder = persona.displayName  // e.g. "Mia", "Ava", "Sofia", "Mei", "Nia"
+    let id = persona.id               // e.g. "mia", "ava", "sofia", "mei", "nia"
+
+    let stateName: String?
+    switch state {
+    case .idle:      stateName = "idle loop"
+    case .talking:   stateName = "talking loop"
+    case .listening: stateName = "listening loop"
+    case .thinking:  stateName = nil  // no loop clip — baseFallbackState returns .idle
+    case .smile:     stateName = "smile reaction"
+    case .laugh:     stateName = "laugh reaction"
+    case .flirty:    stateName = "flirty reaction"
+    case .surprised: stateName = "surprised reaction"
+    case .cool:      stateName = "cool reaction"
+    case .reassure:  stateName = "reassure reaction"
     }
+
+    guard let sn = stateName else { return nil }
+    return "\(folder)/clips/\(id) \(sn).mp4"
   }
 
-  /// A base looping state that is guaranteed to exist for the persona, used as
-  /// a last-resort fallback so a looping request never resolves to nothing
-  /// when *some* clip exists.
+  /// A base looping state that is guaranteed to exist for all personas.
+  /// Used as a last-resort fallback so a looping request never resolves to nothing.
   private func baseFallbackState(for persona: AvatarPersona) -> AvatarState? {
-    persona.id == "mia" ? .listening : nil
+    .idle
   }
 
   // MARK: - Public surface
@@ -151,7 +148,7 @@ final class AvatarClipCatalog {
   /// Warm the on-device cache for the looping base states + the most common
   /// reactions BEFORE a live session starts. Best-effort; failures are silent.
   func preload(persona: AvatarPersona) async {
-    let warm: [AvatarState] = [.listening, .talking, .smile, .laugh]
+    let warm: [AvatarState] = [.idle, .listening, .talking, .smile, .laugh]
     await withTaskGroup(of: Void.self) { group in
       for s in warm {
         group.addTask { [weak self] in

@@ -297,6 +297,21 @@ struct PracticeHubView: View {
             Spacer()
           }
         }
+      } else if !sandboxGatePassed {
+        GlassCard {
+          HStack(spacing: 10) {
+            Image(systemName: "lock.fill").foregroundStyle(Theme.gold)
+            Text("Free trial complete — upgrade to Pro for unlimited sandbox.")
+              .font(.system(size: 13, weight: .semibold))
+              .foregroundStyle(Theme.text)
+            Spacer()
+            Button("Upgrade") {
+              CharmsterSuperwall.register(.premiumSandbox)
+            }
+            .font(.system(size: 13, weight: .heavy))
+            .foregroundStyle(Theme.accent)
+          }
+        }
       } else if !app.isPro && app.sandboxFreeUsed < app.sandboxFreeTrialLimit {
         GlassCard {
           HStack {
@@ -312,7 +327,7 @@ struct PracticeHubView: View {
       }
       AuraButton(
         title: "Start session", systemImage: "play.fill",
-        enabled: app.canStartLivePractice
+        enabled: app.canStartLivePractice && sandboxGatePassed
       ) {
         if !app.canStartLivePractice {
           CharmsterSuperwall.register(.premiumDailyPracticeCap)
@@ -368,7 +383,7 @@ private struct SandboxRunner: View {
           lecture: nil, config: config,
           onFinish: { r in
             app.completeSandbox(result: r, scored: config.sandboxScored)
-            result = r
+            withAnimation(.none) { result = r }
           },
           onClose: {
             dismiss()
