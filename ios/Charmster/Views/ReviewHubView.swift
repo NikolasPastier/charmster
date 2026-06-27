@@ -18,6 +18,9 @@ struct ReviewHubView: View {
                 row(for: lec)
               }
             }
+            if !app.recentlyMastered.isEmpty {
+              replayCard
+            }
             masterySummary
           }
           .padding(18)
@@ -92,7 +95,7 @@ struct ReviewHubView: View {
         .padding(.vertical, 12)
         .frame(maxWidth: .infinity)
       }
-      if let stretch = DailyRouter.goldStretch(app: app) ?? app.tasterLecture {
+      if let stretch = app.recentlyMastered.first ?? app.tasterLecture {
         Button {
           presentedLecture = stretch
         } label: {
@@ -117,6 +120,42 @@ struct ReviewHubView: View {
           }
         }
         .buttonStyle(.plain)
+      }
+    }
+  }
+
+  private var replayCard: some View {
+    GlassCard {
+      VStack(alignment: .leading, spacing: 10) {
+        SectionHeader(title: "Replay completed", systemImage: "checkmark.seal")
+        ForEach(app.recentlyMastered.prefix(6)) { lec in
+          Button {
+            presentedLecture = lec
+          } label: {
+            HStack(spacing: 12) {
+              let tier = app.progress[lec.id]?.mastery ?? .none
+              Image(systemName: "rosette")
+                .font(.system(size: 16, weight: .heavy))
+                .foregroundStyle(tier.color)
+                .frame(width: 34, height: 34)
+                .background(Circle().fill(tier.color.opacity(0.12)))
+              VStack(alignment: .leading, spacing: 2) {
+                Text(lec.title)
+                  .font(.system(size: 14, weight: .heavy))
+                  .foregroundStyle(Theme.text)
+                Text("\(tier.title) · Free replay")
+                  .font(.system(size: 11))
+                  .foregroundStyle(Theme.textMuted)
+              }
+              Spacer()
+              Image(systemName: "chevron.right").foregroundStyle(Theme.textMuted)
+            }
+          }
+          .buttonStyle(.plain)
+          if lec.id != app.recentlyMastered.prefix(6).last?.id {
+            Divider().overlay(Theme.border)
+          }
+        }
       }
     }
   }

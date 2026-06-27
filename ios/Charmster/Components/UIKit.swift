@@ -48,7 +48,7 @@ struct SectionHeader: View {
         Text(title)
           .font(.system(size: 13, weight: .heavy))
           .tracking(1.4)
-          .foregroundStyle(Theme.textMuted)
+          .foregroundStyle(Theme.text.opacity(0.85))
           .textCase(.uppercase)
         if let subtitle {
           Text(subtitle)

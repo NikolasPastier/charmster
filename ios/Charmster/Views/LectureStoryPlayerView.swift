@@ -260,7 +260,7 @@ struct LectureStoryPlayerView: View {
           Text("BY THE END YOU'LL")
             .font(.system(size: 11, weight: .heavy))
             .tracking(2.5)
-            .foregroundStyle(Color(hex: 0xF5F0F7).opacity(0.45))
+            .foregroundStyle(Color(hex: 0xF5F0F7).opacity(0.85))
             .frame(maxWidth: .infinity, alignment: .leading)
 
           ForEach(Array(story.learningObjectives.prefix(3).enumerated()), id: \.offset) { _, obj in
@@ -336,7 +336,7 @@ struct LectureStoryPlayerView: View {
 
       Text(supportLine(beat.narrationText))
         .font(.system(size: 16, weight: .medium))
-        .foregroundStyle(Color(hex: 0xF5F0F7).opacity(0.58))
+        .foregroundStyle(Color(hex: 0xF5F0F7).opacity(0.85))
         .multilineTextAlignment(.center)
         .lineLimit(3)
         .fixedSize(horizontal: false, vertical: true)
@@ -392,7 +392,7 @@ struct LectureStoryPlayerView: View {
       if let tag {
         Text(tag)
           .font(.system(size: 13, weight: .medium))
-          .foregroundStyle(Color(hex: 0xF5F0F7).opacity(0.48))
+          .foregroundStyle(Color(hex: 0xF5F0F7).opacity(0.72))
           .lineLimit(2)
       }
     }
@@ -452,7 +452,7 @@ struct LectureStoryPlayerView: View {
 
       Text(supportLine(beat.narrationText))
         .font(.system(size: 16, weight: .medium))
-        .foregroundStyle(Color(hex: 0xF5F0F7).opacity(0.58))
+        .foregroundStyle(Color(hex: 0xF5F0F7).opacity(0.85))
         .multilineTextAlignment(.center)
         .lineLimit(3)
         .fixedSize(horizontal: false, vertical: true)
@@ -515,7 +515,7 @@ struct LectureStoryPlayerView: View {
         .truncationMode(.tail)
       Text(beatLabel(for: beat.kind))
         .font(.system(size: 11))
-        .foregroundStyle(Color(hex: 0xF5F0F7).opacity(0.55))
+        .foregroundStyle(Color(hex: 0xF5F0F7).opacity(0.75))
     }
     .padding(.top, 4)
     .padding(.bottom, 6)
@@ -609,7 +609,7 @@ struct LectureStoryPlayerView: View {
           }
           Text(recall.why)
             .font(.system(size: 14))
-            .foregroundStyle(Theme.textMuted)
+            .foregroundStyle(Theme.text.opacity(0.85))
             .multilineTextAlignment(.center)
             .padding(.horizontal, hMargin)
           if correct {

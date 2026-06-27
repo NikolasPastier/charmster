@@ -396,7 +396,7 @@ struct SettingsView: View {
       Text(title).foregroundStyle(Theme.text)
         .layoutPriority(1)
       Spacer(minLength: 8)
-      Text(value).foregroundStyle(Theme.textMuted)
+      Text(value).foregroundStyle(Theme.text.opacity(0.85))
         .lineLimit(1)
         .minimumScaleFactor(0.8)
         .multilineTextAlignment(.trailing)

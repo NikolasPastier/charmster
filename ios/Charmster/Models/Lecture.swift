@@ -109,6 +109,30 @@ struct LectureProgress: Codable, Hashable {
   var isMastered: Bool { mastery != .none && quizCorrect >= 2 && practiced }
 }
 
+// MARK: - ProgressStore
+//
+// UserDefaults-backed persistence for the per-lecture progress dictionary.
+// Mirrors the JournalStore pattern so mastery, quiz state, and SRS schedules
+// survive app restarts (previously all in-memory only).
+
+enum ProgressStore {
+  private static let key = "charmster.progress.v1"
+
+  static func save(_ progress: [String: LectureProgress]) {
+    guard let data = try? JSONEncoder().encode(progress) else { return }
+    UserDefaults.standard.set(data, forKey: key)
+  }
+
+  static func load() -> [String: LectureProgress] {
+    guard let data = UserDefaults.standard.data(forKey: key) else { return [:] }
+    return (try? JSONDecoder().decode([String: LectureProgress].self, from: data)) ?? [:]
+  }
+
+  static func wipe() {
+    UserDefaults.standard.removeObject(forKey: key)
+  }
+}
+
 // MARK: - Session result
 
 struct SessionResult: Identifiable, Hashable, Codable {

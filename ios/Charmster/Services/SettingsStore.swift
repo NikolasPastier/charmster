@@ -18,6 +18,9 @@ enum SettingsStore {
   private static let streakFreezeKey = "charmster.streakFreezes.v1"
   private static let lastFreezeRefillKey = "charmster.lastFreezeRefill.v1"
   private static let sandboxFreeUsedKey = "charmster.sandboxFreeUsed.v1"
+  private static let streakDaysKey = "charmster.streakDays.v1"
+  private static let lastDailyCompletedKey = "charmster.lastDailyCompleted.v1"
+  private static let dailyResetAtKey = "charmster.dailyResetAt.v1"
 
   // MARK: - Profile
 
@@ -86,6 +89,40 @@ enum SettingsStore {
     UserDefaults.standard.set(count, forKey: sandboxFreeUsedKey)
   }
 
+  // MARK: - Streak days
+
+  static func loadStreakDays() -> Int? {
+    UserDefaults.standard.object(forKey: streakDaysKey) as? Int
+  }
+
+  static func saveStreakDays(_ days: Int) {
+    UserDefaults.standard.set(days, forKey: streakDaysKey)
+  }
+
+  // MARK: - Daily completion timestamp
+
+  static func loadLastDailyCompleted() -> Date? {
+    UserDefaults.standard.object(forKey: lastDailyCompletedKey) as? Date
+  }
+
+  static func saveLastDailyCompleted(_ date: Date) {
+    UserDefaults.standard.set(date, forKey: lastDailyCompletedKey)
+  }
+
+  static func clearLastDailyCompleted() {
+    UserDefaults.standard.removeObject(forKey: lastDailyCompletedKey)
+  }
+
+  // MARK: - Daily reset anchor
+
+  static func loadDailyResetAt() -> Date? {
+    UserDefaults.standard.object(forKey: dailyResetAtKey) as? Date
+  }
+
+  static func saveDailyResetAt(_ date: Date) {
+    UserDefaults.standard.set(date, forKey: dailyResetAtKey)
+  }
+
   // MARK: - Wipe (used by deleteAccount)
 
   static func wipeAll() {
@@ -93,6 +130,7 @@ enum SettingsStore {
     [
       profileKey, coachKey, coachIdKey, tierKey,
       streakFreezeKey, lastFreezeRefillKey, sandboxFreeUsedKey,
+      streakDaysKey, lastDailyCompletedKey, dailyResetAtKey,
     ].forEach {
       d.removeObject(forKey: $0)
     }

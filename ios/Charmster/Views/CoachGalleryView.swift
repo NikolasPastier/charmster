@@ -23,7 +23,7 @@ struct CoachGalleryView: View {
 
   var body: some View {
     content
-      .background { if !embedded { Theme.bg.ignoresSafeArea() } }
+      .background { if !embedded { AuraBackground() } }
       .overlay(alignment: .center) {
         if let coach = justJoined {
           JoinConfirmation(coach: coach)
@@ -41,7 +41,7 @@ struct CoachGalleryView: View {
     } else {
       NavigationStack {
         ScrollView { gallery.padding(18) }
-          .background(Theme.bg.ignoresSafeArea())
+          .background(AuraBackground())
           .navigationTitle("Meet your coaches")
           .navigationBarTitleDisplayMode(.inline)
           .toolbar {

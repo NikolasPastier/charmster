@@ -32,11 +32,8 @@ struct LectureHandoffView: View {
         VStack(spacing: 20) {
           CoachAvatarView(coach: coach, baseState: .idle)
             .frame(width: 150, height: 150)
-            .clipShape(RoundedRectangle(cornerRadius: 26, style: .continuous))
-            .overlay(
-              RoundedRectangle(cornerRadius: 26, style: .continuous)
-                .stroke(Theme.border, lineWidth: 1)
-            )
+            .clipShape(Circle())
+            .overlay(Circle().stroke(Theme.border, lineWidth: 1))
             .auraGlow(radius: 24, intensity: 0.45)
 
           VStack(spacing: 8) {

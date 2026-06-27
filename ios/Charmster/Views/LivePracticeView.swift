@@ -193,9 +193,9 @@ struct LivePracticeView: View {
         }
         GeometryReader { geo in
           ZStack(alignment: .leading) {
-            Capsule().fill(Color.white.opacity(0.10))
+            Capsule().fill(Theme.border)
             Capsule()
-              .fill(Theme.accentGradient)
+              .fill(Theme.scoreScale)
               .frame(width: geo.size.width * CGFloat(pipeline.liveFeel))
           }
         }
@@ -221,9 +221,10 @@ struct LivePracticeView: View {
         Button(action: endNow) {
           Text("Done")
             .font(.system(size: 14, weight: .heavy))
-            .foregroundStyle(.black)
+            .foregroundStyle(.white)
             .padding(.horizontal, 16).padding(.vertical, 10)
-            .background(Capsule().fill(Theme.gold))
+            .background(Capsule().fill(Theme.accentGradient))
+            .shadow(color: Theme.pink.opacity(0.4), radius: 10, y: 4)
         }
         .buttonStyle(.plain)
         .layoutPriority(1)
@@ -269,9 +270,9 @@ struct LivePracticeView: View {
       Spacer()
       Text("Wrapping up — finish your thought.")
         .font(.system(size: 13, weight: .bold))
-        .foregroundStyle(.black)
+        .foregroundStyle(.white)
         .padding(.horizontal, 14).padding(.vertical, 8)
-        .background(Capsule().fill(Theme.gold))
+        .background(Capsule().fill(Theme.accentGradient))
         .padding(.bottom, 130)
     }
   }
@@ -295,9 +296,10 @@ struct LivePracticeView: View {
       Button(action: onClose) {
         Text("Got it")
           .font(.system(size: 15, weight: .heavy))
-          .foregroundStyle(.black)
+          .foregroundStyle(.white)
           .padding(.horizontal, 22).padding(.vertical, 12)
-          .background(Capsule().fill(Theme.gold))
+          .background(Capsule().fill(Theme.accentGradient))
+          .shadow(color: Theme.pink.opacity(0.4), radius: 14, y: 6)
       }
       .buttonStyle(.plain)
       Spacer()

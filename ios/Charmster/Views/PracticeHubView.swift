@@ -65,27 +65,15 @@ struct PracticeHubView: View {
     GlassCard {
       VStack(alignment: .leading, spacing: 10) {
         SectionHeader(title: "Setting", systemImage: "map.fill")
-        LazyVGrid(columns: [.init(.flexible()), .init(.flexible())], spacing: 8) {
+        VStack(spacing: 8) {
           ForEach(PracticeSetting.library) { s in
-            Button {
+            OnboardingOptionCard(
+              title: s.title, systemImage: s.icon,
+              isSelected: !useCustom && setting.id == s.id
+            ) {
               useCustom = false
               setting = s
-            } label: {
-              HStack(spacing: 6) {
-                Image(systemName: s.icon).foregroundStyle(Theme.accent)
-                Text(s.title).font(.system(size: 13, weight: .bold))
-                  .foregroundStyle(Theme.text)
-                Spacer()
-              }
-              .padding(10)
-              .background(RoundedRectangle(cornerRadius: 12).fill(Theme.surfaceRaised))
-              .overlay(
-                RoundedRectangle(cornerRadius: 12)
-                  .stroke(
-                    !useCustom && setting.id == s.id ? Theme.accent : Theme.border,
-                    lineWidth: !useCustom && setting.id == s.id ? 2 : 1))
             }
-            .buttonStyle(.plain)
           }
         }
         TextField("Or describe your own setting…", text: $customSetting)
@@ -105,29 +93,13 @@ struct PracticeHubView: View {
     GlassCard {
       VStack(alignment: .leading, spacing: 10) {
         SectionHeader(title: "Persona", systemImage: "person.crop.circle")
-        ScrollView(.horizontal, showsIndicators: false) {
-          HStack(spacing: 10) {
-            ForEach(PartnerPersona.library) { p in
-              Button {
-                persona = p
-              } label: {
-                VStack(alignment: .leading, spacing: 4) {
-                  Text(p.displayName).font(.system(size: 14, weight: .heavy))
-                    .foregroundStyle(Theme.text)
-                  Text(p.pronouns).font(.system(size: 11))
-                    .foregroundStyle(Theme.textMuted)
-                }
-                .frame(width: 140, alignment: .leading)
-                .padding(10)
-                .background(RoundedRectangle(cornerRadius: 12).fill(Theme.surfaceRaised))
-                .overlay(
-                  RoundedRectangle(cornerRadius: 12)
-                    .stroke(
-                      persona.id == p.id ? Theme.accent : Theme.border,
-                      lineWidth: persona.id == p.id ? 2 : 1))
-              }
-              .buttonStyle(.plain)
-            }
+        VStack(spacing: 8) {
+          ForEach(PartnerPersona.library) { p in
+            OnboardingOptionCard(
+              title: p.displayName, subtitle: p.pronouns,
+              systemImage: "person.fill",
+              isSelected: persona.id == p.id
+            ) { persona = p }
           }
         }
       }
@@ -151,7 +123,7 @@ struct PracticeHubView: View {
       VStack(alignment: .leading, spacing: 12) {
         SectionHeader(title: "Options", systemImage: "slider.horizontal.3")
         HStack {
-          Text("Difficulty").foregroundStyle(Theme.textMuted)
+          Text("Difficulty").foregroundStyle(Theme.text.opacity(0.85))
             .font(.system(size: 13, weight: .bold))
           Spacer()
           ForEach(DifficultyTier.allCases) { t in
@@ -170,7 +142,7 @@ struct PracticeHubView: View {
         }
         VStack(alignment: .leading, spacing: 6) {
           Text("Focus skills").font(.system(size: 13, weight: .bold))
-            .foregroundStyle(Theme.textMuted)
+            .foregroundStyle(Theme.text.opacity(0.85))
           FlowLayout(spacing: 6) {
             ForEach(focusOptions, id: \.self) { f in
               let on = focus.contains(f)
@@ -193,28 +165,15 @@ struct PracticeHubView: View {
 
   private var coachCard: some View {
     GlassCard {
-      VStack(alignment: .leading, spacing: 12) {
+      VStack(alignment: .leading, spacing: 10) {
         SectionHeader(title: "Coach style", systemImage: "person.line.dotted.person.fill")
-        ScrollView(.horizontal, showsIndicators: false) {
-          HStack(spacing: 10) {
-            ForEach(CoachStyle.allCases) { c in
-              Button {
-                coachStyle = c
-              } label: {
-                VStack(alignment: .leading, spacing: 4) {
-                  Text(c.title).font(.system(size: 14, weight: .heavy)).foregroundStyle(Theme.text)
-                  Text(c.blurb).font(.system(size: 11)).foregroundStyle(Theme.textMuted).lineLimit(2)
-                }
-                .frame(width: 160, alignment: .leading)
-                .padding(10)
-                .background(RoundedRectangle(cornerRadius: 12).fill(Theme.surfaceRaised))
-                .overlay(
-                  RoundedRectangle(cornerRadius: 12)
-                    .stroke(coachStyle == c ? Theme.accent : Theme.border,
-                            lineWidth: coachStyle == c ? 2 : 1))
-              }
-              .buttonStyle(.plain)
-            }
+        VStack(spacing: 8) {
+          ForEach(CoachStyle.allCases) { c in
+            OnboardingOptionCard(
+              title: c.title, subtitle: c.blurb,
+              systemImage: "person.2.fill",
+              isSelected: coachStyle == c
+            ) { coachStyle = c }
           }
         }
       }
@@ -223,29 +182,16 @@ struct PracticeHubView: View {
 
   private var modeCard: some View {
     GlassCard {
-      VStack(alignment: .leading, spacing: 12) {
+      VStack(alignment: .leading, spacing: 10) {
         SectionHeader(title: "Mode", systemImage: "waveform")
-        ForEach(PracticeMode.allCases) { m in
-          Button {
-            mode = m
-          } label: {
-            HStack(spacing: 12) {
-              Image(systemName: m.icon)
-                .font(.system(size: 16))
-                .foregroundStyle(Theme.accent)
-                .frame(width: 28)
-              VStack(alignment: .leading, spacing: 2) {
-                Text(m.title).font(.system(size: 14, weight: .heavy)).foregroundStyle(Theme.text)
-                Text(m.blurb).font(.system(size: 12)).foregroundStyle(Theme.textMuted)
-              }
-              Spacer()
-              Image(systemName: mode == m ? "largecircle.fill.circle" : "circle")
-                .foregroundStyle(mode == m ? Theme.accent : Theme.textMuted)
-            }
-            .padding(10)
-            .background(RoundedRectangle(cornerRadius: 12).fill(Theme.surfaceRaised))
+        VStack(spacing: 8) {
+          ForEach(PracticeMode.allCases) { m in
+            OnboardingOptionCard(
+              title: m.title, subtitle: m.blurb,
+              systemImage: m.icon,
+              isSelected: mode == m
+            ) { mode = m }
           }
-          .buttonStyle(.plain)
         }
       }
     }
@@ -253,32 +199,19 @@ struct PracticeHubView: View {
 
   private var sandboxModeCard: some View {
     GlassCard {
-      HStack(spacing: 10) {
-        Button {
-          coached = true
-        } label: {
-          sandboxChip("Coached", "Tips + scoring", on: coached)
-        }
-        Button {
-          coached = false
-        } label: {
-          sandboxChip("Just Vibe", "No tips, no score", on: !coached)
-        }
+      VStack(spacing: 8) {
+        OnboardingOptionCard(
+          title: "Coached", subtitle: "Tips + scoring",
+          systemImage: "person.badge.shield.checkmark.fill",
+          isSelected: coached
+        ) { coached = true }
+        OnboardingOptionCard(
+          title: "Just Vibe", subtitle: "No tips, no score",
+          systemImage: "music.note",
+          isSelected: !coached
+        ) { coached = false }
       }
-      .buttonStyle(.plain)
     }
-  }
-
-  private func sandboxChip(_ title: String, _ sub: String, on: Bool) -> some View {
-    VStack(spacing: 4) {
-      Text(title).font(.system(size: 14, weight: .heavy)).foregroundStyle(Theme.text)
-      Text(sub).font(.system(size: 11)).foregroundStyle(Theme.textMuted)
-    }
-    .frame(maxWidth: .infinity).padding(.vertical, 12)
-    .background(RoundedRectangle(cornerRadius: 12).fill(Theme.surfaceRaised))
-    .overlay(
-      RoundedRectangle(cornerRadius: 12)
-        .stroke(on ? Theme.accent : Theme.border, lineWidth: on ? 2 : 1))
   }
 
   private var sandboxGatePassed: Bool {

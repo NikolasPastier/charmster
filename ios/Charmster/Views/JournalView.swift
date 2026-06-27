@@ -53,6 +53,7 @@ struct JournalView: View {
         HStack(spacing: 12) {
           CoachAvatarView(coach: app.selectedCoach)
             .frame(width: 44, height: 44).clipShape(Circle())
+            .auraGlow()
           VStack(alignment: .leading, spacing: 3) {
             Text(app.selectedCoach.humanName)
               .font(.system(size: 12, weight: .heavy)).tracking(1.0)
@@ -143,13 +144,17 @@ struct JournalView: View {
       VStack(alignment: .leading, spacing: 10) {
         SectionHeader(title: "Recent sessions", systemImage: "clock.arrow.circlepath")
         ForEach(app.journal.suffix(6).reversed()) { e in
+          let labels = SessionLabels.from(e)
           VStack(alignment: .leading, spacing: 4) {
             HStack {
-              Text(e.skill).font(.system(size: 14, weight: .heavy)).foregroundStyle(Theme.text)
+              Text(labels.primary).font(.system(size: 14, weight: .heavy)).foregroundStyle(Theme.text)
               Spacer()
               Text("\(e.sessionScore)")
                 .font(.system(size: 14, weight: .heavy))
                 .foregroundStyle(Theme.scoreColor(for: e.sessionScore))
+            }
+            if let sub = labels.secondary {
+              Text(sub).font(.system(size: 12)).foregroundStyle(Theme.textMuted)
             }
             Text(e.feltLine).font(.system(size: 12)).foregroundStyle(Theme.textMuted)
             Text(e.timestamp.formatted(.relative(presentation: .named)))

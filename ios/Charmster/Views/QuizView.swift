@@ -51,9 +51,9 @@ struct QuizView: View {
                   }
                 }
                 .padding(14)
-                .background(RoundedRectangle(cornerRadius: 14).fill(Theme.surface))
+                .background(RoundedRectangle(cornerRadius: 16).fill(Theme.surface))
                 .overlay(
-                  RoundedRectangle(cornerRadius: 14)
+                  RoundedRectangle(cornerRadius: 16)
                     .stroke(borderColor(for: i, q: q), lineWidth: 1))
               }
               .buttonStyle(.plain)

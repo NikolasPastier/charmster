@@ -113,7 +113,7 @@ final class AppState {
   var progress: [String: LectureProgress] = [:]
   var aura: Int = 0
   var streakDays: Int = 0
-  var lastActiveDay: Date?
+  var lastDailyCompletedAt: Date?
 
   // Daily Charge
   var chargeCap: Int = 3
@@ -167,6 +167,7 @@ final class AppState {
     if progress.isEmpty {
       if let first = Curriculum.lectures.first {
         progress[first.id] = LectureProgress()
+        ProgressStore.save(progress)
       }
     }
     rollDailyResetIfNeeded()
@@ -193,6 +194,10 @@ final class AppState {
     if let n = SettingsStore.loadSandboxFreeUsed() { sandboxFreeUsed = n }
     journal = JournalStore.loadEntries()
     dimensionBests = JournalStore.loadBests()
+    progress = ProgressStore.load()
+    if let n = SettingsStore.loadStreakDays() { streakDays = n }
+    if let d = SettingsStore.loadLastDailyCompleted() { lastDailyCompletedAt = d }
+    if let d = SettingsStore.loadDailyResetAt() { dailyResetAt = d }
   }
 
   /// Persist everything Settings can edit. Called by the Settings screen's
@@ -265,6 +270,7 @@ final class AppState {
       }
     }
     progress = migrated
+    ProgressStore.save(progress)
   }
 
   // MARK: - Derived
@@ -386,6 +392,7 @@ final class AppState {
     p.quizCorrect = max(p.quizCorrect, correct)
     progress[lecture.id] = p
     maybePromoteMastery(lecture)
+    ProgressStore.save(progress)
   }
 
   func completePractice(_ lecture: Lecture, result: SessionResult) {
@@ -398,6 +405,9 @@ final class AppState {
     if recentResults.count > 40 { recentResults.removeLast(recentResults.count - 40) }
     maybePromoteMastery(lecture)
     scheduleSRSReview(for: lecture, quality: srsQuality(from: result))
+    ProgressStore.save(progress)
+    lastDailyCompletedAt = .now
+    SettingsStore.saveLastDailyCompleted(.now)
     recordJournalEntry(result, lecture: lecture)
     dailyLiveSessionsUsed += 1
   }
@@ -417,7 +427,11 @@ final class AppState {
     // auraEarned is a signed delta produced by SessionScorer's EMA pull.
     // Aura itself is the 0–100 rolling average — clamp on apply.
     aura = max(0, min(100, aura + result.auraEarned))
-    if result.streakKept { streakDays += 1 }
+    // Streak increments at most once per calendar day — replays don't count.
+    if result.streakKept && !dailyCompleted {
+      streakDays += 1
+      SettingsStore.saveStreakDays(streakDays)
+    }
   }
 
   private func maybePromoteMastery(_ lecture: Lecture) {
@@ -472,6 +486,30 @@ final class AppState {
     }
   }
 
+  /// Mastered lectures not currently due, sorted most-recently-practiced first.
+  /// Used by the Review hub's "Replay completed" section.
+  var recentlyMastered: [Lecture] {
+    let dueIds = Set(dueReviews.map(\.id))
+    return Curriculum.lectures
+      .filter {
+        guard let p = progress[$0.id] else { return false }
+        return p.mastery != .none && !dueIds.contains($0.id)
+      }
+      .sorted {
+        let a = progress[$0.id]?.lastPracticedAt ?? .distantPast
+        let b = progress[$1.id]?.lastPracticedAt ?? .distantPast
+        return a > b
+      }
+  }
+
+  /// True when the user has completed today's prescribed session (lecture practice
+  /// or a review). Resets automatically at the next local calendar day because it
+  /// compares against the current date — no explicit reset logic needed.
+  var dailyCompleted: Bool {
+    guard let d = lastDailyCompletedAt else { return false }
+    return Calendar.current.isDateInToday(d)
+  }
+
   /// Called when a review session succeeds — bumps mastery tier.
   func recordReviewSuccess(_ lecture: Lecture, result: SessionResult) {
     guard var p = progress[lecture.id] else { return }
@@ -479,7 +517,10 @@ final class AppState {
     p.lastPracticedAt = .now
     progress[lecture.id] = p
     scheduleSRSReview(for: lecture, quality: srsQuality(from: result))
+    ProgressStore.save(progress)
     applyRewards(result)
+    lastDailyCompletedAt = .now
+    SettingsStore.saveLastDailyCompleted(.now)
     recentResults.insert(result, at: 0)
     recordJournalEntry(result, lecture: lecture)
   }
@@ -493,6 +534,7 @@ final class AppState {
       id: result.id,
       timestamp: result.createdAt,
       lectureId: result.lectureId,
+      lectureTitle: lecture?.title,
       skill: lecture?.skill ?? "Sandbox",
       coachId: selectedCoachId,
       setting: selectedSetting.title,
@@ -723,6 +765,7 @@ final class AppState {
       progress[first.id] == nil
     {
       progress[first.id] = LectureProgress()
+      ProgressStore.save(progress)
     }
   }
 
@@ -762,6 +805,7 @@ final class AppState {
     let cal = Calendar.current
     if !cal.isDateInToday(dailyResetAt) {
       dailyResetAt = cal.startOfDay(for: .now)
+      SettingsStore.saveDailyResetAt(dailyResetAt)
       dailyLiveSessionsUsed = 0
       chargeMinutes = profile.dailyGoalMinutes
       return true
@@ -780,6 +824,9 @@ final class AppState {
     JournalStore.wipe()
     aura = 0
     streakDays = 0
+    SettingsStore.saveStreakDays(0)
+    lastDailyCompletedAt = nil
+    SettingsStore.clearLastDailyCompleted()
     dailyLiveSessionsUsed = 0
     sandboxFreeUsed = 0
     SettingsStore.saveSandboxFreeUsed(0)

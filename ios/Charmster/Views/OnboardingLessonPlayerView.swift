@@ -156,7 +156,7 @@ struct OnboardingLessonPlayerView: View {
       auraRule.padding(.top, 14).padding(.bottom, 20)
       Text(supportLine(screen.narrationText))
         .font(.system(size: 16, weight: .medium))
-        .foregroundStyle(Color(hex: 0xF5F0F7).opacity(0.58))
+        .foregroundStyle(Color(hex: 0xF5F0F7).opacity(0.85))
         .multilineTextAlignment(.center)
         .lineLimit(3)
         .fixedSize(horizontal: false, vertical: true)
@@ -199,7 +199,7 @@ struct OnboardingLessonPlayerView: View {
       if let tag {
         Text(tag)
           .font(.system(size: 13, weight: .medium))
-          .foregroundStyle(Color(hex: 0xF5F0F7).opacity(0.48))
+          .foregroundStyle(Color(hex: 0xF5F0F7).opacity(0.72))
           .lineLimit(2)
       }
     }
@@ -234,7 +234,7 @@ struct OnboardingLessonPlayerView: View {
           VStack(spacing: 6) {
             Text(screen.recallWhy ?? "")
               .font(.system(size: 14))
-              .foregroundStyle(Theme.textMuted)
+              .foregroundStyle(Theme.text.opacity(0.85))
               .multilineTextAlignment(.center)
               .padding(.horizontal, 20)
           }
@@ -309,7 +309,7 @@ struct OnboardingLessonPlayerView: View {
       auraRule.padding(.top, 14).padding(.bottom, 20)
       Text(supportLine(screen.narrationText))
         .font(.system(size: 16, weight: .medium))
-        .foregroundStyle(Color(hex: 0xF5F0F7).opacity(0.58))
+        .foregroundStyle(Color(hex: 0xF5F0F7).opacity(0.85))
         .multilineTextAlignment(.center)
         .lineLimit(3)
         .fixedSize(horizontal: false, vertical: true)

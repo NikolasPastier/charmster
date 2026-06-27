@@ -46,7 +46,7 @@ struct ProfileView: View {
             .font(.system(size: 20, weight: .heavy))
             .foregroundStyle(Theme.text)
           Text("\(AuraTier.forAura(app.aura).title) · \(app.profile.attachmentLabel)")
-            .font(.system(size: 13)).foregroundStyle(Theme.textMuted)
+            .font(.system(size: 13)).foregroundStyle(Theme.text.opacity(0.85))
         }
         Spacer()
       }
@@ -66,7 +66,7 @@ struct ProfileView: View {
         Image(systemName: icon).foregroundStyle(tone)
         Text(value).font(.system(size: 20, weight: .heavy)).foregroundStyle(Theme.text)
         Text(label).font(.system(size: 11, weight: .bold)).tracking(1.4)
-          .foregroundStyle(Theme.textMuted).textCase(.uppercase)
+          .foregroundStyle(Theme.text.opacity(0.85)).textCase(.uppercase)
       }
       .frame(maxWidth: .infinity)
     }
@@ -154,7 +154,8 @@ struct ProfileView: View {
             CoachAvatarView(coach: app.selectedCoach)
               .frame(width: 52, height: 52)
               .clipShape(Circle())
-              .overlay(Circle().stroke(Theme.border, lineWidth: 1))
+              .overlay(Circle().stroke(Theme.accent.opacity(0.5), lineWidth: 1))
+              .auraGlow()
             VStack(alignment: .leading, spacing: 2) {
               Text(app.selectedCoach.humanName)
                 .font(.system(size: 17, weight: .heavy))
@@ -193,11 +194,15 @@ struct ProfileView: View {
             .font(.system(size: 13)).foregroundStyle(Theme.textMuted)
         } else {
           ForEach(app.recentResults.prefix(5)) { r in
+            let labels = SessionLabels.from(r)
             HStack {
               ScoreRing(value: r.sessionScore, size: 44, lineWidth: 5)
               VStack(alignment: .leading, spacing: 2) {
-                Text(Curriculum.lecture(id: r.lectureId ?? "")?.title ?? "Sandbox")
+                Text(labels.primary)
                   .font(.system(size: 14, weight: .heavy)).foregroundStyle(Theme.text)
+                if let sub = labels.secondary {
+                  Text(sub).font(.system(size: 11)).foregroundStyle(Theme.textMuted)
+                }
                 Text(r.createdAt.formatted(.relative(presentation: .named)))
                   .font(.system(size: 11)).foregroundStyle(Theme.textMuted)
               }

@@ -13,6 +13,7 @@ struct JournalEntry: Identifiable, Codable, Hashable {
 
   // Context
   let lectureId: String?
+  let lectureTitle: String?   // stored at write time; nil on pre-migration entries
   let skill: String
   let coachId: String
   let setting: String
@@ -94,5 +95,40 @@ enum JournalStore {
   static func wipe() {
     UserDefaults.standard.removeObject(forKey: entriesKey)
     UserDefaults.standard.removeObject(forKey: bestsKey)
+  }
+}
+
+// MARK: - SessionLabels
+//
+// Single source of truth for the (primary, secondary?) label pair shown on every
+// session row. Both ProfileView and JournalView call this so they can never drift.
+
+struct SessionLabels {
+  let primary: String
+  let secondary: String?
+
+  // From a persisted JournalEntry (Progress Journal list).
+  static func from(_ entry: JournalEntry) -> SessionLabels {
+    if entry.isSandbox {
+      let coachName = CoachPersona.library.first(where: { $0.id == entry.coachId })?.humanName
+        ?? entry.coachId
+      return SessionLabels(primary: "Sandbox", secondary: "\(coachName) · \(entry.setting)")
+    }
+    // Prefer the stored title; fall back to Curriculum lookup for pre-migration rows.
+    let title = entry.lectureTitle
+      ?? Curriculum.lecture(id: entry.lectureId ?? "")?.title
+      ?? entry.skill
+    return SessionLabels(primary: title, secondary: entry.skill)
+  }
+
+  // From an in-memory SessionResult (Profile list).
+  static func from(_ result: SessionResult) -> SessionLabels {
+    if result.isSandbox {
+      return SessionLabels(primary: "Sandbox", secondary: nil)
+    }
+    if let lecture = Curriculum.lecture(id: result.lectureId ?? "") {
+      return SessionLabels(primary: lecture.title, secondary: lecture.skill)
+    }
+    return SessionLabels(primary: "Session", secondary: nil)
   }
 }
