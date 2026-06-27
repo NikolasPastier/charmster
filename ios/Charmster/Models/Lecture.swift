@@ -15,6 +15,34 @@ enum LectureFormat: String, Codable, Hashable {
   case assessment
 }
 
+// MARK: - Opening turn
+
+/// Who speaks first when the live session connects.
+/// `.user` (default) preserves the existing cold-start behaviour.
+/// `.avatar` fires a `response.create` on `session.created` so she approaches first.
+enum OpeningTurn: String, Codable, Hashable {
+  case user
+  case avatar
+}
+
+// MARK: - Scoring profile
+
+/// Per-lecture dimension weights used by SessionScorer.
+/// All values are relative — SessionScorer renormalises over the active channels.
+/// Lectures that omit this in the curriculum JSON use `.balanced` (all 1.0).
+struct ScoringProfile: Codable, Hashable {
+  var voice: Double
+  var face: Double
+  var body: Double
+  var synchrony: Double
+  var responsiveness: Double
+  var calibration: Double
+
+  static let balanced = ScoringProfile(
+    voice: 1, face: 1, body: 1,
+    synchrony: 1, responsiveness: 1, calibration: 1)
+}
+
 // MARK: - Lecture
 
 struct Lecture: Identifiable, Hashable, Codable {
@@ -28,6 +56,23 @@ struct Lecture: Identifiable, Hashable, Codable {
   let isCapstone: Bool
   let access: LectureAccess
   let format: LectureFormat
+  let scoringProfile: ScoringProfile?
+  let openingTurn: OpeningTurn
+
+  init(
+    id: String, trackId: Int, number: Int, title: String,
+    scenario: String, minutes: Int, skill: String,
+    isCapstone: Bool, access: LectureAccess, format: LectureFormat,
+    scoringProfile: ScoringProfile? = nil,
+    openingTurn: OpeningTurn = .user
+  ) {
+    self.id = id; self.trackId = trackId; self.number = number
+    self.title = title; self.scenario = scenario; self.minutes = minutes
+    self.skill = skill; self.isCapstone = isCapstone
+    self.access = access; self.format = format
+    self.scoringProfile = scoringProfile
+    self.openingTurn = openingTurn
+  }
 
   var displayNumber: String { isCapstone ? "\(trackId).★" : "\(trackId).\(number)" }
 }
@@ -72,7 +117,8 @@ struct SessionResult: Identifiable, Hashable, Codable {
   let isCapstone: Bool
   let isSandbox: Bool
 
-  // Scored dimensions (0-100). Real signals come from SessionScorer.
+  // On-device scored dimensions (0-100).
+  // Dimensions dropped via channel-dropping are stored as 0.
   let responsiveness: Int
   let voice: Int
   let face: Int
@@ -88,4 +134,42 @@ struct SessionResult: Identifiable, Hashable, Codable {
   let durationSeconds: Int
   let safetyCapApplied: Bool
   let createdAt: Date
+
+  // Channel metadata (nil = old stored result, treat as camera used).
+  let cameraUsed: Bool?
+
+  // Feel-layer dims from the transcript judge (nil if judge unavailable or old result).
+  let interest: Int?
+  let spark: Int?
+  let respect: Int?
+
+  // Narrative feedback from the transcript judge.
+  let reactionLine: String?
+  let strengths: [String]?
+  let fixes: [String]?
+
+  init(
+    id: UUID, lectureId: String?, isCapstone: Bool, isSandbox: Bool,
+    responsiveness: Int, voice: Int, face: Int, body: Int,
+    synchrony: Int, calibration: Int, comfort: Int,
+    sessionScore: Int, auraEarned: Int, streakKept: Bool,
+    coinsEarned: Int, durationSeconds: Int, safetyCapApplied: Bool,
+    createdAt: Date,
+    cameraUsed: Bool? = true,
+    interest: Int? = nil, spark: Int? = nil, respect: Int? = nil,
+    reactionLine: String? = nil, strengths: [String]? = nil, fixes: [String]? = nil
+  ) {
+    self.id = id; self.lectureId = lectureId
+    self.isCapstone = isCapstone; self.isSandbox = isSandbox
+    self.responsiveness = responsiveness; self.voice = voice
+    self.face = face; self.body = body; self.synchrony = synchrony
+    self.calibration = calibration; self.comfort = comfort
+    self.sessionScore = sessionScore; self.auraEarned = auraEarned
+    self.streakKept = streakKept; self.coinsEarned = coinsEarned
+    self.durationSeconds = durationSeconds; self.safetyCapApplied = safetyCapApplied
+    self.createdAt = createdAt
+    self.cameraUsed = cameraUsed
+    self.interest = interest; self.spark = spark; self.respect = respect
+    self.reactionLine = reactionLine; self.strengths = strengths; self.fixes = fixes
+  }
 }

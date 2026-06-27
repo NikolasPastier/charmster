@@ -3,18 +3,6 @@
   "generatedFor": "Charmster AI — canonical curriculum v1",
   "tracks": [
     {
-      "id": 0,
-      "slug": "onboarding",
-      "emoji": "✨",
-      "title": "Onboarding",
-      "coreQuestion": "Let's tune Charmster to you.",
-      "subtitle": "First-run personalization quiz",
-      "symbol": "sparkles",
-      "order": 0,
-      "accessDefault": "free",
-      "lectures": []
-    },
-    {
       "id": 1,
       "slug": "foundations-of-attraction",
       "emoji": "🌱",

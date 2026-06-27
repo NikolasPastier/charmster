@@ -6,7 +6,7 @@ import SwiftUI
 ///
 /// Flow order (spec):
 /// 1 Hero · 2 Goal · 3 Experience · 4 Where you freeze · 5 Confidence ·
-/// 6 Coach style · 7 Attachment + flirting (skippable) · 8 Daily goal ·
+/// 6 Coach style · 7 Attachment + flirting check-in (skippable) · 8 Daily goal ·
 /// 9 Name + avatar · 10 Privacy primer · 11 Account + 17+ ·
 /// 12 Personalized plan · 13 Free taster → paywall.
 struct OnboardingFlowView: View {
@@ -14,13 +14,15 @@ struct OnboardingFlowView: View {
 
   /// Logical steps. `plan` and `taster` sit after the progress-bar steps.
   private enum Step: Int, CaseIterable {
-    case hero, goal, experience, freeze, confidence, coach, psych, daily, name, privacy, account
+    case hero, goal, experience, freeze, confidence
+    case coach, psych, daily, name, privacy, account
     case plan, taster
   }
 
   @State private var step: Step = .hero
 
   /// Steps that show the gradient progress bar (everything from goal..account).
+  /// Lesson screens are full-screen players and don't show the progress bar.
   private static let progressSteps: [Step] = [
     .goal, .experience, .freeze, .confidence, .coach, .psych, .daily, .name, .privacy, .account,
   ]
@@ -328,7 +330,7 @@ private struct ConfidenceStep: View {
       VStack(spacing: 22) {
         ZStack {
           Circle().fill(Theme.surface)
-          ScoreRing(value: Int(value) * 10, size: 150, lineWidth: 12, label: "out of 10")
+          ScoreRing(value: Int(value) * 10, displayValue: Int(value), size: 150, lineWidth: 12, label: "out of 10")
         }
         .frame(width: 170, height: 170)
         .frame(maxWidth: .infinity)

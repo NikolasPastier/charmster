@@ -84,7 +84,7 @@ final class CurriculumService {
       .appending(queryItems: [
         URLQueryItem(
           name: "select",
-          value: "id,track_id,lecture_number,title,scenario,access,format,minutes,skill,is_capstone"
+          value: "id,track_id,lecture_number,title,scenario,access,format,minutes,skill,is_capstone,opening_turn"
         ),
         URLQueryItem(name: "order", value: "track_id.asc,lecture_number.asc"),
       ])
@@ -102,6 +102,7 @@ final class CurriculumService {
       // Fall back to the bundle curriculum's skill when Supabase returns null,
       // so switch-on-skill in LectureStoryBuilder still resolves correctly.
       let bundleSkill = Curriculum.lecture(id: canonicalId)?.skill ?? ""
+      let openingTurn = OpeningTurn(rawValue: row.opening_turn ?? "user") ?? .user
       return Lecture(
         id: canonicalId,
         trackId: row.track_id,
@@ -112,7 +113,8 @@ final class CurriculumService {
         skill: row.skill ?? bundleSkill,
         isCapstone: row.is_capstone ?? false,
         access: access,
-        format: format
+        format: format,
+        openingTurn: openingTurn
       )
     }
   }
@@ -172,5 +174,6 @@ final class CurriculumService {
     let minutes: Int?
     let skill: String?
     let is_capstone: Bool?
+    let opening_turn: String?
   }
 }

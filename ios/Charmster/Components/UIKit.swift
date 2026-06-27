@@ -190,7 +190,8 @@ struct GlassButton: View {
 // MARK: - ScoreRing
 
 struct ScoreRing: View {
-  let value: Int  // 0..100
+  let value: Int  // 0..100 — controls arc fill
+  var displayValue: Int? = nil  // overrides center text; defaults to `value`
   var size: CGFloat = 110
   var lineWidth: CGFloat = 10
   var label: String? = nil
@@ -208,7 +209,7 @@ struct ScoreRing: View {
         )
         .rotationEffect(.degrees(-90))
       VStack(spacing: 2) {
-        Text("\(value)")
+        Text("\(displayValue ?? value)")
           .font(.system(size: size * 0.32, weight: .heavy))
           .foregroundStyle(Theme.text)
         if let label {

@@ -23,6 +23,8 @@ interface ReqBody {
   persona?: { id?: string; displayName?: string; pronouns?: string; blurb?: string };
   coach_style?: string;
   setting?: string;
+  difficulty_tier?: "bronze" | "silver" | "gold" | null;
+  opening_turn?: "user" | "avatar" | null;
 }
 
 interface LectureRow {
@@ -32,19 +34,37 @@ interface LectureRow {
   win_condition: string | null;
   success_criteria: string[] | null;
   coach_scripts: Record<string, unknown> | null;
+  opening_turn: "user" | "avatar" | null;
 }
+
+const TIER_STYLE: Record<string, string> = {
+  bronze:
+    "DIFFICULTY — BRONZE (forgiving): You are patient and warm. You give the user clear signals, respond readily to small efforts, and are easy to read. You warm up quickly. This is a safe space to practice.",
+  silver:
+    "DIFFICULTY — SILVER (realistic): You behave like a real person on a date — natural pacing, honest reactions. You warm up when he earns it and cool slightly when the conversation stalls. No artificial difficulty.",
+  gold:
+    "DIFFICULTY — GOLD (challenging): You are skeptical and slower to warm. You have high standards. Short, measured replies until he genuinely earns more. You are not unkind, but you are not easily impressed. It takes real calibration to win you over.",
+};
 
 function buildInstructions(args: {
   lecture: LectureRow | null;
   persona: ReqBody["persona"];
   coach_style?: string;
   setting?: string;
+  difficulty_tier?: string | null;
+  opening_turn?: string | null;
 }): string {
   const p = args.persona ?? {};
   const name = p.displayName ?? "Mia";
   const pron = p.pronouns ?? "she/her";
   const blurb = p.blurb ?? "Warm, witty, a little shy on the first beat.";
   const setting = args.setting ?? "a casual coffee shop";
+  const tierStyle = TIER_STYLE[args.difficulty_tier ?? "silver"] ?? TIER_STYLE.silver;
+  // Resolve opening_turn: client value takes precedence over lecture DB value.
+  const openingTurn = args.opening_turn ?? args.lecture?.opening_turn ?? "user";
+  const whoSpeaksFirst = openingTurn === "avatar"
+    ? `OPENING: You approach the user first. When the session begins, start the conversation naturally — 1-2 sentences max, in character.`
+    : `OPENING: Wait for the user to approach you and start the conversation.`;
 
   const lec = args.lecture;
   const scenario = lec?.scenario ?? "A relaxed first conversation. Be a believable date, not a coach.";
@@ -55,6 +75,10 @@ function buildInstructions(args: {
   return [
     `You are roleplaying as ${name} (${pron}). Personality: ${blurb}.`,
     `Setting: ${setting}.`,
+    ``,
+    tierStyle,
+    ``,
+    whoSpeaksFirst,
     ``,
     `SCENARIO`,
     scenario,
@@ -102,7 +126,7 @@ serve(async (req: Request) => {
         const sb = createClient(SUPABASE_URL, SERVICE_ROLE, { auth: { persistSession: false } });
         const { data } = await sb
           .from("lectures")
-          .select("id,title,scenario,win_condition,success_criteria,coach_scripts")
+          .select("id,title,scenario,win_condition,success_criteria,coach_scripts,opening_turn")
           .eq("id", body.lecture_id)
           .maybeSingle();
         if (data) lecture = data as LectureRow;
@@ -114,6 +138,8 @@ serve(async (req: Request) => {
       persona: body.persona,
       coach_style: body.coach_style,
       setting: body.setting,
+      difficulty_tier: body.difficulty_tier,
+      opening_turn: body.opening_turn,
     });
 
     // Mint a short-lived Realtime session token.

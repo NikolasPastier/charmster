@@ -19,6 +19,7 @@ struct LivePracticeView: View {
   @State private var showSelfView: Bool = true
   @State private var winddown: Bool = false
   @State private var ended: Bool = false
+  @State private var scoring: Bool = false
   @State private var dailyCapHit: Bool = false
   @State private var pendingReaction: AvatarState?
   @State private var lastReactionTag: AvatarState?
@@ -51,6 +52,7 @@ struct LivePracticeView: View {
 
   private var avatarBaseState: AvatarState {
     if pipeline.partnerSpeaking { return .talking }
+    if pipeline.awaitingAvatarOpen { return .thinking }
     if pipeline.userSpeaking { return .listening }
     if let tag = pipeline.lastMoodTag, tag.isLooping { return tag }
     return .idle
@@ -83,6 +85,7 @@ struct LivePracticeView: View {
 
         if dailyCapHit { dailyCapOverlay } else { mainOverlay }
         if winddown && !dailyCapHit { winddownOverlay }
+        if scoring { scoringOverlay }
       }
       .task { await openSession() }
       .onAppear { nudges.configure(level: app.profile.nudgeLevel) }
@@ -314,7 +317,9 @@ struct LivePracticeView: View {
     await AvatarClipCatalog.shared.preload(persona: avatarPersona)
     let capContent = lecture.flatMap { CapstoneContentStore.shared.content(for: $0) }
     await pipeline.start(
-      prefersCamera: config.mode == .videoVoice,
+      mode: config.mode,
+      tier: config.tier,
+      openingTurn: config.openingTurn,
       persona: config.persona,
       avatarPersona: avatarPersona,
       voiceId: app.profile.avatarVoiceId,
@@ -360,7 +365,27 @@ struct LivePracticeView: View {
   private func endNow() {
     guard !ended else { return }
     ended = true
+    scoring = true
     pipeline.stop()
+    Task { await endNowAsync() }
+  }
+
+  private func endNowAsync() async {
+    pipeline.tick()
+
+    let judged = await SessionScoreService.judge(
+      transcript: pipeline.signals.transcript ?? "",
+      durationSeconds: elapsed,
+      meanLatencySeconds: pipeline.signals.responseLatencyMean,
+      voiceEnergy: pipeline.signals.meanVoiceEnergy,
+      synchrony: pipeline.signals.synchrony,
+      lectureScenario: lecture?.scenario,
+      winCondition: nil
+    )
+    if let j = judged {
+      pipeline.applyJudged(j)
+    }
+
     let result = SessionScorer.score(
       lecture: lecture,
       durationSeconds: elapsed,
@@ -371,7 +396,23 @@ struct LivePracticeView: View {
       sandboxScored: config.sandboxScored,
       currentAura: app.aura
     )
+    scoring = false
     onFinish(result)
+  }
+
+  private var scoringOverlay: some View {
+    ZStack {
+      Color.black.opacity(0.65).ignoresSafeArea()
+      VStack(spacing: 14) {
+        ProgressView()
+          .progressViewStyle(.circular)
+          .tint(Theme.accent)
+          .scaleEffect(1.4)
+        Text("Reviewing your session…")
+          .font(.system(size: 15, weight: .semibold))
+          .foregroundStyle(Theme.text)
+      }
+    }
   }
 
   private func timeString(_ s: Int) -> String {

@@ -35,6 +35,8 @@ struct RealtimeSessionService {
     /// user's chosen voice. Optional so older callers stay valid.
     let realtime_voice: String?
     let focus_skills: [String]?
+    let difficulty_tier: String?
+    let opening_turn: String?
 
     struct PersonaPayload: Encodable {
       let id: String
@@ -103,6 +105,9 @@ final class RealtimeLiveSession: NSObject {
   private(set) var userSpeaking: Bool = false
   private(set) var liveTranscript: String = ""
   private(set) var lastUserUtterance: String = ""
+  /// True from the moment `response.create` is fired (avatar-opens scenario) until
+  /// the first audio delta arrives. Drives `.thinking` avatar state during the gap.
+  private(set) var awaitingAvatarOpen: Bool = false
   /// Monotonic count of COMPLETED user turns (transcribed utterances). Drives
   /// the UX4 coach-nudge trigger — the view observes this changing.
   private(set) var userTurnCount: Int = 0
@@ -129,10 +134,19 @@ final class RealtimeLiveSession: NSObject {
   private var partnerTurnRequestedAt: Date?
   private var lastResponseEnergies: [Double] = []
   private var lastUserEnergies: [Double] = []
+  private var avatarTurnBuffer: String = ""
+  private var pendingOpeningTurn: OpeningTurn = .user
+  private var openingScenarioHint: String?
 
   /// Connect to OpenAI Realtime using a freshly-minted ephemeral token. The
   /// session sends `instructions` already baked in by `realtime_session`.
-  func connect(token: RealtimeSessionService.Token) async {
+  func connect(
+    token: RealtimeSessionService.Token,
+    openingTurn: OpeningTurn = .user,
+    scenarioHint: String? = nil
+  ) async {
+    pendingOpeningTurn = openingTurn
+    openingScenarioHint = scenarioHint
     status = .connecting
 
     guard let secret = Optional(token.clientSecret), !secret.isEmpty else {
@@ -301,13 +315,34 @@ final class RealtimeLiveSession: NSObject {
     else { return }
 
     switch type {
+    case "session.created":
+      // Safe trigger point: model is ready. Fire avatar-opens turn if configured.
+      if pendingOpeningTurn == .avatar {
+        let hint = openingScenarioHint.map {
+          "Open the conversation naturally. You approach her — keep it to 1-2 sentences. Context: \($0)"
+        } ?? "Open the conversation naturally. You approach first — keep it to 1-2 sentences."
+        sendJSON([
+          "type": "response.create",
+          "response": [
+            "modalities": ["audio", "text"],
+            "instructions": hint,
+          ] as [String: Any],
+        ])
+        awaitingAvatarOpen = true
+      }
     case "response.audio.delta":
+      if awaitingAvatarOpen { awaitingAvatarOpen = false }
       if let b64 = obj["delta"] as? String, let pcm = Data(base64Encoded: b64) {
         enqueuePartnerAudio(pcm)
-        partnerSpeaking = true
         partnerTurnRequestedAt = partnerTurnRequestedAt ?? Date()
       }
-    case "response.audio.done", "response.done":
+    case "response.audio.done":
+      partnerSpeaking = false
+    case "response.done":
+      if !avatarTurnBuffer.isEmpty {
+        liveTranscript += "Her: \(avatarTurnBuffer)\n"
+        avatarTurnBuffer = ""
+      }
       partnerSpeaking = false
       turnsTaken += 1
       if let start = partnerTurnRequestedAt, let utter = userTurnStartedAt {
@@ -319,7 +354,7 @@ final class RealtimeLiveSession: NSObject {
       userTurnStartedAt = nil
     case "response.audio_transcript.delta":
       if let delta = obj["delta"] as? String {
-        liveTranscript += delta
+        avatarTurnBuffer += delta
       }
     case "conversation.item.input_audio_transcription.completed":
       if let text = obj["transcript"] as? String {
@@ -371,7 +406,10 @@ final class RealtimeLiveSession: NSObject {
       lastResponseEnergies.removeFirst(lastResponseEnergies.count - 64)
     }
     player.scheduleBuffer(buf, completionHandler: nil)
-    if !player.isPlaying { player.play() }
+    if !player.isPlaying {
+      partnerSpeaking = true  // gate on player-node start, not first delta
+      player.play()
+    }
   }
 
   // MARK: - Utility

@@ -7,6 +7,7 @@ struct SessionConfig: Hashable {
   var tier: DifficultyTier
   var coach: CoachStyle
   var mode: PracticeMode
+  var openingTurn: OpeningTurn = .user
   var isSandbox: Bool
   var sandboxScored: Bool  // "Coached" vs "Just Vibe"
   var sandboxPremise: String?
@@ -19,6 +20,7 @@ struct SessionConfig: Hashable {
       tier: app.difficultyTier,
       coach: app.coachMode,
       mode: app.profile.practiceModeDefault,
+      openingTurn: lecture?.openingTurn ?? .user,
       isSandbox: lecture == nil,
       sandboxScored: true,
       sandboxPremise: nil

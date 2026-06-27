@@ -5,8 +5,6 @@ struct ResultsView: View {
   @Environment(AppState.self) private var app
   let result: SessionResult
   let lecture: Lecture?
-  /// Replay the lecture with different settings (opens the replay setup sheet).
-  /// Optional so sandbox results can omit it.
   var onReplay: (() -> Void)? = nil
   let onQuiz: () -> Void
   let onDone: () -> Void
@@ -17,8 +15,8 @@ struct ResultsView: View {
         VStack(spacing: 16) {
           heroScore
           rewardsCard
+          feedbackCard
           breakdownCard
-          coachDebriefCard
           actions
         }
         .padding(18)
@@ -27,6 +25,8 @@ struct ResultsView: View {
     }
     .trackView("ResultsView")
   }
+
+  // MARK: - Hero score
 
   private var heroScore: some View {
     VStack(spacing: 12) {
@@ -52,9 +52,6 @@ struct ResultsView: View {
     .padding(.top, 16)
   }
 
-  /// Aura is a 0–100 rolling average. Show the current value, the tier band
-  /// it lands in, and the signed delta from this session so the user can
-  /// see whether they moved up or down.
   private var auraSummary: some View {
     let tier = AuraTier.forAura(app.aura)
     let delta = result.auraEarned
@@ -82,8 +79,8 @@ struct ResultsView: View {
     }
   }
 
-  /// Step 7: removed RewardChip(icon: "circle.hexagongrid.fill", label: "+coins").
-  /// Replaced with a streak/milestone callout so the row doesn't look empty.
+  // MARK: - Rewards
+
   private var rewardsCard: some View {
     GlassCard {
       VStack(spacing: 12) {
@@ -104,7 +101,6 @@ struct ResultsView: View {
               label: milestoneLabel,
               tone: Theme.gold)
           }
-          // Coins chip intentionally omitted — feature flag off.
           if app.coinsEnabled {
             RewardChip(
               icon: "circle.hexagongrid.fill",
@@ -128,47 +124,92 @@ struct ResultsView: View {
     return "Good start"
   }
 
-  private var breakdownCard: some View {
+  // MARK: - Feedback card (Feedback Engine Part 4 order)
+
+  private var feedbackCard: some View {
     GlassCard {
       VStack(alignment: .leading, spacing: 14) {
-        SectionHeader(title: "Breakdown", systemImage: "chart.bar.fill")
-        ScoreBar(label: "Responsiveness", value: result.responsiveness)
-        ScoreBar(label: "Voice", value: result.voice)
-        ScoreBar(label: "Face", value: result.face, tone: Theme.aura)
-        ScoreBar(label: "Body", value: result.body, tone: Theme.aura)
-        ScoreBar(label: "Synchrony", value: result.synchrony, tone: Theme.teal)
-        ScoreBar(label: "Calibration", value: result.calibration, tone: Theme.gold)
-        ScoreBar(label: "Comfort", value: result.comfort, tone: Theme.coral)
+
+        // 1 · Reaction line (her felt experience)
+        if let line = result.reactionLine, !line.isEmpty {
+          Text("\u{201C}\(line)\u{201D}")
+            .font(.system(size: 15, weight: .semibold).italic())
+            .foregroundStyle(Theme.text)
+            .fixedSize(horizontal: false, vertical: true)
+            .padding(.bottom, 2)
+        }
+
+        // 2 · Four feel meters
+        SectionHeader(title: "How she felt", systemImage: "heart.text.square.fill")
+        ScoreBar(label: "Comfort",  value: result.comfort,          tone: Theme.coral)
+        ScoreBar(label: "Interest", value: result.interest ?? 50,   tone: Theme.aura)
+        ScoreBar(label: "Spark",    value: result.spark   ?? 50,    tone: Theme.gold)
+        ScoreBar(label: "Respect",  value: result.respect ?? 50,    tone: Theme.teal)
+
+        // 3 · Strengths
+        if let strengths = result.strengths, !strengths.isEmpty {
+          Divider().overlay(Theme.border)
+          Text("What worked")
+            .font(.system(size: 12, weight: .bold)).tracking(1.2)
+            .foregroundStyle(Theme.textMuted).textCase(.uppercase)
+          ForEach(strengths, id: \.self) { s in
+            HStack(alignment: .top, spacing: 8) {
+              Image(systemName: "checkmark.circle.fill")
+                .font(.system(size: 13))
+                .foregroundStyle(Theme.good)
+              Text(s)
+                .font(.system(size: 14))
+                .foregroundStyle(Theme.text)
+                .fixedSize(horizontal: false, vertical: true)
+            }
+          }
+        }
+
+        // 4 · Fixes (dimension-labelled)
+        if let fixes = result.fixes, !fixes.isEmpty {
+          Divider().overlay(Theme.border)
+          Text("Next time")
+            .font(.system(size: 12, weight: .bold)).tracking(1.2)
+            .foregroundStyle(Theme.textMuted).textCase(.uppercase)
+          ForEach(fixes, id: \.self) { fix in
+            HStack(alignment: .top, spacing: 8) {
+              Image(systemName: "arrow.up.circle.fill")
+                .font(.system(size: 13))
+                .foregroundStyle(Theme.accent)
+              Text(fix)
+                .font(.system(size: 14))
+                .foregroundStyle(Theme.text)
+                .fixedSize(horizontal: false, vertical: true)
+            }
+          }
+        }
       }
     }
   }
 
-  private var coachDebriefCard: some View {
+  // MARK: - Raw signals breakdown
+
+  private var breakdownCard: some View {
     GlassCard {
-      VStack(alignment: .leading, spacing: 10) {
-        HStack(spacing: 10) {
-          CoachAvatarView(coach: app.selectedCoach)
-            .frame(width: 34, height: 34)
-            .clipShape(Circle())
-          Text(app.selectedCoach.humanName)
-            .font(.system(size: 13, weight: .heavy))
-            .tracking(1.0)
-            .foregroundStyle(Theme.textMuted)
-            .textCase(.uppercase)
-          Spacer()
+      VStack(alignment: .leading, spacing: 14) {
+        SectionHeader(title: "Raw signals", systemImage: "chart.bar.fill")
+        ScoreBar(label: "Responsiveness", value: result.responsiveness)
+        ScoreBar(label: "Calibration",    value: result.calibration,   tone: Theme.gold)
+        if result.voice > 0 {
+          ScoreBar(label: "Voice",   value: result.voice)
         }
-        // CAP1: for capstones, replace debriefText with CapstoneContentStore.shared.content(for: lecture)?.coachRecap
-        Text(
-          LectureContentStore.shared.debriefText(
-            coach: app.coachMode,
-            result: result,
-            gentleness: app.profile.feedbackGentleness)
-        )
-        .font(.system(size: 15))
-        .foregroundStyle(Theme.text)
+        if result.synchrony > 0 {
+          ScoreBar(label: "Synchrony", value: result.synchrony, tone: Theme.teal)
+        }
+        if result.cameraUsed != false {
+          ScoreBar(label: "Face", value: result.face, tone: Theme.aura)
+          ScoreBar(label: "Body", value: result.body, tone: Theme.aura)
+        }
       }
     }
   }
+
+  // MARK: - Actions
 
   private var actions: some View {
     VStack(spacing: 10) {
@@ -188,12 +229,20 @@ struct ResultsView: View {
 #Preview {
   ResultsView(
     result: SessionResult(
-      id: UUID(), lectureId: "t0_l1", isCapstone: false, isSandbox: false,
-      responsiveness: 78, voice: 72, face: 65, body: 70,
-      synchrony: 80, calibration: 74, comfort: 68,
-      sessionScore: 73, auraEarned: 36,
+      id: UUID(), lectureId: "1.1", isCapstone: false, isSandbox: false,
+      responsiveness: 74, voice: 68, face: 71, body: 65,
+      synchrony: 77, calibration: 72, comfort: 64,
+      sessionScore: 70, auraEarned: 3,
       streakKept: true, coinsEarned: 10, durationSeconds: 240,
-      safetyCapApplied: false, createdAt: .now
+      safetyCapApplied: false, createdAt: .now,
+      cameraUsed: true,
+      interest: 66, spark: 58, respect: 80,
+      reactionLine: "She warmed up when you asked about the book — that callback landed.",
+      strengths: ["Good callback on her earlier mention", "Clean turn-taking throughout"],
+      fixes: [
+        "Calibration: Back off when she gives one-word answers — she was cooling.",
+        "Spark: Add one playful tease early before going deep.",
+      ]
     ),
     lecture: Curriculum.lectures.first,
     onQuiz: {}, onDone: {}

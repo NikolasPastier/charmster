@@ -46,6 +46,10 @@ final class LectureBeatNarrator: NSObject, AVSpeechSynthesizerDelegate {
   /// load failure so a genuine 404 is visible before the TTS fallback.
   private var currentRemoteURL: URL?
 
+  /// Custom failover called instead of AVSpeechSynthesizer when set.
+  /// Used by onboarding lessons where OS-TTS is not allowed.
+  private var audioFailover: (() -> Void)?
+
   override init() {
     super.init()
     synth.delegate = self
@@ -166,10 +170,14 @@ final class LectureBeatNarrator: NSObject, AVSpeechSynthesizerDelegate {
   }
 
   private func failoverToTTS() {
-    // Tear down the failed player WITHOUT firing completion, then TTS-speak the
-    // same text so the beat is never silent.
     teardownPlayer()
-    speakWithTTS(text: fallbackText, style: fallbackStyle)
+    if let f = audioFailover {
+      // Onboarding beats: never use OS TTS — caller handles the missing clip.
+      audioFailover = nil
+      f()
+    } else {
+      speakWithTTS(text: fallbackText, style: fallbackStyle)
+    }
   }
 
   private func handleRemoteFinished() {
@@ -262,9 +270,42 @@ final class LectureBeatNarrator: NSObject, AVSpeechSynthesizerDelegate {
     }
   }
 
+  /// Speak an onboarding beat using a fixed `lessonId` slug (no trackId/number
+  /// derivation). On load failure, calls `onMissing` so the caller can try a
+  /// backup coach voice or proceed silently — OS TTS is never used.
+  func speakBeat(
+    lessonId: String,
+    beatId: String,
+    text: String,
+    coachId: String,
+    coachStyle: CoachStyle,
+    onMissing: @escaping () -> Void,
+    onComplete: @escaping () -> Void
+  ) {
+    stop()
+    activeBeatId = beatId
+    onFinished = onComplete
+    audioFailover = onMissing
+    didFinishNaturally = false
+    progress = 0
+    fallbackText = text
+    fallbackStyle = coachStyle
+    activateSession()
+    guard let url = LectureAudioURL.lectureAudioURL(
+      lectureId: lessonId, coachId: coachId, beatId: beatId)
+    else {
+      audioFailover = nil
+      onMissing()
+      return
+    }
+    currentRemoteURL = url
+    playRemote(url: url)
+  }
+
   /// Stop playback WITHOUT firing the completion handler (manual advance/skip).
   func stop() {
     onFinished = nil
+    audioFailover = nil
     teardownPlayer()
     if synth.isSpeaking || synth.isPaused {
       synth.stopSpeaking(at: .immediate)

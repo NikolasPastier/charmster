@@ -113,6 +113,16 @@ enum DifficultyTier: String, CaseIterable, Identifiable, Codable {
     }
   }
 
+  /// Minimum session score for a rep to count as a pass (streak kept, mastery-eligible).
+  /// Bronze is forgiving; Gold demands a noticeably stronger performance.
+  var passThreshold: Int {
+    switch self {
+    case .bronze: return 55
+    case .silver: return 60
+    case .gold:   return 68
+    }
+  }
+
   var color: Color {
     switch self {
     case .bronze: return Color(hex: 0xCD7F32)

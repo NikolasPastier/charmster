@@ -1,7 +1,7 @@
 import Foundation
 
 /// Canonical curriculum loaded from `Resources/curriculum.json` in the app bundle.
-/// 16 content tracks (1–16) + Track 0 onboarding shell = 17 tracks total.
+/// 16 content tracks (1–16) = 16 tracks total.
 /// 117 lectures + 16 capstones.
 ///
 /// This is the SINGLE SOURCE OF TRUTH for the app's curriculum shape at runtime.
@@ -119,6 +119,8 @@ enum Curriculum {
     let minutes: Int
     let skill: String
     let scenario: String?
+    let scoringProfile: ScoringProfile?
+    let openingTurn: OpeningTurn?
   }
 
   private struct CapstoneEntry: Decodable {
@@ -161,7 +163,9 @@ enum Curriculum {
           skill: lec.skill,
           isCapstone: false,
           access: lec.access,
-          format: lec.format
+          format: lec.format,
+          scoringProfile: lec.scoringProfile,
+          openingTurn: lec.openingTurn ?? .user
         )
         trackLectures.append(lecture)
       }
@@ -200,9 +204,9 @@ enum Curriculum {
     }
 
     #if DEBUG
-      let contentLectureCount = lectures.filter { !$0.isCapstone && $0.trackId != 0 }.count
+      let contentLectureCount = lectures.filter { !$0.isCapstone }.count
       let capstoneCount = lectures.filter { $0.isCapstone }.count
-      let contentTrackCount = tracks.filter { $0.id != 0 }.count
+      let contentTrackCount = tracks.count
       if contentTrackCount != 16 || contentLectureCount != 117 || capstoneCount != 16 {
         assertionFailure(
           "Curriculum manifest counts off: tracks=\(contentTrackCount) lectures=\(contentLectureCount) capstones=\(capstoneCount); expected 16/117/16"

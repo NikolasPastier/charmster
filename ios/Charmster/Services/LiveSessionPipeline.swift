@@ -44,6 +44,10 @@ final class LiveSessionPipeline: NSObject {
   var lastVisionBody: Int?
   var lastVisionWarmth: Double?
 
+  /// True while waiting for the avatar's opening turn to start arriving.
+  /// Mirrors `realtime.awaitingAvatarOpen` so views can observe it.
+  var awaitingAvatarOpen: Bool { realtime.awaitingAvatarOpen }
+
   /// Accumulated signals — read at session end to feed the scorer.
   private(set) var signals = SessionSignals()
 
@@ -70,7 +74,9 @@ final class LiveSessionPipeline: NSObject {
   /// or mock when components are unavailable. The pipeline is honest — no
   /// fake state is reported as live.
   func start(
-    prefersCamera: Bool,
+    mode: PracticeMode,
+    tier: DifficultyTier,
+    openingTurn: OpeningTurn = .user,
     persona: PartnerPersona,
     avatarPersona: AvatarPersona,
     voiceId: String,
@@ -86,9 +92,13 @@ final class LiveSessionPipeline: NSObject {
     self.lectureId = lecture?.id
     self.sessionId = UUID().uuidString
 
+    signals.practiceMode = mode
+
     status = .requestingPermission
     let mic = await requestMic()
-    let cam = prefersCamera ? await requestCamera() : false
+    // Camera is only relevant for videoVoice. Never request permission for other modes.
+    let wantsCamera = mode == .videoVoice
+    let cam = wantsCamera ? await requestCamera() : false
     micAvailable = mic
     cameraAvailable = cam
     signals.cameraAvailable = cam
@@ -118,10 +128,15 @@ final class LiveSessionPipeline: NSObject {
       coach_style: coach.rawValue,
       setting: capstoneSettingDescription ?? setting.title,
       realtime_voice: AvatarVoice.resolve(from: voiceId).realtimeVoice,
-      focus_skills: focusSkills.isEmpty ? nil : focusSkills
+      focus_skills: focusSkills.isEmpty ? nil : focusSkills,
+      difficulty_tier: tier.rawValue,
+      opening_turn: openingTurn.rawValue
     )
     if let token = await RealtimeSessionService.mint(req) {
-      await realtime.connect(token: token)
+      await realtime.connect(
+        token: token,
+        openingTurn: openingTurn,
+        scenarioHint: lecture?.scenario)
       status = cam ? .running : .voiceOnly
     } else {
       TenXPreviewSupport.log("[Pipeline] realtime mint failed — running voice-only fallback")
@@ -134,6 +149,18 @@ final class LiveSessionPipeline: NSObject {
     captureSession.stopRunning()
     try? AVAudioSession.sharedInstance().setActive(false, options: [.notifyOthersOnDeactivation])
     status = .idle
+  }
+
+  func applyJudged(_ result: SessionScoreService.Result) {
+    signals.judgedResponsiveness = result.responsiveness
+    signals.judgedCalibration    = result.calibration
+    signals.judgedComfort        = result.comfort
+    signals.judgedInterest       = result.interest
+    signals.judgedSpark          = result.spark
+    signals.judgedRespect        = result.respect
+    signals.reactionLine         = result.reactionLine
+    signals.strengths            = result.strengths
+    signals.fixes                = result.fixes
   }
 
   /// Pull current Realtime EMAs + vision into SessionSignals. Called by the
